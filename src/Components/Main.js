@@ -60,9 +60,7 @@ function Main(){
   return(
     <div className="PageController">
       <div className="PageSelectors">
-        <button id="SC-I" onClick={() => {setLayout("EC"); setImmersive(true);}}>SC-I</button>
         <button id="SS-I" onClick={() => {setLayout("CC"); setImmersive(true);}}>SS-I</button>
-        <button id="SC-N" onClick={() => {setLayout("EC"); setImmersive(false);}}>SC-N</button>
         <button id="SS-N" onClick={() => {setLayout("CC"); setImmersive(false);}}>SS-N</button>
       </div>
       <Layout data={data} immersive={immersive} layout={layout}/>
