@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
 import './Overlay.css';
-import BarComponent from './BarComponent';
 
 const text1 = `육류 소비량은 증가하고 있다.
 A 도시는 농축산업 지원정책에 따른 식습관 변화였고,
@@ -34,7 +33,6 @@ const Overlay = React.forwardRef(({ scroll }, ref) => (
     className="PageController"
     ref={ref}
     onScroll={(e) => {
-      console.log(e.target.scrollTop)
       scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
     }}>
     <div className="TitleContainer">
@@ -42,13 +40,11 @@ const Overlay = React.forwardRef(({ scroll }, ref) => (
         식량 소비에 관하여
       </div>
     </div>
-    <div className={"Content"}>
-      <div className="Texts" style={{marginLeft: "-10%", position: "relative"}}>
-        <TextComponent text = {text1}/>
-        <TextComponent text = {text2}/>
-        <TextComponent text = {text3}/>
-        <TextComponent text = {text4}/>
-      </div>
+    <div className={"Texts"}>
+      <TextComponent text = {text1}/>
+      <TextComponent text = {text2}/>
+      <TextComponent text = {text3}/>
+      <TextComponent text = {text4}/>
     </div>
     <div className={"QuizButton"}>
 

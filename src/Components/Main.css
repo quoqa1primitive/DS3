@@ -1,20 +1,6 @@
-* {
-  /* background-color: #cccccc; */
-  font-family: "Roboto";
-  white-space: pre-line;
-}
-
-.Content {
+.PageSelectors {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  margin-bottom: 10vw;
-}
-
-.Texts {
-  background-color: transparent;
-  font-size: 16px;
-  line-height: 1.5;
-  z-index: 2;
-  margin-top: 80vh;
+  width: fit-content;
+  height: fit-content;
 }

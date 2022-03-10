@@ -1,18 +1,18 @@
 import * as THREE from 'three'
-import React, { useRef, useLayoutEffect, useState, useMemo, Suspense } from 'react'
+import React, { useRef, useLayoutEffect, useEffect, useState, useMemo, Suspense } from 'react'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
-import { OrbitControls, OrthographicCamera, PerspectiveCamera, shaderMaterial, useCursor } from '@react-three/drei';
+import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
 import { Text } from "troika-three-text";
-import glsl from 'babel-plugin-glsl/macro';
 import fonts from "./fonts";
 
 import "./ImmVisComponent.css"
+const bezier = require('bezier-easing');
 
 const STEP_XY = 100;
 const STEP_ZY = 101;
 const STEP_ZX = 110;
 
-const scale = 4.5;
+const scale = 5.5;
 const tickLength = 0.6;
 const speed = 0.035;
 const opts = {
@@ -91,13 +91,6 @@ function AxGr({position}){
   const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
   const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
 
-  useFrame((state) => {
-    // console.log(state.camera.position);
-    state.camera.position.x = state.camera.position.x;
-    state.camera.position.y = state.camera.position.y;
-    state.camera.position.z = state.camera.position.z;
-  })
-
   const XAxis1 =
     <>
       {
@@ -119,6 +112,7 @@ function AxGr({position}){
             <Line key={idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} /> // Tick
             <TextBox opts={opts} text={3 + 3 * item} anchorX={"right"} anchorY={"middle"} /> // Label
             <Line key={idx+100} color={"lightgrey"} start={[tickLength, 0, 0]} end={[xLength, 0, 0]} /> // Grid
+            <Line key={idx+200} color={"lightgrey"} start={[xLength, 0, 0]} end={[xLength, 0, zLength]} /> // Grid
           </mesh>
       })
     }
@@ -145,7 +139,7 @@ function AxGr({position}){
       <Line color={"black"} start={[0, 0, zLength]} end={[xLength, 0, zLength]} /> // X-Axis
       <Line color={"black"} start={[0, 0, 0]} end={[0, yLength, 0]} /> // Y-Axis
       <Line color={"black"} start={[0, 0, 0]} end={[0, 0, zLength]} /> // Z-Axis
-      <Line color={"black"} start={[0, 0, 0]} end={[xLength, 0, 0]} /> // Z-Axis2
+      // <Line color={"black"} start={[0, 0, 0]} end={[xLength, 0, 0]} /> // Z-Axis2
     </group>
   )
 }
@@ -164,18 +158,19 @@ function MainGroup1({position, target}){
             position={[
               xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
               0,
-              zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2
-            ]}>
-              <Rect width={rectWidth} height={item} depth={rectDepth} color={new THREE.Color("rgb(0, 255, 0)")} opacity={idx==xyzProps.dataA1.length-1?1:1}/>
+              zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2]}>
+              <Rect width={rectWidth} height={item} depth={rectDepth} color={new THREE.Color("#512C8A")} opacity={idx==xyzProps.dataA1.length-1?1:1}/>
             </mesh>
         })
       }
       {
         xyzProps.dataB1.map((item, idx) => {
           return <mesh key={idx}
-              position={[xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)), 0, zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}
-            >
-                  <Rect key={idx} width={rectWidth} height={item} depth={rectDepth} color={new THREE.Color("rgb(255, 0, 0)")} opacity={idx==xyzProps.dataB1.length-1?1:1}/>
+              position={[
+                xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
+                0,
+                zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}>
+              <Rect key={idx} width={rectWidth} height={item} depth={rectDepth} color={new THREE.Color("#2F9B39")} opacity={idx==xyzProps.dataB1.length-1?1:1}/>
             </mesh>
         })
       }
@@ -219,22 +214,54 @@ function MainGroup2({position, target}){
   )
 }
 
-function VisComponent({scroll, ...props}){
-  const group = useRef()
+function VisComponent({camera, scroll, ...props}){
+  const group = useRef();
+
+  let step = 0;
+  const sp_1 = 0.2;
+  const sp_2 = 0.48;
 
   useFrame(() => {
-    const et = scroll.current
+    const et = scroll.current;
     // console.log(et);
-    group.current.position.y = Math.sin((et) / 2) * 50
-    group.current.rotation.x = Math.sin((et) / 3) * 50
-    group.current.rotation.y = Math.cos((et) / 2) * 50
-    group.current.rotation.z = Math.sin((et) / 3) * 50
+
+    group.current.position.x = -xyzProps.xLength * 3/4;
+
+    let bezierFunc = bezier(0.4, 0, 0.4, 1);
+    let bzVal = 0;
+    const durMargin = 0.03;
+
+    if(et < (sp_1 - durMargin)){
+      step = 1;
+      bzVal = bezierFunc((et - 0) / (sp_1 - durMargin));
+      group.current.rotation.y = -Math.PI / 6 * (1 - bzVal);
+      camera.current.position.y = 2000 * (1 - bzVal);
+    }else if(et < (sp_1 + durMargin)){
+      step = 2;
+      group.current.rotation.y = 0;
+      camera.current.position.y = 0;
+    }else if(et < (sp_2 - durMargin)){
+      step = 3;
+      let et2 = et - sp_1 - durMargin;
+      let dur = sp_2 - durMargin - sp_1 - durMargin;
+      bzVal = bezierFunc(et2 / dur);
+      group.current.rotation.y = Math.PI / 2 * bzVal;
+      camera.current.position.y = 500 * Math.sin(bzVal * Math.PI);
+    }
+
+    camera.current.lookAt(0, 0, 0);
   });
+
+  const centerPos = [
+    -xyzProps.xLength / 2,
+    -xyzProps.yLength / 2,
+    -xyzProps.zLength / 2
+  ]
 
   return(
     <group ref={group}>
-      <AxGr position={[0, 0, 0]} xyzProps={xyzProps} />
-      <MainGroup1 position={[0, 0, 0]} xyzProps={xyzProps} />
+      <AxGr step={step} position={centerPos} xyzProps={xyzProps} />
+      <MainGroup1 position={centerPos} xyzProps={xyzProps} />
     </group>
   )
 }
@@ -244,32 +271,29 @@ function ImmVisComponent({overlay, scroll}) {
   const mainCamera = useRef();
 
   return (
-    <div className={"Visualization"} style={{display: "flex", flexDirection:"column"}}>
-      <div style={{fontSize: "20px"}}> Children and Elderly per 100 Adults </div>
-      <Canvas
-        ref={canvas}
-        onCreated={(state) => state.events.connect(overlay.current)}
-        style={{width: window.offsetWidth, height: window.offsetWidth*1.2}}
-        dpr={Math.max(window.devicePixelRatio, 2)}>
-        <OrthographicCamera ref={mainCamera} makeDefault
-          position={[xyzProps.xLength / 2, xyzProps.yLength / 2, 1000 * scale]}
-          near={0}
-          far={50000 * scale}
-          zoom={1 * scale}
-          />
-        <OrbitControls
-          camera={mainCamera.current}
-          enablePan={true}
-          enableZoom={false}
-          zoomSpeed={0.25/scale}
-          style={{zIndex: 5}}/>
-        <ambientLight />
-        <pointLight position={[10, 10, 10]} />
-        <Suspense fallback={null}>
-          <VisComponent scroll={scroll} />
-        </Suspense>
-      </Canvas>
-    </div>
+    <Canvas
+      ref={canvas}
+      onCreated={(state) => state.events.connect(overlay.current)}
+      dpr={Math.max(window.devicePixelRatio, 2)}>
+      <OrthographicCamera ref={mainCamera} makeDefault
+        position={[0, 0, 1000 * scale]}
+        near={0}
+        far={50000 * scale}
+        zoom={1 * scale}
+        />
+      <OrbitControls
+        camera={mainCamera.current}
+        enablePan={false}
+        enableZoom={false}
+        enableRotate={false}
+        zoomSpeed={0.25/scale}
+        style={{zIndex: 5}}/>
+      <ambientLight
+        intensity={0.5}/>
+      <Suspense fallback={null}>
+        <VisComponent camera={mainCamera} scroll={scroll} />
+      </Suspense>
+    </Canvas>
   )
 }
 
