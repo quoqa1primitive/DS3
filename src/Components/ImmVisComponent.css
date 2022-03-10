@@ -1,0 +1,8 @@
+.Visualization {
+  display: flex;
+  position: sticky;
+  margin-bottom: 2vw;
+  margin-right: 2vw;
+  z-index: 2;
+  /* border: 1px solid black;   */
+}
