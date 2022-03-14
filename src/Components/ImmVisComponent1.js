@@ -1,11 +1,11 @@
 import * as THREE from 'three'
-import React, { useRef, useLayoutEffect, useEffect, useState, useMemo, Suspense } from 'react'
+import React, { useRef, useLayoutEffect, useState, useMemo, Suspense } from 'react'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
 import { Text } from "troika-three-text";
 import fonts from "./fonts";
 
-import "./ImmVisComponent.css"
+import "./ImmVisComponent1.css"
 const bezier = require('bezier-easing');
 
 const STEP_XY = 100;
@@ -149,7 +149,7 @@ function AxGr({step, position}){
               </>
             }
             {
-              (step <= 5) &&
+              (step <= 4) &&
               <Line key={idx+100} color={"lightgrey"} start={[tickLength, 0, 0]} end={[xLength, 0, 0]} /> // Grid
             }
             {
@@ -179,6 +179,11 @@ function AxGr({step, position}){
               <>
                 <Line key={idx} color={"black"} start={[0, 0, tickLength]} end={[0, 0, 0]} /> // Tick
                 <TextBox text={0 + 10 * item} anchorX={"right"} anchorY={"middle"} /> // Label
+              </>
+            }
+            {
+              (step >= 5) &&
+              <>
                 <Line key={idx+100} color={"lightgrey"} start={[0, 0, 0]} end={[0, 0, zLength]} /> // Grid
               </>
             }
@@ -397,7 +402,7 @@ function ImmVisComponent({overlay, scroll}) {
   return (
     <Canvas
       ref={canvas}
-      onCreated={(state) => state.events.connect(overlay.current)}
+      onCreated={(state) => state.events.connect(overlay.current.ref1)}
       dpr={Math.max(window.devicePixelRatio, 2)}>
       <OrthographicCamera ref={mainCamera} makeDefault
         position={[0, 0, 1000 * scale]}
