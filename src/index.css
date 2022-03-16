@@ -1,12 +1,10 @@
 * {
+  font-family: "Roboto";
+}
+
+html, #root, body {
   width: 100%;
   height: 100%;
-  margin: 0;
-  padding: 0;
-  user-select: none;
-  /* background-color: #cccccc; */
-  font-family: "Roboto";
-  white-space: pre-line;
 }
 
 html {

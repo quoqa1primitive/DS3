@@ -21,14 +21,13 @@ function Main(){
   }
 
   return(
-
-    <div className="PageContents">
+    <div style={{width: "100%", height: "100%"}}className="PageContents">
       {
         !quiz &&
-        <>
+        <div className="Viz">
           <ImmVisComponent1 overlay={overlay} scroll={scroll} />
           <Overlay1 ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz}/>
-        </>
+        </div>
       }
       {
         quiz &&
