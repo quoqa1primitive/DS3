@@ -10,7 +10,9 @@
 }
 
 .TitleContainer {
-  margin-top: 100vw;
+  position: sticky;
+  top: 10%;
+  margin-top: 60vw;
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -19,51 +21,50 @@
 }
 
 .Title {
-  width: 50%;
+  width: 40%;
   margin-top: 4vw;
-  margin-bottom: 28vw;
-  font-size: 4vw;
+  font-size: 3vw;
 }
 
 .Texts {
   position: absolute;
-  width: 18vw;
+  width: 100%;
+  margin-top: 70vh;
   height: fit-content;
   display: flex;
-  left: 60vw;
   flex-direction: column;
   background-color: transparent;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.5;
   z-index: 1;
 }
 
 .TextContainer {
-  font-size: 2vmin;
-  box-shadow: 0px 0px 10px 10px rgba(204, 204, 204, 0.7);
-  background-color: rgba(204, 204, 204, 0.7);
-  margin-bottom: 32vw;
-  width: 100%;
+  /* font-size: 2vmin; */
+  position: relative;
+  box-shadow: 0px 0px 10px 10px rgba(204, 204, 204, 0.85);
+  background-color: rgba(204, 204, 204, 0.85);
+  width: 420px;
 }
 
 .Button {
-    margin: 0 auto 16vw auto;
-    width: 8vw;
-    border: 0;
-    line-height: 2.5;
-    padding: 0 20px;
-    font-size: 1rem;
-    text-align: center;
-    color: #fff;
-    text-shadow: 1px 1px 1px #000;
-    border-radius: 10px;
-    background-color: rgba(220, 0, 0, 1);
-    background-image: linear-gradient(to top left,
-                                      rgba(0, 0, 0, .2),
-                                      rgba(0, 0, 0, .2) 30%,
-                                      rgba(0, 0, 0, 0));
-    box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
-                inset -2px -2px 3px rgba(0, 0, 0, .6);
+  margin: 0 auto 60vh auto;
+  width: 8vw;
+  border: 0;
+  line-height: 2.5;
+  padding: 0 20px;
+  font-size: 1rem;
+  text-align: center;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000;
+  border-radius: 10px;
+  background-color: rgba(220, 0, 0, 1);
+  background-image: linear-gradient(to top left,
+                                    rgba(0, 0, 0, .2),
+                                    rgba(0, 0, 0, .2) 30%,
+                                    rgba(0, 0, 0, 0));
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+              inset -2px -2px 3px rgba(0, 0, 0, .6);
 }
 
 .Button:hover {

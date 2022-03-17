@@ -2,34 +2,19 @@ import * as THREE from 'three'
 import React, { useRef, useLayoutEffect, useState, useMemo, Suspense } from 'react'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
-import { Text } from "troika-three-text";
-import fonts from "./fonts";
+import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js'
 
-import "./ImmVisComponent1.css"
+import "./CanvasI.css"
 const bezier = require('bezier-easing');
 
 const STEP_XY = 100;
 const STEP_ZY = 101;
 const STEP_ZX = 110;
 
-const XAXIS1 = 1000;
-const YAXIS1 = 1001;
-const YAXIS2 = 1010;
-const ZAXIS1 = 1011;
-
-const scale = 5.5;
+const scale = 6.5;
 const tickLength = 0.6;
 const speed = 0.035;
-const opts = {
-  font: "roboto",
-  fontSize: "2.5",
-  color: "black",
-  maxWidth: 300,
-  lineHeight: 1,
-  letterSpacing: 0,
-  textAlign: "justify",
-  materialType: "MeshPhongMaterial"
-};
+
 const xyzProps = {
   xSteps: 2,  xLength: 60,  xPadding: 15,
   ySteps: 11, yLength: 60,  yPadding: 0,
@@ -40,73 +25,11 @@ const xyzProps = {
   dataB2: [30, 40, 40, 50, 50, 50, 60, 70, 70, 70, 70, 80]
 }
 
-extend({ Text });
-
-function Line({ start, end, color }) {
-  const ref = useRef();
-  useLayoutEffect(() => {
-    ref.current.geometry.setFromPoints([start, end].map((point) => new THREE.Vector3(...point)))
-  }, [start, end])
-  return (
-    <line ref={ref}>
-      <bufferGeometry />
-      <lineBasicMaterial color={color} />
-    </line>
-  )
-}
-
-function TextBox({text, anchorX, anchorY, label}){
-  const ref = useRef();
-  useFrame((state) => {
-    ref.current.lookAt(new THREE.Vector3(state.camera.position.x, state.camera.position.y, state.camera.position.z));
-    if(label == XAXIS1){
-      // ref.current.rotateX(Math.PI / 2);
-    }else if(label == YAXIS1){
-      ref.current.rotateZ(Math.PI / 2);
-    }else if(label == YAXIS2){
-      ref.current.rotateZ(Math.PI / 2);
-    }else if(label == ZAXIS1){
-
-    }
-  })
-
-  return(
-    <text {...opts} ref={ref} text={text + ""} font={fonts[opts.font]} anchorX={anchorX} anchorY={anchorY}>
-      {opts.materialType === "MeshPhongMaterial" ? (
-        <meshPhongMaterial attach="material" color={opts.color} side={THREE.DoubleSide} />
-      ) : null}
-    </text>
-  )
-
-}
-
-function Rect({ width, height, depth, color, opacity }){
-  let myHeight = height / 5;
-  const geometry = new THREE.BoxGeometry(width, myHeight, depth);
-  const edges = useMemo(() => new THREE.EdgesGeometry(geometry));
-
-  return(
-    <>
-      <mesh raycast={() => null} position={[0, myHeight / 2, 0]}>
-        <boxGeometry args={[width, myHeight, depth]} />
-        <meshStandardMaterial color={color} transparent={true} opacity={opacity} />
-      </mesh>
-      <mesh raycast={() => null} position={[0, myHeight / 2, 0]}>
-        <lineSegments geometry={edges} renderOrder={100}>
-          <lineBasicMaterial color="lightgrey"/>
-        </lineSegments>
-      </mesh>
-    </>
-  )
-}
+const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
+const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
+const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
 
 function AxGr({step, position}){
-  console.log(step);
-
-  const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
-  const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
-  const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
-
   const XAxis1 =
     <>
       {
@@ -250,9 +173,6 @@ function AxGr({step, position}){
 }
 
 function MainGroup1({position, target}){
-  const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
-  const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
-  const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
   const rectWidth = 6, rectDepth = 2;
 
   return(
@@ -284,9 +204,6 @@ function MainGroup1({position, target}){
 }
 
 function MainGroup2({position, target}){
-  const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
-  const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
-  const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
   const rectDepth = 2;
   const ratio = 1.66;
 
@@ -324,9 +241,15 @@ function VisComponent({camera, scroll, ...props}){
   const group = useRef();
   const [step, setStep] = useState(0);
 
-  const sp_1 = 0.14;
-  const sp_2 = 0.38;
-  const sp_3 = 0.64;
+  const text1 = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight) + document.getElementById("text1").getBoundingClientRect().top + window.innerHeight * 0.0;
+  const text2 = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight) + document.getElementById("text2").getBoundingClientRect().top + window.innerHeight * 0.0;
+  const text3 = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight) + document.getElementById("text3").getBoundingClientRect().top + window.innerHeight * 0.0;
+  const text4 = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight) + document.getElementById("text4").getBoundingClientRect().top + window.innerHeight * 0.0;
+  const text5 = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight) + document.getElementById("text5").getBoundingClientRect().top + window.innerHeight * 0.0;
+
+  const sp_1 = text1 / document.getElementById("pageController").scrollHeight;
+  const sp_2 = text3 / document.getElementById("pageController").scrollHeight;
+  const sp_3 = text4 / document.getElementById("pageController").scrollHeight;
 
   useFrame(() => {
     const et = scroll.current;
@@ -342,10 +265,12 @@ function VisComponent({camera, scroll, ...props}){
       setStep(1);
       bzVal = bezierFunc((et - 0) / (sp_1 - durMargin));
       group.current.rotation.y = -Math.PI / 6 * (1 - bzVal);
+      group.current.rotation.z = 0;
       camera.current.position.y = 2000 * (1 - bzVal);
     }else if(et < (sp_1 + durMargin)){
       setStep(2);
       group.current.rotation.y = 0;
+      group.current.rotation.z = 0;
       camera.current.position.y = 0;
     }else if(et < (sp_2 - durMargin)){
       setStep(3);
@@ -353,20 +278,24 @@ function VisComponent({camera, scroll, ...props}){
       let dur2 = sp_2 - durMargin - sp_1 - durMargin;
       bzVal = bezierFunc(et2 / dur2);
       group.current.rotation.y = Math.PI / 2 * bzVal;
-      camera.current.position.y = 500 * Math.sin(bzVal * Math.PI);
+      group.current.rotation.z = 0;
+      camera.current.position.y = 1000 * Math.sin(bzVal * Math.PI);
     }else if(et < (sp_2 + durMargin)){
       setStep(4);
       group.current.rotation.y = Math.PI / 2;
-      camera.current.position.y = 500 * Math.sin(bzVal * Math.PI);
+      group.current.rotation.z = 0;
+      camera.current.position.y = 1000 * Math.sin(bzVal * Math.PI);
     }else if(et < (sp_3 - durMargin)){
       setStep(5);
       let et3 = et - sp_2 - durMargin;
       let dur3 = sp_3 - durMargin - sp_2 - durMargin;
       bzVal = bezierFunc(et3 / dur3);
+      group.current.rotation.y = Math.PI / 2;
       group.current.rotation.z = Math.PI / 2 * bzVal;
-      camera.current.position.x = -500 * Math.sin(bzVal * Math.PI);
+      camera.current.position.x = -1000 * Math.sin(bzVal * Math.PI);
     }else if(et < (sp_3 + durMargin)){
       setStep(6);
+      group.current.rotation.y = Math.PI / 2;
       group.current.rotation.z = Math.PI / 2;
       camera.current.position.x = 0;
     }
@@ -395,7 +324,7 @@ function VisComponent({camera, scroll, ...props}){
   )
 }
 
-function ImmVisComponent({overlay, scroll}) {
+function Canvas2({overlay, scroll}) {
   const canvas = useRef();
   const mainCamera = useRef();
 
@@ -426,4 +355,4 @@ function ImmVisComponent({overlay, scroll}) {
   )
 }
 
-export default ImmVisComponent;
+export default Canvas2;

@@ -2,7 +2,9 @@ import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from
 import { useFrame } from '@react-three/fiber'
 
 import './Main.css'
-import ImmVisComponent1 from './ImmVisComponent1.js';
+import CanvasI from './CanvasI.js';
+// import CanvasA from './CanvasA.js';
+// import CanvasN from './CanvasN.js';
 import Overlay1 from './Overlay1.js';
 
 import Quiz from './Quiz.js'
@@ -25,7 +27,7 @@ function Main(){
       {
         !quiz &&
         <div className="Viz">
-          <ImmVisComponent1 overlay={overlay} scroll={scroll} />
+          <CanvasI overlay={overlay} scroll={scroll} />
           <Overlay1 ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz}/>
         </div>
       }
