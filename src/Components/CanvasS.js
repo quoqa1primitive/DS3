@@ -1,10 +1,10 @@
 import * as THREE from 'three'
-import React, { useRef, useLayoutEffect, useState, useMemo, Suspense } from 'react'
+import React, { useRef, useEffect, useLayoutEffect, useState, useMemo, Suspense } from 'react'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
 import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js'
 
-import "./styles/CanvasI.css"
+import "./styles/CanvasS.css"
 const bezier = require('bezier-easing');
 
 const STEP_XY = 100;
@@ -248,75 +248,27 @@ function MainGroup2({position, target}){
   )
 }
 
-function VisComponent({camera, scroll, ...props}){
+function VisComponent({camera, ...props}){
   const group = useRef();
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(props.step);
 
-  const box1 = document.getElementById("text1").getBoundingClientRect();
-  const box2 = document.getElementById("text2").getBoundingClientRect();
-  const box3 = document.getElementById("text3").getBoundingClientRect();
-  const box4 = document.getElementById("text4").getBoundingClientRect();
-  const box5 = document.getElementById("text5").getBoundingClientRect();
-  const scrollHeight = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight);
-
-  const text1 = scrollHeight + box1.top - window.innerHeight * 0.5 + box1.height * 0.5;
-  const text2 = scrollHeight + box2.top - window.innerHeight * 0.5 + box2.height * 0.5;
-  const text3 = scrollHeight + box3.top - window.innerHeight * 0.5 + box3.height * 0.5;
-  const text4 = scrollHeight + box4.top - window.innerHeight * 0.5 + box4.height * 0.5;
-  const text5 = scrollHeight + box5.top - window.innerHeight * 0.5 + box5.height * 0.5;
-
-  const sp_1 = text1 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  const sp_2 = text3 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  const sp_3 = text4 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-
-  useFrame(() => {
-    const et = scroll.current;
-
-    let bezierFunc = bezier(0.4, 0, 0.4, 1);
-    let bzVal = 0;
-    const durMargin = 0.05;
-
-    if(et < (sp_1 - durMargin)){
-      setStep(1);
-      bzVal = bezierFunc((et - 0) / (sp_1 - durMargin));
-      group.current.rotation.y = -Math.PI / 6 * (1 - bzVal);
-      group.current.rotation.z = 0;
-      camera.current.position.y = 2000 * (1 - bzVal);
-    }else if(et < (sp_1 + durMargin)){
-      setStep(2);
+  useEffect(() => {
+    if(step == 2){
       group.current.rotation.y = 0;
       group.current.rotation.z = 0;
       camera.current.position.y = 0;
-    }else if(et < (sp_2 - durMargin)){
-      setStep(3);
-      let et2 = et - sp_1 - durMargin;
-      let dur2 = sp_2 - durMargin - sp_1 - durMargin;
-      bzVal = bezierFunc(et2 / dur2);
-      group.current.rotation.y = Math.PI / 2 * bzVal;
-      group.current.rotation.z = 0;
-      camera.current.position.y = 1000 * Math.sin(bzVal * Math.PI);
-    }else if(et < (sp_2 + durMargin)){
-      setStep(4);
+    }else if(step == 4){
       group.current.rotation.y = Math.PI / 2;
       group.current.rotation.z = 0;
-      camera.current.position.y = 1000 * Math.sin(bzVal * Math.PI);
-    }else if(et < (sp_3 - durMargin)){
-      setStep(5);
-      let et3 = et - sp_2 - durMargin;
-      let dur3 = sp_3 - durMargin - sp_2 - durMargin;
-      bzVal = bezierFunc(et3 / dur3);
-      group.current.rotation.y = Math.PI / 2;
-      group.current.rotation.z = Math.PI / 2 * bzVal;
-      camera.current.position.x = -1000 * Math.sin(bzVal * Math.PI);
-    }else if(et < (sp_3 + durMargin)){
-      setStep(6);
+      camera.current.position.y = 1000 * Math.sin(1 * Math.PI);
+    }else if(step == 6){
       group.current.rotation.y = Math.PI / 2;
       group.current.rotation.z = Math.PI / 2;
       camera.current.position.x = 0;
     }
 
     camera.current.lookAt(0, 0, 0);
-  });
+  }, []);
 
   const centerPos = [
     -xyzProps.xLength / 2,
@@ -339,35 +291,36 @@ function VisComponent({camera, scroll, ...props}){
   )
 }
 
-function CanvasI({overlay, scroll}) {
+function CanvasS({step}) {
   const canvas = useRef();
   const mainCamera = useRef();
 
   return (
-    <Canvas
-      ref={canvas}
-      onCreated={(state) => state.events.connect(overlay.current.ref1)}
-      dpr={Math.max(window.devicePixelRatio, 2)}>
-      <OrthographicCamera ref={mainCamera} makeDefault
-        position={[0, 0, 1000 * scale]}
-        near={0}
-        far={50000 * scale}
-        zoom={1 * scale}
-        />
-      <OrbitControls
-        camera={mainCamera.current}
-        enablePan={false}
-        enableZoom={false}
-        enableRotate={false}
-        zoomSpeed={0.25/scale}
-        style={{zIndex: 5}}/>
-      <ambientLight
-        intensity={0.5}/>
-      <Suspense fallback={null}>
-        <VisComponent camera={mainCamera} scroll={scroll} />
-      </Suspense>
-    </Canvas>
+    <div className={"CanvasS"}>
+      <Canvas
+        ref={canvas}
+        dpr={Math.max(window.devicePixelRatio, 2)}>
+        <OrthographicCamera ref={mainCamera} makeDefault
+          position={[0, 0, 1000 * scale]}
+          near={0}
+          far={50000 * scale}
+          zoom={1 * scale}
+          />
+        <OrbitControls
+          camera={mainCamera.current}
+          enablePan={false}
+          enableZoom={false}
+          enableRotate={false}
+          zoomSpeed={0.25/scale}
+          style={{zIndex: 5}}/>
+        <ambientLight
+          intensity={0.5}/>
+        <Suspense fallback={null}>
+          <VisComponent camera={mainCamera} step={step}/>
+        </Suspense>
+      </Canvas>
+    </div>
   )
 }
 
-export default CanvasI;
+export default CanvasS;

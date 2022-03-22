@@ -1,4 +1,4 @@
-.PageController {
+.PageControllerI {
   white-space: pre-line;
   position: absolute;
   top: 0;
@@ -9,7 +9,7 @@
   scroll-snap-type: y proximity;
 }
 
-.TitleContainer {
+.PageControllerI .TitleContainer {
   position: sticky;
   top: 10%;
   margin-top: 60vw;
@@ -20,13 +20,12 @@
   align-items: center;
 }
 
-.Title {
+.PageControllerI .Title {
   width: 40%;
-  margin-top: 4vw;
   font-size: 3vw;
 }
 
-.Texts {
+.PageControllerI .Texts {
   position: absolute;
   width: 100%;
   margin-top: 70vh;
@@ -39,15 +38,15 @@
   z-index: 1;
 }
 
-.TextContainer {
+.PageControllerI .TextContainer {
   /* font-size: 2vmin; */
   position: relative;
   box-shadow: 0px 0px 10px 10px rgba(204, 204, 204, 0.85);
   background-color: rgba(204, 204, 204, 0.85);
-  width: 420px;
+  width: 20vw;
 }
 
-.Button {
+.PageControllerI .Button {
   margin: 0 auto 60vh auto;
   width: 8vw;
   border: 0;
@@ -67,6 +66,6 @@
               inset -2px -2px 3px rgba(0, 0, 0, .6);
 }
 
-.Button:hover {
+.PageControllerI .Button:hover {
     background-color: rgba(255, 0, 0, 1);
 }

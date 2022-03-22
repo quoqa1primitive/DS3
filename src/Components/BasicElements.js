@@ -23,6 +23,22 @@ export const YAXIS1 = 1001;
 export const YAXIS2 = 1010;
 export const ZAXIS1 = 1011;
 
+export const text1 = `A was chosen as the area with the quickest rate of urbanization. B is the region with the best developed agricultural and animal industries in 2021.
+
+We've discovered some intriguing potential in terms of meat consumption and food self-sufficiency, given that both regions have experienced rapid growth.
+`
+
+export const text2 = `First of all, meat consumption in both cities has increased. Kim, who lives in Area B, had this to say about it:
+"Perhaps because it's easy to raise, chicken is inexpensive recently, and I eat it often."
+`
+
+export const text3 = `As shown in the chart, A showed monthly consumption from 30t to 210t and B from 90t to 180t. Both showed relatively steady increase.
+`
+export const text4 = `Then, has the self-sufficiency rate of food increased? The results were contrary. While A decreased from 60% to 40%, B soared from 30% to 80%.
+`
+export const text5 = `To broaden the scope of the preceding example, this means that in regions where significant urbanization occurs, the supply of fresh food does not have to rely on long-distance imports, but can take advantage of both freshness and price by leveraging adjacent locations such as B.
+`
+
 function Line({ start, end, color }) {
   const ref = useRef();
   useLayoutEffect(() => {
@@ -80,4 +96,21 @@ function Rect({ width, height, depth, color, opacity }){
   )
 }
 
-export {Line, TextBox, Rect};
+function TextComponent(props){
+  const [string, setString] = useState(props.text);
+  const [margin, setMargin] = useState(props.margin);
+  const [left, setLeft] = useState(props.left);
+
+  return(
+    <div  id={props.id}
+          className="TextContainer"
+          style={{
+            marginBottom: margin,
+            left: left
+          }}>
+      {string}
+    </div>
+  )
+}
+
+export {Line, TextBox, Rect, TextComponent};
