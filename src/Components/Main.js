@@ -25,18 +25,6 @@ function Main(){
     setQuiz(true);
   }
 
-  function setStatic(){
-    setType(Static);
-  }
-
-  function setAnimated(){
-    setType(Animated);
-  }
-
-  function setImmersive(){
-    setType(Immersive);
-  }
-
   return(
     <>
       {
@@ -53,20 +41,20 @@ function Main(){
             type == Immersive &&
             <>
               <CanvasI overlay={overlay} scroll={scroll} />
-              <OverlayI ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} setStatic={setStatic} setAnimated={setAnimated} setImmersive={setImmersive}/>
+              <OverlayI ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} />
             </>
           }
           {
             type == Animated &&
             <>
               <CanvasA overlay={overlay} scroll={scroll} />
-              <OverlayA ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} setStatic={setStatic} setAnimated={setAnimated} setImmersive={setImmersive}/>
+              <OverlayA ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} />
             </>
           }
           {
             type == Static &&
             <>
-              <OverlayS ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} setStatic={setStatic} setAnimated={setAnimated} setImmersive={setImmersive}/>
+              <OverlayS ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} />
             </>
           }
           </div>

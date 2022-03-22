@@ -4,12 +4,13 @@ import './styles/OverlayS.css';
 import { TextComponent, text1, text2, text3, text4, text5 } from './BasicElements.js';
 import CanvasS from './CanvasS.js';
 
-function Overlay({ scroll, quiz, onClick, setStatic, setAnimated, setImmersive }, ref){
+import img2 from '../Static-02.jpg';
+import img3 from '../Static-03.jpg';
+import img4 from '../Static-04.jpg';
+
+function Overlay({ scroll, quiz, onClick }, ref){
   const ref1 = useRef();
   const ref2 = useRef();
-  const ref3 = useRef();
-  const ref4 = useRef();
-  const ref5 = useRef();
 
   useImperativeHandle(ref, () => ({
     focus: () => {
@@ -20,16 +21,7 @@ function Overlay({ scroll, quiz, onClick, setStatic, setAnimated, setImmersive }
     },
     get ref2() {
         return ref2.current;
-    },
-    get ref3() {
-        return ref3.current;
-    },
-    get ref4() {
-        return ref4.current;
-    },
-    get ref5() {
-        return ref5.current;
-    },
+    }
     // ... whatever else one may need
   }));
 
@@ -47,16 +39,19 @@ function Overlay({ scroll, quiz, onClick, setStatic, setAnimated, setImmersive }
         </div>
       </div>
       <div className={"Texts"}>
-        <CanvasS step={2} />
+        <div style={{position: "relative", left: "calc(50% - 378px)", marginBottom: "45px"}}>
+          <img src={ img2 } width='756px' height='448px' />
+        </div>
         <TextComponent id={"text1"} text={text1.concat('\n', text2)} left={"calc(50% - 15vw)"} margin={"15vh"} />
-        <CanvasS step={4} />
+        <div style={{position: "relative", left: "calc(50% - 378px)", marginBottom: "45px"}}>
+          <img src={ img3 } width='756px' height='448px' />
+        </div>
         <TextComponent id={"text3"} text={text3} left={"calc(50% - 15vw)"} margin={"15vh"} />
-        <CanvasS step={6} />
+        <div style={{position: "relative", left: "calc(50% - 378px)", marginBottom: "45px"}}>
+          <img src={ img4 } width='756px' height='448px' />
+        </div>
         <TextComponent id={"text4"} text={text4.concat('\n', text5)} left={"calc(50% - 15vw)"} margin={"15vh"} />
         <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); }}> Go to Quiz </button>
-        <button className="Button" ref={ref3} type="button" onClick={()=>{ setStatic(); }}> Set Static </button>
-        <button className="Button" ref={ref4} type="button" onClick={()=>{ setAnimated(); }}> Set Animated </button>
-        <button className="Button" ref={ref5} type="button" onClick={()=>{ setImmersive(); }}> Set Immersive </button>
       </div>
     </div>
   )
