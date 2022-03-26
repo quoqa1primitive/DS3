@@ -9,7 +9,8 @@ import OverlayA from './OverlayA.js';
 import OverlayS from './OverlayS.js';
 // import CanvasA from './CanvasA.js';
 import imgA from '../Static.jpg';
-import Quiz from './Quiz.js'
+import Quiz from './Quiz.js';
+import axios from 'axios';
 
 function Main(){
   const Static = 100;
@@ -24,6 +25,20 @@ function Main(){
   function getQuiz(){
     setQuiz(true);
   }
+
+  useEffect(()=>{
+    axios.get('http://127.0.0.1:5000/ajaxGet', {
+      params: {
+        "action": "getSessionVar",
+        "keys": "PersonID,StoryID,StoryType"
+      }
+    }).then(response => {
+      console.log("SUCCESS", response);
+      setType(response.data.StoryType);
+    }).catch(error => {
+      console.log(error);
+    })
+  }, [])
 
   return(
     <>
