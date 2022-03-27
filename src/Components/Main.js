@@ -19,7 +19,7 @@ function Main(){
   const overlay = useRef();
   const scroll = useRef(0);
   const [quiz, setQuiz] = useState(false)
-  const [type, setType] = useState(Immersive);
+  const [type, setType] = useState(Animated);
 
   function getQuiz(){
     setQuiz(true);
