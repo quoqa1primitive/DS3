@@ -9,28 +9,55 @@ import OverlayA from './OverlayA.js';
 import OverlayS from './OverlayS.js';
 // import CanvasA from './CanvasA.js';
 import imgA from '../Static.jpg';
-import Quiz from './Quiz.js'
+import Quiz from './Quiz.js';
+import axios from 'axios';
 
 function Main(){
   const Static = 100;
   const Animated = 101;
   const Immersive = 110;
+  const EndOfTask = 0;
 
   const overlay = useRef();
   const scroll = useRef(0);
   const [quiz, setQuiz] = useState(false)
+<<<<<<< HEAD
   const [type, setType] = useState(Animated);
+=======
+  const [type, setType] = useState(Immersive);
+  const [completionCode, setCompletionCode] = useState("");
+
+  let PersonID;
+>>>>>>> c4cd1f388e6c0895b4cc87c10bc94daf1508fa63
 
   function getQuiz(){
     setQuiz(true);
   }
 
+  useEffect(()=>{
+    axios.get('ajaxGet', {
+      params: {
+        "action": "fetchNextStory"
+      }
+    }).then(response => {
+      console.log("SUCCESS", response);
+      if (response.data.nextStory==EndOfTask) {
+        setCompletionCode(response.data.CompletionCode);
+      } else {
+        PersonID = response.data.PersonID;
+      }
+      setType(response.data.nextStory);
+    }).catch(error => {
+      console.log(error);
+    });
+  }, [])
+  
   return(
     <>
       {
         quiz &&
         <>
-          <Quiz />
+          <Quiz type={type} PersonID={PersonID}/>
         </>
       }
       {
@@ -56,6 +83,13 @@ function Main(){
             <>
               <OverlayS ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} />
             </>
+          }
+          {
+            type == EndOfTask &&
+            <div>
+              All tasks done! Here is your completion code: <b>{completionCode}</b><br/>
+              Don't forget to submit it to the AMT task. 
+            </div>
           }
           </div>
         </div>

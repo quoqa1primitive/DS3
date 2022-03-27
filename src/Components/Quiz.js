@@ -1,8 +1,9 @@
-import React, { } from 'react';
+import React, { useCallback } from 'react';
 import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
 import "survey-core/survey.css";
 import "./styles/Quiz.css";
+import axios from 'axios';
 
 function SurveyComponent1(){
   Survey
@@ -32,7 +33,7 @@ function SurveyComponent1(){
   )
 }
 
-function SurveyComponent2(){
+function SurveyComponent2(props){
   Survey
     .StylesManager
     .applyTheme("default");
@@ -119,7 +120,33 @@ function SurveyComponent2(){
 };
 
   const survey = new Survey.Model(json);
-
+  // Setting up the onComplete behavior
+  survey.completedHtml = `<p>Thanks for answering the quizzes.</p>
+    <div>
+      <button onclick='window.location.reload(false);'>Next Story</button>
+    </div>
+  `;
+  const sendResults = useCallback((sender)=>{
+    let resultData;
+    resultData = sender.data;
+    resultData["PersonID"] = props.PersonID;
+    resultData["type"] = props.type;
+    const results = JSON.stringify(resultData);
+    // Using axios to send the results to flask server
+    axios.get('ajaxGet', {
+      params: {
+        "action": "log",
+        "PersonID": props.PersonID,
+        "json":results
+      }
+    }).then(response => {
+      console.log(response);
+    }).catch(error => {
+      console.log(error);
+    });
+  },[]);
+  survey.onComplete.add(sendResults);
+  // 
   return(
     <div className="SurveyComponent">
       <SurveyReact.Survey
@@ -129,10 +156,10 @@ function SurveyComponent2(){
   )
 }
 
-function Quiz(){
+function Quiz(props){
   return(
     <div className="SurveyContainer">
-      <SurveyComponent2 />
+      <SurveyComponent2 type={props.type} PersonID={props.PersonID}/>
     </div>
   )
 }
