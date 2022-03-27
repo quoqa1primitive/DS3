@@ -21,14 +21,10 @@ function Main(){
   const overlay = useRef();
   const scroll = useRef(0);
   const [quiz, setQuiz] = useState(false)
-<<<<<<< HEAD
   const [type, setType] = useState(Animated);
-=======
-  const [type, setType] = useState(Immersive);
   const [completionCode, setCompletionCode] = useState("");
 
   let PersonID;
->>>>>>> c4cd1f388e6c0895b4cc87c10bc94daf1508fa63
 
   function getQuiz(){
     setQuiz(true);
@@ -51,7 +47,7 @@ function Main(){
       console.log(error);
     });
   }, [])
-  
+
   return(
     <>
       {
@@ -88,7 +84,7 @@ function Main(){
             type == EndOfTask &&
             <div>
               All tasks done! Here is your completion code: <b>{completionCode}</b><br/>
-              Don't forget to submit it to the AMT task. 
+              Don't forget to submit it to the AMT task.
             </div>
           }
           </div>
