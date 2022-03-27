@@ -3,9 +3,10 @@ import React, { useRef, useEffect, useState, useImperativeHandle } from 'react';
 import './styles/OverlayI.css';
 import { TextComponent, text1, text2, text3, text4, text5 } from './BasicElements.js';
 
-function Overlay({ scroll, quiz, onClick }, ref){
+function Overlay({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
   const ref2 = useRef();
+  const [startTime, setStartTime] = useState(Date.now());
 
   useImperativeHandle(ref, () => ({
     focus: () => {
@@ -27,6 +28,7 @@ function Overlay({ scroll, quiz, onClick }, ref){
       ref={ref1}
       onScroll={(e) => {
         scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
+        scrollLog.current.push([Date.now() - startTime, scroll.current]);
       }}>
       <div className="TitleContainer">
         <div className="Title">

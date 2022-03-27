@@ -7,7 +7,6 @@ import OverlayI from './OverlayI.js';
 import CanvasA from './CanvasA.js';
 import OverlayA from './OverlayA.js';
 import OverlayS from './OverlayS.js';
-// import CanvasA from './CanvasA.js';
 import imgA from '../Static.jpg';
 import Quiz from './Quiz.js';
 import axios from 'axios';
@@ -20,6 +19,7 @@ function Main(){
 
   const overlay = useRef();
   const scroll = useRef(0);
+  const scrollLog = useRef([]);
   const [quiz, setQuiz] = useState(false)
   const [type, setType] = useState(Animated);
   const [completionCode, setCompletionCode] = useState("");
@@ -27,6 +27,7 @@ function Main(){
   let PersonID;
 
   function getQuiz(){
+    console.log(scrollLog.current);
     setQuiz(true);
   }
 
@@ -64,20 +65,20 @@ function Main(){
             type == Immersive &&
             <>
               <CanvasI overlay={overlay} scroll={scroll} />
-              <OverlayI ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} />
+              <OverlayI ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {
             type == Animated &&
             <>
               <CanvasA overlay={overlay} scroll={scroll} />
-              <OverlayA ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} />
+              <OverlayA ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {
             type == Static &&
             <>
-              <OverlayS ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} />
+              <OverlayS ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {

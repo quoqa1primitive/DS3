@@ -8,9 +8,10 @@ import img2 from '../Static-02.jpg';
 import img3 from '../Static-03.jpg';
 import img4 from '../Static-04.jpg';
 
-function Overlay({ scroll, quiz, onClick }, ref){
+function Overlay({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
   const ref2 = useRef();
+  const [startTime, setStartTime] = useState(Date.now());
 
   useImperativeHandle(ref, () => ({
     focus: () => {
@@ -31,7 +32,8 @@ function Overlay({ scroll, quiz, onClick }, ref){
       id="pageController"
       ref={ref1}
       onScroll={(e) => {
-        scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
+        scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight);
+        scrollLog.current.push([Date.now() - startTime, scroll.current]);
       }}>
       <div className="TitleContainer">
         <div className="Title">
