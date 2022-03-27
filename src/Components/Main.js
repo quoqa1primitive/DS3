@@ -16,36 +16,44 @@ function Main(){
   const Static = 100;
   const Animated = 101;
   const Immersive = 110;
+  const EndOfTask = 0;
 
   const overlay = useRef();
   const scroll = useRef(0);
   const [quiz, setQuiz] = useState(false)
   const [type, setType] = useState(Immersive);
+  const [completionCode, setCompletionCode] = useState("");
+
+  let PersonID;
 
   function getQuiz(){
     setQuiz(true);
   }
 
   useEffect(()=>{
-    axios.get('http://127.0.0.1:5000/ajaxGet', {
+    axios.get('ajaxGet', {
       params: {
-        "action": "getSessionVar",
-        "keys": "PersonID,StoryID,StoryType"
+        "action": "fetchNextStory"
       }
     }).then(response => {
       console.log("SUCCESS", response);
-      setType(response.data.StoryType);
+      if (response.data.nextStory==EndOfTask) {
+        setCompletionCode(response.data.CompletionCode);
+      } else {
+        PersonID = response.data.PersonID;
+      }
+      setType(response.data.nextStory);
     }).catch(error => {
       console.log(error);
-    })
+    });
   }, [])
-
+  
   return(
     <>
       {
         quiz &&
         <>
-          <Quiz />
+          <Quiz type={type} PersonID={PersonID}/>
         </>
       }
       {
@@ -71,6 +79,13 @@ function Main(){
             <>
               <OverlayS ref={overlay} overlay={overlay} scroll={scroll} onClick={getQuiz} />
             </>
+          }
+          {
+            type == EndOfTask &&
+            <div>
+              All tasks done! Here is your completion code: <b>{completionCode}</b><br/>
+              Don't forget to submit it to the AMT task. 
+            </div>
           }
           </div>
         </div>
