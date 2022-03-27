@@ -5,34 +5,6 @@ import "survey-core/survey.css";
 import "./styles/Quiz.css";
 import axios from 'axios';
 
-function SurveyComponent1(){
-  Survey
-    .StylesManager
-    .applyTheme("default");
-
-  let json = {
-    "elements": [
-        {
-            "type": "boolean",
-            "name": "bool",
-            "title": "Please answer the question",
-            "label": "Are you 21 or older?",
-            "isRequired": true
-        }
-    ]
-};
-
-  const survey = new Survey.Model(json);
-
-  return(
-    <div className="SurveyComponent">
-      <SurveyReact.Survey
-        model={survey}
-      />
-    </div>
-  )
-}
-
 function SurveyComponent2(props){
   Survey
     .StylesManager
@@ -131,6 +103,8 @@ function SurveyComponent2(props){
     resultData = sender.data;
     resultData["PersonID"] = props.PersonID;
     resultData["type"] = props.type;
+    resultData["scroll"] = props.ScrollData;
+    console.log(resultData);
     const results = JSON.stringify(resultData);
     // Using axios to send the results to flask server
     axios.get('ajaxGet', {
@@ -146,7 +120,7 @@ function SurveyComponent2(props){
     });
   },[]);
   survey.onComplete.add(sendResults);
-  // 
+  //
   return(
     <div className="SurveyComponent">
       <SurveyReact.Survey
@@ -159,7 +133,7 @@ function SurveyComponent2(props){
 function Quiz(props){
   return(
     <div className="SurveyContainer">
-      <SurveyComponent2 type={props.type} PersonID={props.PersonID}/>
+      <SurveyComponent2 ScrollData={props.ScrollData} type={props.type} PersonID={props.PersonID}/>
     </div>
   )
 }

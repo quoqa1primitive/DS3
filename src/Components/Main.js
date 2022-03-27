@@ -23,12 +23,13 @@ function Main(){
   const [quiz, setQuiz] = useState(false)
   const [type, setType] = useState(Animated);
   const [completionCode, setCompletionCode] = useState("");
+  const [scrollData, setScrollData] = useState([]);
 
   let PersonID;
 
   function getQuiz(){
-    console.log(scrollLog.current);
     setQuiz(true);
+    setScrollData(scrollLog.current);
   }
 
   useEffect(()=>{
@@ -54,7 +55,7 @@ function Main(){
       {
         quiz &&
         <>
-          <Quiz type={type} PersonID={PersonID}/>
+          <Quiz ScrollData={scrollData} type={type} PersonID={PersonID}/>
         </>
       }
       {
@@ -95,11 +96,5 @@ function Main(){
     </>
   )
 }
-
-// <div style={{width: "100%", height: "100%"}} className="PageContentsN">
-//   <div className="VizN">
-//     <img src={imgA} style={{flex:1 , width: undefined, height: undefined}}/>
-//   </div>
-// </div>
 
 export default Main;
