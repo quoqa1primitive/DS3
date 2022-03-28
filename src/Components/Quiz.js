@@ -65,7 +65,7 @@ function SurveyComponent2(props){
         {
             "type": "radiogroup",
             "name": "m2",
-            "title": "(Memorability) Did the article compare the chicken consumption of two cities?",
+            "title": "(Memorability) Did the article compare the amount of chicken consumption?",
             "isRequired": true,
             "hasNone": false,
             "colCount": 1,

@@ -40,10 +40,9 @@
 .PageControllerA .TextContainer {
   /* font-size: 2vmin; */
   position: relative;
-  left: calc(50% - 10vw + 540px);
+  width: 20vw;
   /* box-shadow: 0px 0px 10px 10px rgba(204, 204, 204, 0.85);
   background-color: rgba(204, 204, 204, 0.85); */
-  width: 20vw;
 }
 
 .PageControllerA .Button {

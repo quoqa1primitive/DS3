@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { Static, Animated, Immersive, EndOfTask} from './BasicElements.js';
 
 import './styles/Main.css'
 import CanvasI from './CanvasI.js';
@@ -7,21 +8,16 @@ import OverlayI from './OverlayI.js';
 import CanvasA from './CanvasA.js';
 import OverlayA from './OverlayA.js';
 import OverlayS from './OverlayS.js';
-import imgA from '../Static.jpg';
 import Quiz from './Quiz.js';
 import axios from 'axios';
 
 function Main(){
-  const Static = 100;
-  const Animated = 101;
-  const Immersive = 110;
-  const EndOfTask = 0;
-
   const overlay = useRef();
   const scroll = useRef(0);
   const scrollLog = useRef([]);
   const [quiz, setQuiz] = useState(false)
-  const [type, setType] = useState(Animated);
+  const [type, setType] = useState(Static);
+  const [layoutType, setLayoutType] = useState(Immersive);
   const [completionCode, setCompletionCode] = useState("");
   const [scrollData, setScrollData] = useState([]);
 
@@ -29,6 +25,7 @@ function Main(){
 
   function getQuiz(){
     setQuiz(true);
+    scrollLog.current.push(Date.now()); // Check the total elapsed time
     setScrollData(scrollLog.current);
   }
 
@@ -66,20 +63,20 @@ function Main(){
             type == Immersive &&
             <>
               <CanvasI overlay={overlay} scroll={scroll} />
-              <OverlayI ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <OverlayI ref={overlay} type={layoutType} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {
             type == Animated &&
             <>
               <CanvasA overlay={overlay} scroll={scroll} />
-              <OverlayA ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <OverlayA ref={overlay} type={layoutType} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {
             type == Static &&
             <>
-              <OverlayS ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <OverlayS ref={overlay} type={layoutType} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {

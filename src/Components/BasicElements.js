@@ -7,6 +7,11 @@ import fonts from "./fonts";
 
 extend({ Text });
 
+export const Static = 100;
+export const Animated = 101;
+export const Immersive = 110;
+export const EndOfTask = 0;
+
 const opts = {
   font: "roboto",
   fontSize: "2.5",

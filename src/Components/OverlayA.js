@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState, useImperativeHandle } from 'react';
 import './styles/OverlayA.css';
 import { TextComponent, text1, text2, text3, text4, text5 } from './BasicElements.js';
 
-function Overlay({ scroll, scrollLog, quiz, onClick }, ref){
+function Overlay({ type, scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
   const ref2 = useRef();
   const [startTime, setStartTime] = useState(Date.now());
@@ -36,9 +36,9 @@ function Overlay({ scroll, scrollLog, quiz, onClick }, ref){
         </div>
       </div>
       <div className={"Texts"}>
-        <TextComponent id={"text1"} text={text1.concat("\n", text2)} margin={"75vh"} />
-        <TextComponent id={"text3"} text={text3} margin={"75vh"} />
-        <TextComponent id={"text4"} text={text4.concat('\n', text5)} margin={"75vh"} />
+        <TextComponent id={"text1"} left={"calc(50% - 10vw + 480px)"} text={text1.concat("\n", text2)} margin={"75vh"} />
+        <TextComponent id={"text3"} left={"calc(50% - 10vw + 480px)"} text={text3} margin={"75vh"} />
+        <TextComponent id={"text4"} left={"calc(50% - 10vw + 480px)"} text={text4.concat('\n', text5)} margin={"75vh"} />
         <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); }}> Go to Quiz </button>
       </div>
     </div>

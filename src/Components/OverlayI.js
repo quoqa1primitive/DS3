@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState, useImperativeHandle } from 'react';
 
 import './styles/OverlayI.css';
-import { TextComponent, text1, text2, text3, text4, text5 } from './BasicElements.js';
+import { Immersive, TextComponent, text1, text2, text3, text4, text5 } from './BasicElements.js';
 
-function Overlay({ scroll, scrollLog, quiz, onClick }, ref){
+function Overlay({ type, scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
   const ref2 = useRef();
   const [startTime, setStartTime] = useState(Date.now());
@@ -36,11 +36,11 @@ function Overlay({ scroll, scrollLog, quiz, onClick }, ref){
         </div>
       </div>
       <div className={"Texts"}>
-        <TextComponent id={"text1"} text={text1} left={"60%"} margin={"25vh"} />
-        <TextComponent id={"text2"} text={text2} left={"40%"} margin={"75vh"} />
-        <TextComponent id={"text3"} text={text3} left={"55%"} margin={"110vh"} />
-        <TextComponent id={"text4"} text={text4} left={"25%"} margin={"65vh"} />
-        <TextComponent id={"text5"} text={text5} left={"40%"} margin={"45vh"} />
+        <TextComponent id={"text1"} text={text1} left={type==Immersive? "60%" : "60%"} margin={"25vh"} />
+        <TextComponent id={"text2"} text={text2} left={type==Immersive? "40%" : "60%"} margin={"75vh"} />
+        <TextComponent id={"text3"} text={text3} left={type==Immersive? "55%" : "60%"} margin={"110vh"} />
+        <TextComponent id={"text4"} text={text4} left={type==Immersive? "25%" : "60%"} margin={"65vh"} />
+        <TextComponent id={"text5"} text={text5} left={type==Immersive? "40%" : "60%"} margin={"45vh"} />
         <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); }}> Go to Quiz </button>
       </div>
     </div>

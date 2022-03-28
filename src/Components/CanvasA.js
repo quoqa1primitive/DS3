@@ -42,6 +42,7 @@ function VisComponent({camera, scroll, ...props}){
   const group = useRef();
   const [step, setStep] = useState(0);
   const [progress, setProgress] = useState({a: 1, b: 1, c: 1});
+  const [centerPos, setCenterPos] = useState([-xyzProps.xLength / 2, -xyzProps.yLength / 2, -xyzProps.zLength / 2])
 
   const rectWidth = 6, rectDepth = 2, ratio = 3;
 
@@ -67,38 +68,37 @@ function VisComponent({camera, scroll, ...props}){
 
     if(et < (sp_1 - durMargin)){
       setStep(1);
-      setProgress({a: 0, b: 0, c: 1});
+      setProgress({a: 0, b: 0, c: 0});
     }else if(et < (sp_1 + durMargin)){
       setStep(2);
-      setProgress({a: 0, b: 0, c: 1});
+      setProgress({a: 0, b: 0, c: 0});
     }else if(et < (sp_2 - durMargin)){
       setStep(3);
       let et2 = et - sp_1 - durMargin;
       let dur2 = sp_2 - durMargin - sp_1 - durMargin;
       bzVal = bezierFunc(et2 / dur2);
-      setProgress({a: bzVal, b: bzVal, c: 1});
+      setProgress({a: bzVal, b: bzVal, c: 0});
     }else if(et < (sp_2 + durMargin)){
       setStep(4);
-      setProgress({a: 1, b: 1, c: 1});
+      setProgress({a: 1, b: 1, c: 0});
     }else if(et < (sp_3 - durMargin)){
       setStep(5);
       let et3 = et - sp_2 - durMargin;
       let dur3 = sp_3 - durMargin - sp_2 - durMargin;
       bzVal = bezierFunc(et3 / dur3);
-      setProgress({a: 1, b: 1, c: 1- bzVal});
+      setProgress({a: 1, b: 1, c: bzVal});
     }else if(et < (sp_3 + durMargin)){
       setStep(6);
-      setProgress({a: 1, b: 1, c: 0});
+      setProgress({a: 1, b: 1, c: 1});
     }
 
+    setCenterPos([
+      progress.b * -xyzProps.zLength / 2 + (1 - progress.b) * -xyzProps.xLength / 2,
+      -xyzProps.yLength / 2,
+      -xyzProps.zLength / 2
+    ]);
     camera.current.lookAt(0, 0, 0);
   });
-
-  const centerPos = [
-    -xyzProps.xLength / 2,
-    -xyzProps.yLength / 2,
-    -xyzProps.zLength / 2
-  ]
 
   return(
     <group ref={group}>
@@ -214,22 +214,34 @@ function VisComponent({camera, scroll, ...props}){
             <mesh key={0} position={[
               (xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / -1.5) * (1 - progress.b) + (zPadding + 0 * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2) * progress.b
               , 0, -100]}>
-              <Rect2 width={rectWidth * (1 - progress.b) + rectDepth * progress.b} height={xyzProps.dataA1[0]} depth={rectDepth} color={new THREE.Color("#512C8A")} opacity={1} />
+              <Rect2
+                width={rectWidth * (1 - progress.b) + rectDepth * progress.b}
+                height={(1 - progress.c) * xyzProps.dataA1[0] + progress.c * xyzProps.dataA2[0] * ratio}
+                depth={rectDepth} color={new THREE.Color("#512C8A")} opacity={1} />
             </mesh>
             <mesh key={1} position={[
               (xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / 1.5) * (1 - progress.b) + (zPadding + (xyzProps.dataA1.length - 1) * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2) * progress.b
               , 0, -100]}>
-              <Rect2 width={rectWidth * (1 - progress.b) + rectDepth * progress.b} height={xyzProps.dataA1[xyzProps.dataA1.length - 1]} depth={rectDepth} color={new THREE.Color("#512C8A")} opacity={1} />
+              <Rect2
+                width={rectWidth * (1 - progress.b) + rectDepth * progress.b}
+                height={(1 - progress.c) * xyzProps.dataA1[xyzProps.dataA1.length - 1] + progress.c * xyzProps.dataA2[xyzProps.dataA2.length - 1] * ratio}
+                depth={rectDepth} color={new THREE.Color("#512C8A")} opacity={1} />
             </mesh>
             <mesh key={2} position={[
               (xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / -1.5) * (1 - progress.b) + (zPadding + 0 * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2) * progress.b
               , 0, -100]}>
-              <Rect2 width={rectWidth * (1 - progress.b) + rectDepth * progress.b} height={xyzProps.dataB1[0]} depth={rectDepth} color={new THREE.Color("#2F9B39")} opacity={1} />
+              <Rect2
+                width={rectWidth * (1 - progress.b) + rectDepth * progress.b}
+                height={(1 - progress.c) * xyzProps.dataB1[0] + progress.c * xyzProps.dataB2[0] * ratio}
+                depth={rectDepth} color={new THREE.Color("#2F9B39")} opacity={1} />
             </mesh>
             <mesh key={3} position={[
               (xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / 1.5) * (1 - progress.b) + (zPadding + (xyzProps.dataA1.length - 1) * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2) * progress.b
               , 0, -100]}>
-              <Rect2 width={rectWidth * (1 - progress.b) + rectDepth * progress.b} height={xyzProps.dataB1[xyzProps.dataB1.length - 1]} depth={rectDepth} color={new THREE.Color("#2F9B39")} opacity={1} />
+              <Rect2
+                width={rectWidth * (1 - progress.b) + rectDepth * progress.b}
+                height={(1 - progress.c) * xyzProps.dataB1[xyzProps.dataB1.length - 1] + progress.c * xyzProps.dataB2[xyzProps.dataB2.length - 1] * ratio}
+                depth={rectDepth} color={new THREE.Color("#2F9B39")} opacity={1} />
             </mesh>
           </>
         }
@@ -240,7 +252,7 @@ function VisComponent({camera, scroll, ...props}){
               {
                 (idx != 0 && idx != xyzProps.dataA1.length - 1) &&
                 <mesh key={idx} position={[(1 - progress.b) * (xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1))) + progress.b * (zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2), 0, -100]}>
-                  <Rect2 width={rectDepth} height={progress.b * (progress.c * item + (1 - progress.c) * xyzProps.dataA2[idx] * ratio)} depth={rectWidth} color={new THREE.Color("#512C8A")} opacity={1}/>
+                  <Rect2 width={rectDepth} height={progress.b * ((1 - progress.c) * item + progress.c * xyzProps.dataA2[idx] * ratio)} depth={rectWidth} color={new THREE.Color("#512C8A")} opacity={1}/>
                 </mesh>
               }
               </>
@@ -254,7 +266,7 @@ function VisComponent({camera, scroll, ...props}){
               {
                 (idx != 0 && idx != xyzProps.dataA1.length - 1) &&
                 <mesh key={idx} position={[(1 - progress.b) * (xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1))) + progress.b * (zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2), 0, -100]}>
-                  <Rect2 key={idx} width={rectDepth} height={progress.b * (progress.c * item + (1 - progress.c) * xyzProps.dataB2[idx] * ratio)} depth={rectWidth} color={new THREE.Color("#2F9B39")} opacity={1}/>
+                  <Rect2 key={idx} width={rectDepth} height={progress.b * ((1 - progress.c) * item + progress.c * xyzProps.dataB2[idx] * ratio)} depth={rectWidth} color={new THREE.Color("#2F9B39")} opacity={1}/>
                 </mesh>
               }
               </>
