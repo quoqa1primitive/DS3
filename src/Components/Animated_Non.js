@@ -39,9 +39,9 @@ function OverlayAN({ type, scroll, scrollLog, quiz, onClick }, ref){
         </div>
       </div>
       <div className={"Texts"}>
-        <TextComponent id={"text1"} left={"calc(50% - 200px + 480px)"} text={text1.concat("\n", text2)} margin={"750px"} />
-        <TextComponent id={"text3"} left={"calc(50% - 200px + 480px)"} text={text3} margin={"750px"} />
-        <TextComponent id={"text4"} left={"calc(50% - 200px + 480px)"} text={text4.concat('\n', text5)} margin={"750px"} />
+        <TextComponent id={"text1"} left={"calc(50% - 200px + 420px)"} text={text1.concat("\n", text2)} margin={"750px"} />
+        <TextComponent id={"text3"} left={"calc(50% - 200px + 420px)"} text={text3} margin={"750px"} />
+        <TextComponent id={"text4"} left={"calc(50% - 200px + 420px)"} text={text4.concat('\n', text5)} margin={"750px"} />
         <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); }}> Go to Quiz </button>
       </div>
     </div>

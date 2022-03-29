@@ -36,7 +36,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "BUILD_PATH='../ids_mturk_aws/2022DS_build' react-scripts build",
-    "build-win": "set BUILD_PATH=../ids_mturk_aws/2022DS_build && react-scripts build",
+    "build-win": "set BUILD_PATH=../ids_mturk_aws/2022DS_build&& react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "watch": "npm-watch"
