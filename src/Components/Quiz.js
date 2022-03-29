@@ -27,16 +27,16 @@ function SurveyComponent2(props){
                 }
             ],
             "rows": [
-                "(Interest) Reading the article was interesting.",
-                "(Ease of Understanding) The article was easy to understand.",
-                "(Perceived Persuasiveness) I agree with the message of the article.",
-                "(Perceived Trustworthiness) The article was trustworthy."
+                "Reading the article was interesting.",
+                "The article was easy to understand.",
+                "I agree with the message of the article.",
+                "The article was trustworthy."
             ]
         },
         {
             "type": "radiogroup",
             "name": "tp",
-            "title": "(Time Perception) Please select the estimated range of how long you spent while reading.",
+            "title": "Please select the estimated range of how long you spent while reading.",
             "isRequired": true,
             "hasNone": false,
             "colCount": 1,
@@ -52,7 +52,7 @@ function SurveyComponent2(props){
         {
             "type": "radiogroup",
             "name": "m1",
-            "title": "(Memorability) Which is the reason why B's Food Self-Sufficiency increased?",
+            "title": "Which is the reason why B's Food Self-Sufficiency increased?",
             "isRequired": true,
             "hasNone": true,
             "colCount": 1,
@@ -65,7 +65,7 @@ function SurveyComponent2(props){
         {
             "type": "radiogroup",
             "name": "m2",
-            "title": "(Memorability) Did the article compare the amount of chicken consumption?",
+            "title": "Did the article compare the amount of chicken consumption?",
             "isRequired": true,
             "hasNone": false,
             "colCount": 1,
@@ -77,7 +77,7 @@ function SurveyComponent2(props){
         {
             "type": "radiogroup",
             "name": "m3",
-            "title": "(Memorability) The number of cities mentioned in the article is ___",
+            "title": "The number of cities mentioned in the article is ___",
             "isRequired": true,
             "hasNone": false,
             "colCount": 1,
