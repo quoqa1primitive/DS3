@@ -1,17 +1,64 @@
 import * as THREE from 'three'
-import React, { useRef, useLayoutEffect, useState, useMemo, Suspense } from 'react'
+import React, { useRef, useEffect, useLayoutEffect, useState, useImperativeHandle, useMemo, Suspense } from 'react'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
-import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js'
 
-import "./styles/CanvasI.css"
+import './styles/Immersive_Imm.css';
+import { Immersive, TextComponent, text1, text2, text3, text4, text5, Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js';
+
+function OverlayII({ type, scroll, scrollLog, quiz, onClick }, ref){
+  const ref1 = useRef();
+  const ref2 = useRef();
+  const [startTime, setStartTime] = useState(Date.now());
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+     ref1.current.focus();
+    },
+    get ref1() {
+        return ref1.current;
+    },
+    get ref2() {
+        return ref2.current;
+    }
+    // ... whatever else one may need
+  }));
+
+  return (
+    <div
+      className="PageController PageControllerI"
+      id="pageController"
+      ref={ref1}
+      onScroll={(e) => {
+        scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
+        scrollLog.current.push([Date.now() - startTime, scroll.current]);
+      }}>
+      <div className="TitleContainer">
+        <div className="Title">
+          Who Gave My Meat?
+        </div>
+      </div>
+      <div className={"Texts"}>
+        <TextComponent id={"text1"} text={text1} left={"calc(50% + 240px)"} margin={"240px"} />
+        <TextComponent id={"text2"} text={text2} left={"calc(50% - 200px)"} margin={"750px"} />
+        <TextComponent id={"text3"} text={text3} left={"calc(50% + 450px - 200px)"} margin={"1000px"} />
+        <TextComponent id={"text4"} text={text4} left={"calc(50% - 450px - 100px)"} margin={"750px"} />
+        <TextComponent id={"text5"} text={text5} left={"calc(50% - 200px)"} margin={"300px"} />
+        <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); }}> Go to Quiz </button>
+      </div>
+    </div>
+  )
+}
+
+OverlayII = React.forwardRef(OverlayII);
+
 const bezier = require('bezier-easing');
 
 const STEP_XY = 100;
 const STEP_ZY = 101;
 const STEP_ZX = 110;
 
-const scale = 6.5;
+const scale = 6.25;
 const tickLength = 0.6;
 const speed = 0.035;
 
@@ -339,35 +386,37 @@ function VisComponent({camera, scroll, ...props}){
   )
 }
 
-function CanvasI({overlay, scroll}) {
+function CanvasII({overlay, scroll}) {
   const canvas = useRef();
   const mainCamera = useRef();
 
   return (
-    <Canvas
-      ref={canvas}
-      onCreated={(state) => state.events.connect(overlay.current.ref1)}
-      dpr={Math.max(window.devicePixelRatio, 2)}>
-      <OrthographicCamera ref={mainCamera} makeDefault
-        position={[0, 0, 1000 * scale]}
-        near={0}
-        far={50000 * scale}
-        zoom={1 * scale}
-        />
-      <OrbitControls
-        camera={mainCamera.current}
-        enablePan={false}
-        enableZoom={false}
-        enableRotate={false}
-        zoomSpeed={0.25/scale}
-        style={{zIndex: 5}}/>
-      <ambientLight
-        intensity={0.5}/>
-      <Suspense fallback={null}>
-        <VisComponent camera={mainCamera} scroll={scroll} />
-      </Suspense>
-    </Canvas>
+    <div className={"CanvasI"}>
+      <Canvas
+        ref={canvas}
+        onCreated={(state) => state.events.connect(overlay.current.ref1)}
+        dpr={Math.max(window.devicePixelRatio, 2)}>
+        <OrthographicCamera ref={mainCamera} makeDefault
+          position={[0, 0, 1000 * scale]}
+          near={0}
+          far={50000 * scale}
+          zoom={1 * scale}
+          />
+        <OrbitControls
+          camera={mainCamera.current}
+          enablePan={false}
+          enableZoom={false}
+          enableRotate={false}
+          zoomSpeed={0.25/scale}
+          style={{zIndex: 5}}/>
+        <ambientLight
+          intensity={0.5}/>
+        <Suspense fallback={null}>
+          <VisComponent camera={mainCamera} scroll={scroll} />
+        </Suspense>
+      </Canvas>
+    </div>
   )
 }
 
-export default CanvasI;
+export { CanvasII, OverlayII };

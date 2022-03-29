@@ -1,17 +1,62 @@
 import * as THREE from 'three'
-import React, { useRef, useLayoutEffect, useState, useMemo, Suspense } from 'react'
+import React, { useRef, useEffect, useLayoutEffect, useState, useImperativeHandle, useMemo, Suspense } from 'react'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
-import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js'
 
-import "./styles/CanvasA.css"
+import './styles/Animated_Non.css';
+import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, TextComponent, text1, text2, text3, text4, text5 } from './BasicElements.js'
+
+function OverlayAN({ type, scroll, scrollLog, quiz, onClick }, ref){
+  const ref1 = useRef();
+  const ref2 = useRef();
+  const [startTime, setStartTime] = useState(Date.now());
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+     ref1.current.focus();
+    },
+    get ref1() {
+        return ref1.current;
+    },
+    get ref2() {
+        return ref2.current;
+    }
+    // ... whatever else one may need
+  }));
+
+  return (
+    <div
+      className="PageController PageControllerA"
+      id="pageController"
+      ref={ref1}
+      onScroll={(e) => {
+        scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight);
+        scrollLog.current.push([Date.now() - startTime, scroll.current]);
+      }}>
+      <div className="TitleContainer">
+        <div className="Title">
+          Who Gave My Meat?
+        </div>
+      </div>
+      <div className={"Texts"}>
+        <TextComponent id={"text1"} left={"calc(50% - 200px + 480px)"} text={text1.concat("\n", text2)} margin={"750px"} />
+        <TextComponent id={"text3"} left={"calc(50% - 200px + 480px)"} text={text3} margin={"750px"} />
+        <TextComponent id={"text4"} left={"calc(50% - 200px + 480px)"} text={text4.concat('\n', text5)} margin={"750px"} />
+        <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); }}> Go to Quiz </button>
+      </div>
+    </div>
+  )
+}
+
+OverlayAN = React.forwardRef(OverlayAN);
+
 const bezier = require('bezier-easing');
 
 const STEP_XY = 100;
 const STEP_ZY = 101;
 const STEP_ZX = 110;
 
-const scale = 6.5;
+const scale = 6.25;
 const tickLength = 0.6;
 const speed = 0.035;
 
@@ -278,7 +323,7 @@ function VisComponent({camera, scroll, ...props}){
   )
 }
 
-function Canvas2({overlay, scroll}) {
+function CanvasAN({overlay, scroll}) {
   const canvas = useRef();
   const mainCamera = useRef();
 
@@ -311,4 +356,4 @@ function Canvas2({overlay, scroll}) {
   )
 }
 
-export default Canvas2;
+export { OverlayAN, CanvasAN };
