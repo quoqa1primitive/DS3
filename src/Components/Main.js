@@ -1,5 +1,8 @@
 import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react'
 import { useFrame } from '@react-three/fiber'
+import * as Survey from "survey-core";
+import * as SurveyReact from "survey-react-ui";
+import "survey-core/survey.css";
 import { Static, Animated, Immersive, EndOfTask} from './BasicElements.js';
 
 import './styles/Main.css'
@@ -8,7 +11,137 @@ import { OverlayAN, CanvasAN } from './Animated_Non.js';
 import { OverlaySN, CanvasSN } from './Static_Non.js';
 import { OverlaySI } from './Static_Imm.js';
 import Quiz from './Quiz.js';
+
 import axios from 'axios';
+
+function SurveyComponent1(props){
+  Survey
+    .StylesManager
+    .applyTheme("default");
+
+  let json = {
+    "title": "Demographic Survey",
+    "description": "This is the end page of whole tasks. Please fill out demographic survey and check your completion code.",
+    "elements": [
+        {
+          "type": "radiogroup",
+          "name": "GEN",
+          "title": "Gender",
+          "isRequired": true, "hasNone": false, "colCount": 1,
+          "choices": [
+            "Male",
+            "Female",
+            "N/A"
+          ]
+        },
+        {
+          "type": "radiogroup",
+          "name": "AGE",
+          "title": "Age",
+          "isRequired": true, "hasNone": false, "colCount": 1,
+          "choices": [
+            "0 - 17",
+            "18 - 25",
+            "26 - 35",
+            "36 - 50",
+            "51 +"
+          ]
+        },
+        {
+          "type": "radiogroup",
+          "name": "ERP",
+          "title": "Please check your proficiency of reading in english",
+          "isRequired": true, "hasNone": false, "colCount": 1,
+          "choices": [
+            "Beginner",
+            "Intermediate",
+            "Advanced",
+            "Native"
+          ]
+        },
+        {
+          "type": "radiogroup",
+          "name": "HEL",
+          "title": "Please select your highest level of education.",
+          "isRequired": true, "hasNone": false, "colCount": 1,
+          "choices": [
+            "High school or equivalent",
+            "Technical or occupational certificate",
+            "Associate degree",
+            "Some college coursework completed",
+            "Bachelor’s degree",
+            "Master’s degree",
+            "Doctorate"
+          ]
+        },
+        {
+          "type": "radiogroup",
+          "name": "FOW",
+          "title": "How often do you read articles on the web?",
+          "isRequired": true, "hasNone": false, "colCount": 1,
+          "choices": [
+            "Never",
+            "With a very limited times",
+            "More than 10 articles per a week",
+            "More than 10 articles per 2-3 days",
+            "More than 10 articles per a day"
+          ]
+        },
+        {
+          "type": "radiogroup",
+          "name": "CUD",
+          "title": "What kind of input device you are using currently?",
+          "isRequired": true, "hasNone": false, "colCount": 1,
+          "choices": [
+            "Mouse",
+            "Touch Display(Tab, Smartphone, etc..)",
+            "Touchpad(Accessory, Labtop, etc..)",
+            "Others"
+          ]
+        }
+    ]
+  };
+
+  const survey = new Survey.Model(json);
+  // Setting up the onComplete behavior
+  survey.completedHtml = `<p>Thanks for answering the quizzes.</p>
+    <div> Here is your completion code: ` + props.completionCode  + `</div>
+  `;
+  const sendResults = useCallback((sender)=>{
+    let resultData;
+    resultData = sender.data;
+    resultData["PersonID"] = props.PersonID;
+    resultData["type"] = props.type;
+    const results = JSON.stringify(resultData);
+    // Using axios to send the results to flask server
+    axios.get('ajaxGet', {
+      params: {
+        "action": "log",
+        "PersonID": props.PersonID,
+        "json":results
+      }
+    }).then(response => {
+      console.log(response);
+    }).catch(error => {
+      console.log(error);
+    });
+  },[]);
+  survey.onComplete.add(sendResults);
+  //
+  return(
+    <div className="SurveyComponent">
+      <SurveyReact.Survey model={survey} />
+    </div>
+  )
+}
+
+function CompletionPage(props){
+  return (
+    <div className="SurveyContainer">
+      <SurveyComponent1 type={props.type} PersonID={props.PersonID} completionCode={props.completionCode}/>
+    </div>
+  )
+}
 
 function Main(){
   const overlay = useRef();
@@ -80,10 +213,7 @@ function Main(){
           }
           {
             type == EndOfTask &&
-            <div>
-              All tasks done! Here is your completion code: <b>{completionCode}</b><br/>
-              Don't forget to submit it to the AMT task.
-            </div>
+            <CompletionPage completionCode={completionCode} type={type} PersonID={PersonID}/>
           }
           </div>
         </div>

@@ -11,10 +11,11 @@ function SurveyComponent2(props){
     .applyTheme("default");
 
   let json = {
+    "title": "User Experience Qustionnaire",
     "elements": [
         {
             "type": "matrixdropdown",
-            "name": "Feelings",
+            "name": "UCS",
             "title": "Please fill out the below.",
 
             "columns": [
@@ -35,7 +36,7 @@ function SurveyComponent2(props){
         },
         {
             "type": "radiogroup",
-            "name": "tp",
+            "name": "TP",
             "title": "Please select the estimated range of how long you spent while reading.",
             "isRequired": true,
             "hasNone": false,
@@ -51,7 +52,7 @@ function SurveyComponent2(props){
         },
         {
             "type": "radiogroup",
-            "name": "m1",
+            "name": "M1",
             "title": "Which is the reason why B's Food Self-Sufficiency increased?",
             "isRequired": true,
             "hasNone": true,
@@ -64,7 +65,7 @@ function SurveyComponent2(props){
         },
         {
             "type": "radiogroup",
-            "name": "m2",
+            "name": "M2",
             "title": "Did the article compare the amount of chicken consumption?",
             "isRequired": true,
             "hasNone": false,
@@ -76,7 +77,7 @@ function SurveyComponent2(props){
         },
         {
             "type": "radiogroup",
-            "name": "m3",
+            "name": "M3",
             "title": "The number of cities mentioned in the article is ___",
             "isRequired": true,
             "hasNone": false,
@@ -89,7 +90,7 @@ function SurveyComponent2(props){
             ]
         }
     ]
-};
+  };
 
   const survey = new Survey.Model(json);
   // Setting up the onComplete behavior
@@ -104,7 +105,6 @@ function SurveyComponent2(props){
     resultData["PersonID"] = props.PersonID;
     resultData["type"] = props.type;
     resultData["scroll"] = props.ScrollData;
-    console.log(resultData);
     const results = JSON.stringify(resultData);
     // Using axios to send the results to flask server
     axios.get('ajaxGet', {
