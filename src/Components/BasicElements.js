@@ -10,7 +10,7 @@ extend({ Text });
 export const Static = 100;
 export const Animated = 101;
 export const Immersive = 110;
-export const EndOfTask = 0;
+export const EndOfTask = -1;
 
 const opts = {
   font: "roboto",

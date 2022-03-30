@@ -27,11 +27,10 @@ function SurveyComponent1(props){
           "type": "radiogroup",
           "name": "GEN",
           "title": "Gender",
-          "isRequired": true, "hasNone": false, "colCount": 1,
+          "isRequired": false, "hasNone": false, "colCount": 1,
           "choices": [
             "Male",
-            "Female",
-            "N/A"
+            "Female"
           ]
         },
         {
@@ -40,17 +39,17 @@ function SurveyComponent1(props){
           "title": "Age",
           "isRequired": true, "hasNone": false, "colCount": 1,
           "choices": [
-            "0 - 17",
-            "18 - 25",
-            "26 - 35",
-            "36 - 50",
-            "51 +"
+            " 0-17 years old",
+            "18-25",
+            "26-35",
+            "36-50",
+            "51+"
           ]
         },
         {
           "type": "radiogroup",
           "name": "ERP",
-          "title": "Please check your proficiency of reading in english",
+          "title": "Please check your proficiency of reading in english.",
           "isRequired": true, "hasNone": false, "colCount": 1,
           "choices": [
             "Beginner",
@@ -65,6 +64,7 @@ function SurveyComponent1(props){
           "title": "Please select your highest level of education.",
           "isRequired": true, "hasNone": false, "colCount": 1,
           "choices": [
+            "Less than high school",
             "High school or equivalent",
             "Technical or occupational certificate",
             "Associate degree",
@@ -80,22 +80,24 @@ function SurveyComponent1(props){
           "title": "How often do you read articles on the web?",
           "isRequired": true, "hasNone": false, "colCount": 1,
           "choices": [
-            "Never",
-            "With a very limited times",
-            "More than 10 articles per a week",
-            "More than 10 articles per 2-3 days",
-            "More than 10 articles per a day"
+            "Less than 1 article per week",
+            "1-10 articles per week",
+            "10-20 articles per week",
+            "20-50 articles per week",
+            "50+ articles per week"
           ]
         },
         {
           "type": "radiogroup",
           "name": "CUD",
-          "title": "What kind of input device you are using currently?",
+          "title": "What kind of input device are you currently using?",
           "isRequired": true, "hasNone": false, "colCount": 1,
           "choices": [
             "Mouse",
             "Touch Display(Tab, Smartphone, etc..)",
-            "Touchpad(Accessory, Labtop, etc..)",
+            "Touchpad, Trackpad",
+            "Trackball",
+            "Pen Mouse",
             "Others"
           ]
         }
@@ -128,9 +130,10 @@ function SurveyComponent1(props){
   },[]);
   survey.onComplete.add(sendResults);
   //
+
   return(
     <div className="SurveyComponent">
-      <SurveyReact.Survey model={survey} />
+      <SurveyReact.Survey model={survey}/>
     </div>
   )
 }
@@ -159,9 +162,19 @@ function Main(){
     setQuiz(true);
     scrollLog.current.push(Date.now()); // Check the total elapsed time
     setScrollData(scrollLog.current);
+    console.log("quiz set");
+    axios.get('ajaxGet', {
+      params: {
+        "action": "setQuiz"
+      }
+    }).then(response => {
+      console.log("SUCCESS", response);
+    }).catch(error => {
+      console.log(error);
+    });;
   }
 
-  useEffect(()=>{
+  useLayoutEffect(()=>{
     axios.get('ajaxGet', {
       params: {
         "action": "fetchNextStory"
@@ -173,10 +186,26 @@ function Main(){
       } else {
         PersonID = response.data.PersonID;
       }
-      setType(response.data.nextStory);
+      console.log(response.data);
+      if(response.data.isQuiz==1){
+        console.log(response.data.isQuiz);
+        setQuiz(true)
+      }else{
+        console.log("type changed");
+        setType(response.data.nextStory);
+      }
     }).catch(error => {
       console.log(error);
     });
+
+    // const unloadCallback = (event) => {
+    //   event.preventDefault();
+    //   event.returnValue = "";
+    //   return "";
+    // };
+    //
+    // window.addEventListener("beforeunload", unloadCallback);
+    // return () => window.removeEventListener("beforeunload", unloadCallback);
   }, [])
 
   return(

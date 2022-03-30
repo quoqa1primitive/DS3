@@ -1,4 +1,4 @@
-.Viz{
+.Viz {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -9,7 +9,7 @@
   white-space: pre-line;
 }
 
-.PageContentsN{
+.PageContentsN {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -80,4 +80,9 @@
 
 .Button:hover {
     background-color: rgba(255, 0, 0, 1);
+}
+
+/* from this, will be applied to surveyJS */
+.sv_header__text h5 span {
+  font-size: 16px;
 }

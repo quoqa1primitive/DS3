@@ -11,7 +11,7 @@ function SurveyComponent2(props){
     .applyTheme("default");
 
   let json = {
-    "title": "User Experience Qustionnaire",
+    "title": "Questionnaire",
     "elements": [
         {
             "type": "matrixdropdown",
