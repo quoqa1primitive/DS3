@@ -58,8 +58,16 @@
   z-index: 1;
 }
 
-.Button {
+.ButtonContainer{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: fit-content;
   margin: 400px auto 100px auto;
+}
+
+.Button {
+  margin: 0px auto 0px auto;
   width: 100px;
   border: 0;
   line-height: 2.5;

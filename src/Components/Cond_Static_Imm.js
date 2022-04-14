@@ -11,10 +11,11 @@ import img1 from '../Static-01.jpg';
 import img2 from '../Static-02.jpg';
 import img3 from '../Static-03.jpg';
 
-function OverlaySI({ type, scroll, scrollLog, quiz, onClick }, ref){
+function OverlaySI({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
   const ref2 = useRef();
   const [startTime, setStartTime] = useState(Date.now());
+  const [isFirstButton, setIsFirstButton] = useState(true);
 
   useImperativeHandle(ref, () => ({
     focus: () => {
@@ -58,7 +59,19 @@ function OverlaySI({ type, scroll, scrollLog, quiz, onClick }, ref){
           <TextComponent id={"text4"} text={text4} left={"calc(-180px)"} top={"calc(30px + 0px)"} />
           <TextComponent id={"text5"} text={text5} left={"calc(352.5px - 180px)"} top={"calc(30px + 750px)"} />
         </div>
-        <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); }}> Go to Quiz </button>
+        {
+          isFirstButton &&
+          <div className="ButtonContainer" >
+            <button className="Button" ref={ref2} type="button" onClick={()=>{ setIsFirstButton(false); }}> Go to Quiz </button>
+          </div>
+        }
+        {
+          !isFirstButton &&
+          <div className="ButtonContainer" >
+            <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); setIsFirstButton(true); }}> Go to Quiz </button>
+            <div style={{ textAlign: "center", margin: "10px auto 0px auto" }}> ※ If you are ready to take a quiz, ※ <br/> ※ Please press the button again ※ </div>
+          </div>
+        }
       </div>
     </div>
   )

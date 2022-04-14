@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
 import "survey-core/survey.css";
-import { Static, Animated, Immersive, EndOfTask} from './BasicElements.js';
+import { StaticNon1, StaticNon2, StaticImm, AnimatedNon, AnimatedImm, ImmersiveNon, ImmersiveImm, EndOfTask} from './BasicElements.js';
 
 import './styles/Main.css'
 import { OverlaySI, CanvasSI } from './Cond_Static_Imm.js';
@@ -154,8 +154,7 @@ function Main(){
   const scroll = useRef(0);
   const scrollLog = useRef([]);
   const [quiz, setQuiz] = useState(false)
-  const [type, setType] = useState(Static);
-  const [layoutType, setLayoutType] = useState(Immersive);
+  const [type, setType] = useState(StaticNon1);
   const [completionCode, setCompletionCode] = useState("");
   const [scrollData, setScrollData] = useState([]);
 
@@ -215,43 +214,49 @@ function Main(){
         <div style={{width: "100%", height: "100%"}} className="PageContents">
           <div className="Viz">
           {
-            (type == Immersive && layoutType == Static) &&
+            (type == ImmersiveNon) &&
             <>
               <CanvasIN overlay={overlay} scroll={scroll} />
-              <OverlayIN ref={overlay} type={layoutType} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <OverlayIN ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {
-            (type == Immersive && layoutType == Immersive) &&
+            (type == ImmersiveImm) &&
             <>
               <CanvasII overlay={overlay} scroll={scroll} />
-              <OverlayII ref={overlay} type={layoutType} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <OverlayII ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {
-            (type == Animated && layoutType == Static) &&
+            (type == AnimatedNon) &&
             <>
               <CanvasAN overlay={overlay} scroll={scroll} />
-              <OverlayAN ref={overlay} type={layoutType} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <OverlayAN ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {
-            (type == Animated && layoutType == Immersive) &&
+            (type == AnimatedImm) &&
             <>
               <CanvasAI overlay={overlay} scroll={scroll} />
-              <OverlayAI ref={overlay} type={layoutType} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <OverlayAI ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {
-            (type == Static && layoutType == Static) &&
+            (type == StaticNon1) &&
             <>
-              <OverlaySN2 ref={overlay} type={layoutType} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <OverlaySN ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {
-            (type == Static && layoutType == Immersive) &&
+            (type == StaticNon2) &&
             <>
-              <OverlaySI ref={overlay} type={layoutType} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <OverlaySN2 ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+            </>
+          }
+          {
+            (type == StaticImm) &&
+            <>
+              <OverlaySI ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </>
           }
           {

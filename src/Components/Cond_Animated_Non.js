@@ -6,10 +6,11 @@ import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@r
 import './styles/Cond_Animated_Non.css';
 import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, TextComponent, text1, text2, text3, text4, text5 } from './BasicElements.js'
 
-function OverlayAN({ type, scroll, scrollLog, quiz, onClick }, ref){
+function OverlayAN({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
   const ref2 = useRef();
   const [startTime, setStartTime] = useState(Date.now());
+  const [isFirstButton, setIsFirstButton] = useState(true);
 
   useImperativeHandle(ref, () => ({
     focus: () => {
@@ -42,7 +43,19 @@ function OverlayAN({ type, scroll, scrollLog, quiz, onClick }, ref){
         <TextComponent id={"text1"} left={"calc(50% - 200px + 420px)"} text={text1.concat("\n", text2)} margin={"750px"} />
         <TextComponent id={"text3"} left={"calc(50% - 200px + 420px)"} text={text3} margin={"750px"} />
         <TextComponent id={"text4"} left={"calc(50% - 200px + 420px)"} text={text4.concat('\n', text5)} margin={"0px"} />
-        <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); }}> Go to Quiz </button>
+        {
+          isFirstButton &&
+          <div className="ButtonContainer" >
+            <button className="Button" ref={ref2} type="button" onClick={()=>{ setIsFirstButton(false); }}> Go to Quiz </button>
+          </div>
+        }
+        {
+          !isFirstButton &&
+          <div className="ButtonContainer" >
+            <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); setIsFirstButton(true); }}> Go to Quiz </button>
+            <div style={{ textAlign: "center", margin: "10px auto 0px auto" }}> ※ If you are ready to take a quiz, ※ <br/> ※ Please press the button again ※ </div>
+          </div>
+        }
       </div>
     </div>
   )
@@ -96,9 +109,9 @@ function VisComponent({camera, scroll, ...props}){
   const box4 = document.getElementById("text4").getBoundingClientRect();
   const scrollHeight = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight);
 
-  const text1 = scrollHeight + box1.top - window.innerHeight * 0.5;
-  const text3 = scrollHeight + box3.top - window.innerHeight * 0.5;
-  const text4 = scrollHeight + box4.top - window.innerHeight * 0.5;
+  const text1 = scrollHeight + box1.top - window.innerHeight * 0.5 + box1.height * 0.5;
+  const text3 = scrollHeight + box3.top - window.innerHeight * 0.5 + box3.height * 0.5;
+  const text4 = scrollHeight + box4.top - window.innerHeight * 0.5 + box4.height * 0.5;
 
   const sp_1 = text1 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
   const sp_2 = text3 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
@@ -109,7 +122,7 @@ function VisComponent({camera, scroll, ...props}){
 
     let bezierFunc = bezier(0.4, 0, 0.4, 1);
     let bzVal = 0;
-    const durMargin = 0.05;
+    const durMargin = 0.03;
 
     if(et < (sp_1 - durMargin)){
       setStep(1);

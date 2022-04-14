@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import showdown from 'showdown';
 import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
 import "survey-core/survey.css";
@@ -13,82 +14,103 @@ function SurveyComponent2(props){
   let json = {
     "title": "Questionnaire",
     "elements": [
-        {
-            "type": "matrixdropdown",
-            "name": "UCS",
-            "title": "Please fill out the below.",
-
-            "columns": [
-                {
-                    "name": "col1",
-                    "cellType": "radiogroup",
-                    "showInMultipleColumns": true,
-                    "isRequired": true,
-                    "choices": ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"]
-                }
-            ],
-            "rows": [
-                "Reading the article was interesting.",
-                "The article was easy to understand.",
-                "I agree with the message of the article.",
-                "The article was trustworthy."
-            ]
-        },
-        {
-            "type": "radiogroup",
-            "name": "TP",
-            "title": "Please select the estimated range of how long you spent while reading.",
-            "isRequired": true,
-            "hasNone": false,
-            "colCount": 1,
-            "choices": [
-                "0  ≤   ＜ 10 sec",
-                "10 ≤   ＜ 20 sec",
-                "20 ≤   ＜ 30 sec",
-                "30 ≤   ＜ 40 sec",
-                "40 ≤   ＜ 50 sec",
-                "50 ≤    ",
-            ]
-        },
-        {
-            "type": "radiogroup",
-            "name": "M1",
-            "title": "Which is the reason why B's Food Self-Sufficiency increased?",
-            "isRequired": true,
-            "hasNone": true,
-            "colCount": 1,
-            "choices": [
-                "Decreased Population",
-                "Urbanization",
-                "Agricultural Growth"
-            ]
-        },
-        {
-            "type": "radiogroup",
-            "name": "M2",
-            "title": "Did the article compare the amount of energy consumption?",
-            "isRequired": true,
-            "hasNone": false,
-            "colCount": 1,
-            "choices": [
-                "True",
-                "False"
-            ]
-        },
-        {
-            "type": "radiogroup",
-            "name": "M3",
-            "title": "The number of cities mentioned in the article is ___",
-            "isRequired": true,
-            "hasNone": false,
-            "colCount": 1,
-            "choices": [
-                "1",
-                "2",
-                "3",
-                "4"
-            ]
-        }
+      {
+        "type": "matrix",
+        "name": "UCS",
+        "title": "Please fill out the below.",
+        "isRequired": true,
+        "columns": [
+          {
+            "value": 1,
+            "text": "Strongly <br /> disagree",
+          },{
+            "value": 2,
+            "text": "&nbsp;&nbsp;",
+          },{
+            "value": 3,
+            "text": "Disagree",
+          },{
+            "value": 4,
+            "text": "&nbsp;&nbsp;",
+          },{
+            "value": 5,
+            "text": "Neutral",
+          },{
+            "value": 6,
+            "text": "&nbsp;&nbsp;",
+          },{
+            "value": 7,
+            "text": "Agree",
+          },{
+            "value": 8,
+            "text": "&nbsp;&nbsp;",
+          },{
+            "value": 9,
+            "text": "Strongly <br /> agree",
+          },
+        ],
+        "rows": [
+          "Reading the article was very interesting.",
+          "The article was easy to understand.",
+          "I totally agree with the message of the article.",
+          "The article was really trustworthy."
+        ]
+      },
+      {
+        "type": "radiogroup",
+        "name": "TP",
+        "title": "Please select the estimated range of how long you spent while reading.",
+        "isRequired": true,
+        "hasNone": false,
+        "colCount": 1,
+        "choices": [
+          "0  ≤   ＜ 10 sec",
+          "10 ≤   ＜ 20 sec",
+          "20 ≤   ＜ 30 sec",
+          "30 ≤   ＜ 40 sec",
+          "40 ≤   ＜ 50 sec",
+          "50 ≤    ",
+        ]
+      },
+      {
+        "type": "radiogroup",
+        "name": "M1",
+        "title": "Which is the reason why B's Food Self-Sufficiency increased?",
+        "isRequired": true,
+        "hasNone": true,
+        "colCount": 1,
+        "choices": [
+          "Decreased Population",
+          "Urbanization",
+          "Agricultural Growth"
+        ]
+      },
+      {
+        "type": "radiogroup",
+        "name": "M2",
+        "title": "Did the article compare the amount of energy consumption?",
+        "isRequired": true,
+        "hasNone": false,
+        "colCount": 1,
+        "choices": [
+          "True",
+          "False"
+        ]
+      },
+      {
+        "type": "radiogroup",
+        "name": "M3",
+        "title": "The number of cities mentioned in the article is ___",
+        "isRequired": true,
+        "hasNone": false,
+        "colCount": 1,
+        "choices": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ]
+      }
     ]
   };
 
@@ -99,6 +121,19 @@ function SurveyComponent2(props){
       <button onclick='window.location.reload(false);'>Next Story</button>
     </div>
   `;
+
+  //Create showdown markdown converter
+  var converter = new showdown.Converter();
+  survey.onTextMarkdown.add(function(survey, options){
+    //convert the markdown text to html
+    var str = converter.makeHtml(options.text);
+    //remove root paragraphs <p></p>
+    str = str.substring(3);
+    str = str.substring(0, str.length - 4);
+    //set html
+    options.html = str;
+  });
+
   const sendResults = useCallback((sender)=>{
     let resultData;
     resultData = sender.data;
@@ -106,6 +141,7 @@ function SurveyComponent2(props){
     resultData["type"] = props.type;
     resultData["scroll"] = props.ScrollData;
     resultData["winHeight"] = window.innerHeight;
+    resultData["zoomLevel"] = Math.round(window.devicePixelRatio * 100)
     const results = JSON.stringify(resultData);
     // Using axios to send the results to flask server
     axios.get('ajaxGet', {

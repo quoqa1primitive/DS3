@@ -14,3 +14,7 @@
   height: fit-content;
   margin-bottom: 100px;
 }
+
+.SurveyComponent .sv_main .sv_container .sv_body .sv_p_root table.sv_q_matrix td {
+  min-width: 3em;
+}

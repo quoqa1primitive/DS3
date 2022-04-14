@@ -10,6 +10,15 @@ extend({ Text });
 export const Static = 100;
 export const Animated = 101;
 export const Immersive = 110;
+
+export const StaticNon1 = 1000;
+export const AnimatedNon = 1001;
+export const ImmersiveNon = 1010;
+export const StaticNon2 = 1011;
+export const StaticImm = 1100;
+export const AnimatedImm = 1101;
+export const ImmersiveImm = 1110;
+
 export const EndOfTask = -1;
 
 const opts = {
@@ -23,10 +32,10 @@ const opts = {
   materialType: "MeshPhongMaterial"
 };
 
-export const XAXIS1 = 1000;
-export const YAXIS1 = 1001;
-export const YAXIS2 = 1010;
-export const ZAXIS1 = 1011;
+export const XAXIS1 = 10000;
+export const YAXIS1 = 10001;
+export const YAXIS2 = 10010;
+export const ZAXIS1 = 10011;
 
 export const text1 = `A was chosen as the area with the quickest rate of urbanization. B is the region with the best developed agricultural and animal industries in 2021.
 
