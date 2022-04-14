@@ -105,13 +105,15 @@ function TextComponent(props){
   const [string, setString] = useState(props.text);
   const [margin, setMargin] = useState(props.margin);
   const [left, setLeft] = useState(props.left);
+  const [top, setTop] = useState(props.top);
 
   return(
     <div  id={props.id}
           className="TextContainer"
           style={{
             marginBottom: margin,
-            left: left
+            left: left,
+            top: top
           }}>
       {string}
     </div>

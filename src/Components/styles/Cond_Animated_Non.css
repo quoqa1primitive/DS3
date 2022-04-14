@@ -1,0 +1,17 @@
+.PageControllerAN .TitleContainer {
+  position: relative;
+  margin-top: calc(105px);
+}
+
+.PageControllerAN .Texts {
+  margin-top: max(1000px, 100vh);
+}
+
+
+.CanvasAN {
+  position: relative;
+  top: calc(50% - 320px);
+  left: calc(50% - 200px - 420px);
+  width: 840px;
+  height: 640px;
+}

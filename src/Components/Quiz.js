@@ -66,7 +66,7 @@ function SurveyComponent2(props){
         {
             "type": "radiogroup",
             "name": "M2",
-            "title": "Did the article compare the amount of chicken consumption?",
+            "title": "Did the article compare the amount of energy consumption?",
             "isRequired": true,
             "hasNone": false,
             "colCount": 1,
@@ -105,6 +105,7 @@ function SurveyComponent2(props){
     resultData["PersonID"] = props.PersonID;
     resultData["type"] = props.type;
     resultData["scroll"] = props.ScrollData;
+    resultData["winHeight"] = window.innerHeight;
     const results = JSON.stringify(resultData);
     // Using axios to send the results to flask server
     axios.get('ajaxGet', {
