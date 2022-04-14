@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react'
+import axios from 'axios';
 import { useFrame } from '@react-three/fiber'
 import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
@@ -15,7 +16,7 @@ import { OverlayAN, CanvasAN } from './Cond_Animated_Non.js';
 import { OverlayIN, CanvasIN } from './Cond_Immersive_Non.js';
 import Quiz from './Quiz.js';
 
-import axios from 'axios';
+// import { data } from '../0415Data.js'
 
 function SurveyComponent1(props){
   Survey
@@ -175,6 +176,10 @@ function Main(){
       console.log(error);
     });;
   }
+
+  useEffect(() => {
+    // console.log(data[0])
+  },[]);
 
   useLayoutEffect(()=>{
     axios.get('ajaxGet', {
