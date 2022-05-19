@@ -37,20 +37,21 @@ export const YAXIS1 = 10001;
 export const YAXIS2 = 10010;
 export const ZAXIS1 = 10011;
 
-export const text1 = `A was chosen as the area with the quickest rate of urbanization. B is the region with the best developed agricultural and animal industries in 2021.
-
-We've discovered some intriguing potential in terms of meat consumption and food self-sufficiency, given that both regions have experienced rapid growth.
+export const title = `How Can Urbanized City Get Fresh Meat?
 `
-
-export const text2 = `First of all, meat consumption in both cities has increased. Kim, who lives in Area B, had this to say about it:
-"Perhaps because it's easy to raise, chicken is inexpensive recently, and I eat it often."
+export const text1 = `X and Y are two nearby cities. During the last year they have gone through different paths. While X became highly urbanized, Y developed infrastructures for agriculture supported by the local government.
 `
-
-export const text3 = `As shown in the chart, A showed monthly consumption from 30t to 210t and B from 90t to 180t. Both showed relatively steady increase.
+export const text2 = `Although it is due to different situations, the two cities showed a rapid increase in meat consumption in 2021.
 `
-export const text4 = `Then, has the self-sufficiency rate of food increased? The results were contrary. While A decreased from 60% to 40%, B soared from 30% to 80%.
+export const text3 = `Monthly chart shows that meat consumption in two cities steadily increased. It is noteworthy that X's meat consumption dramatically increased after June.
 `
-export const text5 = `To broaden the scope of the preceding example, this means that in regions where significant urbanization occurs, the supply of fresh food does not have to rely on long-distance imports, but can take advantage of both freshness and price by leveraging adjacent locations such as B.
+export const text4 = `However, meat export of the two cities shows opposite relationship. X's export fell, while Y's increased.
+`
+export const text5 = `After May, meat export of Y exceeded that of X. Most of exported meat from Y were consumed by X.
+`
+export const text6 = `The gap kept increasing till the end of 2021. During that period, Y played a significant role as a meat supplier.
+`
+export const text7 = `Even though this article only focused on meat consumption and export, the case of cities X and Y implies that various economic exchanges can help smooth urbanizing.
 `
 
 function Line({ start, end, color }) {

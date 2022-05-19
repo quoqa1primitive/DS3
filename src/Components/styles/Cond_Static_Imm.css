@@ -1,6 +1,5 @@
 .PageControllerSI .TitleContainer {
   position: relative;
-  margin-top: 105px;
 }
 
 .PageControllerSI .Texts {
@@ -9,15 +8,13 @@
 
 .PageControllerSI .TextContainer {
   position: absolute;
-  box-shadow: 0px 0px 10px 10px rgba(204, 204, 204, 0.85);
-  background-color: rgba(204, 204, 204, 0.85);
+  box-shadow: 0px 0px 10px 10px rgba(248, 245, 240, 0.90);
+  background-color: rgba(248, 245, 240, 0.90);
 }
 
 .PageControllerSI .ButtonContainer {
   margin: calc(-435px + 30px + 750px + 144px + 400px) auto 100px auto;
 }
-
-
 
 .CanvasSI {
   width: 100%;

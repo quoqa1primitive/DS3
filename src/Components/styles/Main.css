@@ -25,11 +25,12 @@
   text-align: center;
   justify-content: center;
   align-items: center;
+  margin-top: 150px;
 }
 
 .Title {
   width: 100%;
-  font-size: 56px;
+  font-size: 48px;
 }
 
 .PageController {
@@ -63,7 +64,7 @@
   flex-direction: column;
   width: 100%;
   height: fit-content;
-  margin: 400px auto 100px auto;
+  margin: 500px auto 100px auto;
 }
 
 .Button {

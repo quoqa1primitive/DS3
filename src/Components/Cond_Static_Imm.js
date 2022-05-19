@@ -5,7 +5,7 @@ import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@r
 import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js'
 
 import './styles/Cond_Static_Imm.css';
-import { TextComponent, text1, text2, text3, text4, text5 } from './BasicElements.js';
+import { TextComponent, title, text1, text2, text3, text4, text5 } from './BasicElements.js';
 
 import img1 from '../Static-01.jpg';
 import img2 from '../Static-02.jpg';
@@ -41,7 +41,7 @@ function OverlaySI({ scroll, scrollLog, quiz, onClick }, ref){
       }}>
       <div className="TitleContainer">
         <div className="Title">
-          Who Gave My Meat?
+          {title}
         </div>
       </div>
       <div className={"Texts"}>

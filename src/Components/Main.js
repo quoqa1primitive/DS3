@@ -155,7 +155,7 @@ function Main(){
   const scroll = useRef(0);
   const scrollLog = useRef([]);
   const [quiz, setQuiz] = useState(false)
-  const [type, setType] = useState(StaticNon1);
+  const [type, setType] = useState(StaticNon2);
   const [completionCode, setCompletionCode] = useState("");
   const [scrollData, setScrollData] = useState([]);
 

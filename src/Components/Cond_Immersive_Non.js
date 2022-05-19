@@ -4,7 +4,7 @@ import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
 
 import './styles/Cond_Immersive_Non.css';
-import { Immersive, TextComponent, text1, text2, text3, text4, text5, Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js';
+import { Immersive, TextComponent, title, text1, text2, text3, text4, text5, Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js';
 
 function OverlayIN({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
@@ -36,7 +36,7 @@ function OverlayIN({ scroll, scrollLog, quiz, onClick }, ref){
       }}>
       <div className="TitleContainer">
         <div className="Title">
-          Who Gave My Meat?
+          {title}
         </div>
       </div>
       <div className={"Texts"}>
@@ -97,7 +97,7 @@ function AxGr({step, position}){
                 (step <= 2) &&
                 <>
                   <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-                  <TextBox text={String.fromCharCode(65+item)} anchorX={"center"} anchorY={"top"} /> // Label
+                  <TextBox text={String.fromCharCode(88+item)} anchorX={"center"} anchorY={"top"} /> // Label
                 </>
               }
               {
@@ -315,9 +315,9 @@ function VisComponent({camera, scroll, ...props}){
   const box4 = document.getElementById("text4").getBoundingClientRect();
   const scrollHeight = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight);
 
-  const text1 = scrollHeight + box1.top - window.innerHeight * 0.5 + box1.height * 0.5;
-  const text3 = scrollHeight + box3.top - window.innerHeight * 0.5 + box3.height * 0.5;
-  const text4 = scrollHeight + box4.top - window.innerHeight * 0.5 + box4.height * 0.5;
+  const text1 = scrollHeight + box1.top - window.innerHeight * 0.5 + 100 + box1.height * 0.5;
+  const text3 = scrollHeight + box3.top - window.innerHeight * 0.5 + 100 + box3.height * 0.5;
+  const text4 = scrollHeight + box4.top - window.innerHeight * 0.5 + 100 + box4.height * 0.5;
 
   const sp_1 = text1 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
   const sp_2 = text3 / (document.getElementById("pageController").scrollHeight - window.innerHeight);

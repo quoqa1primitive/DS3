@@ -22,7 +22,7 @@ function SurveyComponent2(props){
         "columns": [
           {
             "value": 1,
-            "text": "Strongly <br /> disagree",
+            "text": "Strongly <br/> disagree",
           },{
             "value": 2,
             "text": "&nbsp;&nbsp;",
@@ -50,16 +50,16 @@ function SurveyComponent2(props){
           },
         ],
         "rows": [
-          "Reading the article was very interesting.",
+          "Reading the article was really interesting.",
           "The article was easy to understand.",
           "I totally agree with the message of the article.",
-          "The article was really trustworthy."
+          "The article was very trustworthy."
         ]
       },
       {
         "type": "radiogroup",
         "name": "TP",
-        "title": "Please select the estimated range of how long you spent while reading.",
+        "title": "Please select the estimated range of how long you spent while reading the article.",
         "isRequired": true,
         "hasNone": false,
         "colCount": 1,
@@ -75,20 +75,21 @@ function SurveyComponent2(props){
       {
         "type": "radiogroup",
         "name": "M1",
-        "title": "Which is the reason why B's Food Self-Sufficiency increased?",
+        "title": "When was the time range X's Meat Consumption most dramatically increased?",
         "isRequired": true,
-        "hasNone": true,
+        "hasNone": false,
         "colCount": 1,
         "choices": [
-          "Decreased Population",
-          "Urbanization",
-          "Agricultural Growth"
+          "February - March",
+          "May - June",
+          "August - September",
+          "November - December"
         ]
       },
       {
         "type": "radiogroup",
         "name": "M2",
-        "title": "Did the article compare the amount of energy consumption?",
+        "title": "Did the article compare the amount of flights?",
         "isRequired": true,
         "hasNone": false,
         "colCount": 1,
