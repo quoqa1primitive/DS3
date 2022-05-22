@@ -4,7 +4,7 @@ import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
 
 import './styles/Cond_Immersive_Imm.css';
-import { Immersive, TextComponent, title, text1, text2, text3, text4, text5, text6, text7, Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js';
+import { Immersive, TextComponent, title, text1, text2, text3, text4, text5, text6, Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js';
 
 function OverlayII({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
@@ -25,43 +25,48 @@ function OverlayII({ scroll, scrollLog, quiz, onClick }, ref){
     // ... whatever else one may need
   }));
 
+  useEffect(()=>{
+    // console.log(ref1);
+    ref1.current.addEventListener('wheel', handleWheel, {passive: false});
+    ref1.current.addEventListener('scroll', handleScroll, {passive: true});
+  },[])
+
+  function handleWheel(e){
+    console.log(e);
+    e.preventDefault();
+    e.stopPropagation();
+
+    const speed = 1, smooth = 12, limit = 15 / window.devicePixelRatio ;
+    const delta = e.wheelDelta
+    ref1.current.scrollTop += (Math.abs(delta * speed) > limit? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed))
+    console.log(e.target)
+    // e.target.scrollTop = Math.max(0, Math.min(e.target.scrollTop, e.target.scrollHeight - window.innerHeight)) // limit scrolling
+  }
+
+  function handleScroll(e){
+    console.log(e.target.scrollTop);
+    scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
+    scrollLog.current.push([Date.now() - startTime, scroll.current]);
+  }
+
   return (
     <div
       className="PageController PageControllerII"
       id="pageController"
-      ref={ref1}
-      onScroll={(e) => {
-        scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
-        scrollLog.current.push([Date.now() - startTime, scroll.current]);
-      }}>
+      ref={ref1}>
       <div className="TitleContainer">
-        <div className="Title">
-          {title}
-        </div>
+        <div className="Title">{title}</div>
       </div>
       <div className={"Texts"}>
-        <TextComponent id={"text1"} text={text1} left={"calc(150% + 240px)"} margin={"240px"} />
-        <TextComponent id={"text2"} text={text2} left={"calc(150% - 200px)"} margin={"560px"} />
-
-        <TextComponent id={"text3"} text={text3} left={"calc(150% + 450px - 200px)"} margin={"800px"} />
-
-        <TextComponent id={"text4"} text={text4} left={"calc(150% - 450px + 140px)"} margin={"800px"} />
-        <TextComponent id={"text5"} text={text5} left={"calc(150% - 450px + 540px)"} margin={"800px"} />
-        <TextComponent id={"text6"} text={text6} left={"calc(150% - 450px - 200px)"} margin={"800px"} />
-        <TextComponent id={"text7"} text={text7} left={"calc(150% - 450px + 240px)"} margin={"0px"} />
-        {
-          isFirstButton &&
-          <div className="ButtonContainer" >
-            <button className="Button" ref={ref2} type="button" onClick={()=>{ setIsFirstButton(false); }}> Go to Quiz </button>
-          </div>
-        }
-        {
-          !isFirstButton &&
-          <div className="ButtonContainer" >
-            <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); setIsFirstButton(true); }}> Go to Quiz </button>
-            <div style={{ textAlign: "center", margin: "10px auto 0px auto" }}> ※ If you are ready to take a quiz, ※ <br/> ※ Please press the button again ※ </div>
-          </div>
-        }
+        <TextComponent id={"text1"} text={text1} left={"calc(50% + 240px)"}         margin={"800px"} />
+        <TextComponent id={"text2"} text={text2} left={"calc(50% + 450px - 200px)"} margin={"800px"} />
+        <TextComponent id={"text3"} text={text3} left={"calc(50% - 450px + 140px)"} margin={"600px"} />
+        <TextComponent id={"text4"} text={text4} left={"calc(50% - 450px + 340px)"} margin={"600px"} />
+        <TextComponent id={"text5"} text={text5} left={"calc(50% - 450px + 540px)"} margin={"600px"} />
+        <TextComponent id={"text6"} text={text6} left={"calc(50% - 450px + 240px)"} margin={"500px"} />
+        <div className="ButtonContainer" >
+          <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick()}}> Go to Quiz </button>
+        </div>
       </div>
     </div>
   )
@@ -83,17 +88,17 @@ const xyzProps = {
   xSteps: 2,  xLength: 60,  xPadding: 15,
   ySteps: 11, yLength: 60,  yPadding: 0,
   zSteps: 3,  zLength: 100, zPadding: 10,
-  dataA1: [30, 50, 60, 70, 70, 150, 160, 160, 170, 190, 210, 220],
-  dataB1: [40, 40, 50, 60, 60, 80, 80, 90, 100, 120, 120, 130],
-  dataA2: [50, 55, 55, 55, 50, 35, 30, 30, 25, 20, 20, 15],
-  dataB2: [40, 45, 45, 50, 50, 55, 60, 65, 70, 70, 70, 75]
+  dataA1: [50, 60, 60, 70, 70, 120, 170, 180, 190, 190, 200, 200],
+  dataB1: [40, 40, 50, 60, 60, 80, 80, 100, 100, 120, 130, 140],
+  dataA2: [45, 45, 40, 45, 40, 45, 40, 35, 30, 35, 30, 30],
+  dataB2: [40, 40, 35, 35, 45, 50, 55, 60, 60, 60, 65, 65]
 }
 
 const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
 const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
 const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
 const rectDepth = 2;
-const ratio = 1.66;
+const ratio = 5 / 3;
 
 function AxGr({step, position}){
   const XAxis1 =
@@ -113,7 +118,7 @@ function AxGr({step, position}){
                 <Line key={idx+100} color={"lightgrey"} start={[0, tickLength, 0]} end={[0, tickLength, -zLength]} /> // Grid
               }
               {
-                (step == 2) &&
+                (step <= 2) &&
                 <>
                   <group position={[-4, (idx==0?xyzProps.dataA1[0]:xyzProps.dataB1[0]) / 5 + 3, 0]}>
                     <TextBox text={"Jan."} anchorX={"center"} anchorY={"bottom"} label={null}/> // X-Axis2
@@ -142,7 +147,7 @@ function AxGr({step, position}){
       Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
         return <mesh key={idx} position={[-tickLength, item * ((yLength - 2 * yPadding) / (ySteps - 1)), 0]}>
             {
-              (step >= 2 && step <= 4) &&
+              (step >= 1 && step <= 4) &&
               <>
                 <Line key={idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} /> // Tick
                 <TextBox text={0 + 30 * item} anchorX={"right"} anchorY={"middle"} /> // Label
@@ -160,22 +165,22 @@ function AxGr({step, position}){
       })
     }
     {
-      (step >= 2 && step <= 4) &&
+      (step >= 1 && step <= 4) &&
       <>
         <group position={[-6, yLength / 2, -6]}>
-          <TextBox text={"Meat Consumption(ton)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS1}/>
+          <TextBox text={"Food Consumption(ton)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS1}/>
           <>{
-            (step == 4) &&
-            <>
-              <group position={[0, yLength / 2 - yLength / 10, 6 + zLength / 10]}>
-                <Rect width={12} height={12} depth={1.2 * ratio} color={new THREE.Color("#512C8A")} />
-                <TextBox text={"    X: Urbanized"} anchorX={"left"} anchorY={"bottom"} label={XAXIS1}/>
-              </group>
-              <group position={[0, yLength / 2 - yLength / 10 - 4, 6 + zLength / 10]}>
-                <Rect width={12} height={12} depth={1.2 * ratio} color={new THREE.Color("#2F9B39")} />
-                <TextBox text={"    Y: Agricultural"} anchorX={"left"} anchorY={"bottom"} label={XAXIS1}/>
-              </group>
-            </>
+            // (step == 4) &&
+            // <>
+            //   <group position={[0, yLength / 2 - yLength / 10, 6 + zLength / 10]}>
+            //     <Rect width={12} height={12} depth={1.2 * ratio} color={new THREE.Color("#512C8A")} />
+            //     <TextBox text={"    X"} anchorX={"left"} anchorY={"bottom"} label={XAXIS1}/>
+            //   </group>
+            //   <group position={[0, yLength / 2 - yLength / 10 - 4, 6 + zLength / 10]}>
+            //     <Rect width={12} height={12} depth={1.2 * ratio} color={new THREE.Color("#2F9B39")} />
+            //     <TextBox text={"    Y"} anchorX={"left"} anchorY={"bottom"} label={XAXIS1}/>
+            //   </group>
+            // </>
           }</>
         </group>
       </>
@@ -207,7 +212,7 @@ function AxGr({step, position}){
       (step >= 6) &&
       <>
         <group position={[xLength / 2, 0, -6]}>
-          <TextBox text={"Meat Export(ton)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS2}/>
+          <TextBox text={"Vegetable + Grain Consumption(%)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS2}/>
         </group>
       </>
     }
@@ -251,6 +256,10 @@ function AxGr({step, position}){
           <Line color={"black"} start={[0, 0, zLength]} end={[xLength, 0, zLength]} /> // X-Axis
           <Line color={"black"} start={[0, 0, 0]} end={[0, yLength, 0]} /> // Y-Axis
         </>
+      }
+      {
+        (step == 5) &&
+        <Line color={"black"} start={[xLength, 0, 0]} end={[xLength, yLength, 0]} /> // Second Y-Axis
       }
       <Line color={"black"} start={[0, 0, 0]} end={[0, 0, zLength]} /> // Z-Axis
       {
@@ -306,9 +315,9 @@ function MainGroup2({step, position, target, opacity}){
               zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2]}>
               <Rect width={xyzProps.dataA2[idx] / ratio} height={item} depth={rectDepth} color={new THREE.Color("#512C8A")}
                 opacity={
-                  step<=8? (idx != 3 && idx != 4 && idx != 5)? opacity : 1
-                    : step<=10? (idx > 5)? opacity : (idx < 3)? 0.2 : 1
-                    : (idx < 3)? 1.2 - opacity: 1
+                  step<=8? (idx >= 5)? opacity : 1
+                    : step<=10? (idx > 4)? opacity : (idx < 4)? 1.2 - opacity : 1
+                    : (idx < 4)? 1.2 - opacity: 1
                   }
               />
             </mesh>
@@ -324,9 +333,9 @@ function MainGroup2({step, position, target, opacity}){
               zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}>
               <Rect width={xyzProps.dataB2[idx] / ratio} height={item} depth={rectDepth} color={new THREE.Color("#2F9B39")}
                 opacity={
-                  step<=8? (idx != 3 && idx != 4 && idx != 5)? opacity : 1
-                    : step<=10? (idx > 5)? opacity : (idx < 3)? 0.2 : 1
-                    : (idx < 3)? 1.2 - opacity: 1
+                  step<=8? (idx >= 5)? opacity : 1
+                    : step<=10? (idx > 4 )? opacity : (idx < 4)? 1.2 - opacity : 1
+                    : (idx < 4)? 1.2 - opacity: 1
                   }
               />
             </mesh>
@@ -341,118 +350,125 @@ function VisComponent({camera, scroll, ...props}){
   const [step, setStep] = useState(0);
   const [opacity, setOpacity] = useState(0.2);
 
-  const box1 = document.getElementById("text1").getBoundingClientRect();
-  const box2 = document.getElementById("text2").getBoundingClientRect();
-  const box3 = document.getElementById("text3").getBoundingClientRect();
-  const box4 = document.getElementById("text4").getBoundingClientRect();
-  const box5 = document.getElementById("text5").getBoundingClientRect();
-  const box6 = document.getElementById("text6").getBoundingClientRect();
-  const box7 = document.getElementById("text7").getBoundingClientRect();
+  const length = 6;
+  let boxes = [], texts = [], sp = [];
+  for(let i=0; i<length; i++){
+    boxes[i] = document.getElementById("text" + (i+1).toString()).getBoundingClientRect();
+  }
   const scrollHeight = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight);
 
-  const text1 = scrollHeight + box1.top - window.innerHeight * 0.5 + 100 + box1.height * 0.5;
-  const text2 = scrollHeight + box2.top - window.innerHeight * 0.5 + 100 + box2.height * 0.5;
-  const text3 = scrollHeight + box3.top - window.innerHeight * 0.5 + 100 + box3.height * 0.5;
-  const text4 = scrollHeight + box4.top - window.innerHeight * 0.5 + 100 + box4.height * 0.5;
-  const text5 = scrollHeight + box5.top - window.innerHeight * 0.5 + 100 + box5.height * 0.5;
-  const text6 = scrollHeight + box6.top - window.innerHeight * 0.5 + 100 + box6.height * 0.5;
-  const text7 = scrollHeight + box7.top - window.innerHeight * 0.5 + 100 + box7.height * 0.5;
+  for(let i=0; i<length; i++){
+    texts[i] = scrollHeight - window.innerHeight * 0.5 + boxes[i].top + boxes[i].height * 0.5 + 100;
+  }
 
-  const sp_1 = text1 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  const sp_2 = text3 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  const sp_3 = text4 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  const sp_4 = text5 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  const sp_5 = text6 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  const sp_6 = text7 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
+  for(let i=0; i<length; i++){
+    sp[i] = texts[i] / (document.getElementById("pageController").scrollHeight - window.innerHeight);
+  }
+
+  const durMargin = 0.04;
+  const div1 = [sp[0] - durMargin, sp[0] + durMargin];
+  const div2 = [sp[1] - durMargin, sp[1] + durMargin];
+  const div3 = [sp[2] - durMargin, sp[2] + durMargin * 0.5];
+  const div4 = [sp[3] - durMargin * 0.5, sp[3] + durMargin * 0.5];
+  const div5 = [sp[4] - durMargin * 0.5, sp[4] + durMargin * 0.5];
+  const div6 = [sp[5] - durMargin * 0.5, sp[5] + durMargin * 0.5];
+
 
   useFrame(() => {
     const et = scroll.current;
 
     let bezierFunc = bezier(0.4, 0, 0.4, 1);
     let bzVal = 0;
-    const durMargin = 0.03;
 
-    if(et < (sp_1 - durMargin)){
+
+    if(et < div1[0]){
       setStep(1);
-      bzVal = bezierFunc((et - 0) / (sp_1 - durMargin));
-      group.current.rotation.y = -Math.PI / 6 * (1 - bzVal);
-      group.current.rotation.z = 0;
-      camera.current.position.y = 2000 * (1 - bzVal);
+      // bzVal = bezierFunc((et - 0) / div1[0]);
+      // group.current.rotation.y = -Math.PI / 6 * (1 - bzVal);
+      // group.current.rotation.z = 0;
+      // camera.current.position.y = 2000 * (1 - bzVal);
       setOpacity(1.0);
-      camera.current.updateProjectionMatrix();
-    }else if(et < (sp_1 + durMargin)){
-      setStep(2);
+      // camera.current.updateProjectionMatrix();
       group.current.rotation.y = 0;
       group.current.rotation.z = 0;
       camera.current.position.y = 0;
       camera.current.updateProjectionMatrix();
-    }else if(et < (sp_2 - durMargin)){
+    }else if(et < div1[1]){
+      setStep(2);
+      setOpacity(1.0);
+      group.current.rotation.y = 0;
+      group.current.rotation.z = 0;
+      camera.current.position.y = 0;
+      camera.current.updateProjectionMatrix();
+    }else if(et < div2[0]){
       setStep(3);
-      let et2 = et - sp_1 - durMargin;
-      let dur2 = sp_2 - durMargin - sp_1 - durMargin;
+      let et2 = et - div1[1];
+      let dur2 = div2[0] - div1[1];
       bzVal = bezierFunc(et2 / dur2);
       group.current.rotation.y = Math.PI / 2 * bzVal;
       group.current.rotation.z = 0;
       camera.current.position.y = 1000 * Math.sin(bzVal * Math.PI);
       camera.current.updateProjectionMatrix();
-    }else if(et < (sp_2 + durMargin)){
+    }else if(et < div2[1]){
       setStep(4);
       group.current.rotation.y = Math.PI / 2;
       group.current.rotation.z = 0;
       camera.current.position.y = 1000 * Math.sin(bzVal * Math.PI);
       camera.current.updateProjectionMatrix();
-    }else if(et < (sp_3 - durMargin)){
+    }else if(et < div3[0]){
       setStep(5);
-      let et3 = et - sp_2 - durMargin;
-      let dur3 = sp_3 - durMargin - sp_2 - durMargin;
+      let et3 = et - div2[1];
+      let dur3 = div3[0] - div2[1];
       bzVal = bezierFunc(et3 / dur3);
       group.current.rotation.y = Math.PI / 2;
       group.current.rotation.z = Math.PI / 2 * bzVal;
       camera.current.position.x = -1000 * Math.sin(bzVal * Math.PI);
       camera.current.updateProjectionMatrix();
-    }else if(et < (sp_3 + durMargin)){
+    }else if(et < div3[1]){
       setStep(6);
       group.current.rotation.y = Math.PI / 2;
       group.current.rotation.z = Math.PI / 2;
       camera.current.position.x = 0;
-    }else if(et < (sp_4 - durMargin)){
+    }else if(et < div4[0]){
       setStep(7);
-      let et4 = et - sp_3 - durMargin;
-      let dur4 = sp_4 - durMargin - sp_3 - durMargin;
+      let et4 = et - div3[1];
+      let dur4 = div4[0] - div3[1];
       bzVal = bezierFunc(et4 / dur4);
+      group.current.position.setX(30 * bzVal);
       group.current.position.setY(10 * bzVal);
       camera.current.zoom = 6.25 + 5.75 * bzVal;
       setOpacity(1 - 0.8 * bzVal);
       camera.current.updateProjectionMatrix();
-    }else if(et < (sp_4 + durMargin)){
+    }else if(et < div4[1]){
       setStep(8);
+      group.current.position.setX(30);
       group.current.position.setY(10);
       camera.current.zoom = 12.00;
       setOpacity(0.2);
       camera.current.updateProjectionMatrix();
-    }else if(et < (sp_5 - durMargin)){
+    }else if(et < div5[0]){
       setStep(9);
-      let et5 = et - sp_4 - durMargin;
-      let dur5 = sp_5 - durMargin - sp_4 - durMargin;
+      let et5 = et - div4[1];
+      let dur5 = div5[0] - div4[1];
       bzVal = bezierFunc(et5 / dur5);
       camera.current.zoom = 9.00 + 3.00 * (1 - bzVal);
-      group.current.position.setX(-10 * bzVal);
+      group.current.position.setX(30 + -50 * bzVal);
       group.current.position.setY(10 * (1 - bzVal));
       setOpacity(0.2 + 0.8 * bzVal);
       camera.current.updateProjectionMatrix();
-    }else if(et < (sp_5 + durMargin)){
+    }else if(et < div5[1]){
       setStep(10);
-      group.current.position.setX(-10);
+      group.current.position.setX(-20);
       group.current.position.setY(0);
       camera.current.zoom = 9.00;
       setOpacity(1.0);
       camera.current.updateProjectionMatrix();
-    }else if(et < (sp_6 - durMargin)){
+    }else if(et < div6[0]){
       setStep(11);
-      let et6 = et - sp_5 - durMargin;
-      let dur6 = sp_6 - durMargin - sp_5 - durMargin;
+      let et6 = et - div5[1];
+      let dur6 = div6[0] - div5[1];
       bzVal = bezierFunc(et6 / dur6);
-      group.current.position.setX(-10 + 10 * bzVal);
+      group.current.position.setX(-20 + 20 * bzVal);
       camera.current.zoom = 6.25 + 2.75 * (1 - bzVal);
       setOpacity(0.2 + 0.8 * (1-bzVal));
       camera.current.updateProjectionMatrix();

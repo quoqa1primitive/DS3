@@ -12,70 +12,12 @@ function SurveyComponent2(props){
     .applyTheme("default");
 
   let json = {
-    "title": "Questionnaire",
+    "title": "Quiz & Questionnaire",
     "elements": [
       {
-        "type": "matrix",
-        "name": "UCS",
-        "title": "Please fill out the below.",
-        "isRequired": true,
-        "columns": [
-          {
-            "value": 1,
-            "text": "Strongly <br/> disagree",
-          },{
-            "value": 2,
-            "text": "&nbsp;&nbsp;",
-          },{
-            "value": 3,
-            "text": "Disagree",
-          },{
-            "value": 4,
-            "text": "&nbsp;&nbsp;",
-          },{
-            "value": 5,
-            "text": "Neutral",
-          },{
-            "value": 6,
-            "text": "&nbsp;&nbsp;",
-          },{
-            "value": 7,
-            "text": "Agree",
-          },{
-            "value": 8,
-            "text": "&nbsp;&nbsp;",
-          },{
-            "value": 9,
-            "text": "Strongly <br /> agree",
-          },
-        ],
-        "rows": [
-          "Reading the article was really interesting.",
-          "The article was easy to understand.",
-          "I totally agree with the message of the article.",
-          "The article was very trustworthy."
-        ]
-      },
-      {
         "type": "radiogroup",
-        "name": "TP",
-        "title": "Please select the estimated range of how long you spent while reading the article.",
-        "isRequired": true,
-        "hasNone": false,
-        "colCount": 1,
-        "choices": [
-          "0  ≤   ＜ 10 sec",
-          "10 ≤   ＜ 20 sec",
-          "20 ≤   ＜ 30 sec",
-          "30 ≤   ＜ 40 sec",
-          "40 ≤   ＜ 50 sec",
-          "50 ≤    ",
-        ]
-      },
-      {
-        "type": "radiogroup",
-        "name": "M1",
-        "title": "When was the time range X's Meat Consumption most dramatically increased?",
+        "name": "M1-1",
+        "title": "When did X's Food Consumption most dramatically increase?",
         "isRequired": true,
         "hasNone": false,
         "colCount": 1,
@@ -88,6 +30,23 @@ function SurveyComponent2(props){
       },
       {
         "type": "radiogroup",
+        "name": "M1-2",
+        "title": "Do you agree that urbanization lead to particular type of food consumption?",
+        "isRequired": true,
+        "hasNone": false,
+        "colCount": 1,
+        "choices": [
+          "7 - Strongly agree.",
+          "6",
+          "5",
+          "4 - Neutral",
+          "3",
+          "2",
+          "1 - Strongly disagree",
+        ]
+      },
+      {
+        "type": "radiogroup",
         "name": "M2",
         "title": "Did the article compare the amount of flights?",
         "isRequired": true,
@@ -96,6 +55,23 @@ function SurveyComponent2(props){
         "choices": [
           "True",
           "False"
+        ]
+      },
+      {
+        "type": "radiogroup",
+        "name": "M1-3",
+        "title": "Please check how much you pay attention to the existence of errors or inconsistencies <i>in the graph.</i>",
+        "isRequired": true,
+        "hasNone": false,
+        "colCount": 1,
+        "choices": [
+          "7 - Completely Untrustworthy",
+          "6",
+          "5",
+          "4 - Neutral",
+          "3",
+          "2",
+          "1 - Completely Trustworthy"
         ]
       },
       {
@@ -140,7 +116,7 @@ function SurveyComponent2(props){
     resultData = sender.data;
     resultData["PersonID"] = props.PersonID;
     resultData["type"] = props.type;
-    resultData["scroll"] = props.ScrollData;
+    resultData["scroll"] = props.ScrollData.map(([a, b]) => [a, Number(b).toFixed(3)]);
     resultData["winHeight"] = window.innerHeight;
     resultData["zoomLevel"] = Math.round(window.devicePixelRatio * 100)
     const results = JSON.stringify(resultData);
@@ -168,7 +144,7 @@ function SurveyComponent2(props){
   )
 }
 
-function Quiz(props){
+function Quiz1(props){
   return(
     <div className="SurveyContainer">
       <SurveyComponent2 ScrollData={props.ScrollData} type={props.type} PersonID={props.PersonID}/>
@@ -176,4 +152,4 @@ function Quiz(props){
   )
 }
 
-export default Quiz;
+export default Quiz1;

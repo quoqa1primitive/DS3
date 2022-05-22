@@ -37,21 +37,20 @@ export const YAXIS1 = 10001;
 export const YAXIS2 = 10010;
 export const ZAXIS1 = 10011;
 
-export const title = `How Can Urbanized City Get Fresh Meat?
+export const title = `Does Urbanization Affect
+Food Consumption Pattern?
 `
-export const text1 = `X and Y are two nearby cities. During the last year they have gone through different paths. While X became highly urbanized, Y developed infrastructures for agriculture supported by the local government.
+export const text1 = `X and Y became highly urbanized during the last year. As a result, the graph demonstrates that both X and Y had a noticeable increase in food consumption.
 `
-export const text2 = `Although it is due to different situations, the two cities showed a rapid increase in meat consumption in 2021.
+export const text2 = `The monthly chart shows in detail that the increasing trends were distinct. While X's food consumption increased noticeably after May, Y's went up steadily.
 `
-export const text3 = `Monthly chart shows that meat consumption in two cities steadily increased. It is noteworthy that X's meat consumption dramatically increased after June.
+export const text3 = `However, the vegetable and grain consumption timeline revealed the contrasting patterns of the two cities.
 `
-export const text4 = `However, meat export of the two cities shows opposite relationship. X's export fell, while Y's increased.
+export const text4 = `In the early of 2021, the ratio of vegetable and grain consumption in both cities were comparable.
 `
-export const text5 = `After May, meat export of Y exceeded that of X. Most of exported meat from Y were consumed by X.
+export const text5 = `Y's ratio has exceeded X's since May. The gap between the two cities kept increasing until the end of 2021.
 `
-export const text6 = `The gap kept increasing till the end of 2021. During that period, Y played a significant role as a meat supplier.
-`
-export const text7 = `Even though this article only focused on meat consumption and export, the case of cities X and Y implies that various economic exchanges can help smooth urbanizing.
+export const text6 = `In sum, urbanization appeared to affect both the total and composition of consumption. However, there was no direct causal relationship with the type of consumption pattern.
 `
 
 function Line({ start, end, color }) {
@@ -129,5 +128,14 @@ function TextComponent(props){
     </div>
   )
 }
+
+// function TextsCollection(props){
+//   if(props.texts === "undefined" || props.lefts === "undefined" || props.margins === "undefined"){
+//     throw 'not valid textcomponents attributes'
+//   }
+//
+//   const len = props.length;
+//
+// }
 
 export {Line, TextBox, Rect, TextComponent};

@@ -5,7 +5,7 @@
 }
 
 .PageControllerII .Texts {
-  margin-top: max(1000px, 100vh);
+  top: calc(50vh + 300px);
 }
 
 .PageControllerII .TextContainer {

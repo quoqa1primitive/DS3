@@ -14,7 +14,8 @@ import { OverlaySN, CanvasSN } from './Cond_Static_Non.js';
 import { OverlaySN2, CanvasSN2 } from './Cond_Static_Non_2.js';
 import { OverlayAN, CanvasAN } from './Cond_Animated_Non.js';
 import { OverlayIN, CanvasIN } from './Cond_Immersive_Non.js';
-import Quiz from './Quiz.js';
+import Quiz1 from './Quiz1.js';
+import Quiz2 from './Quiz2.js';
 
 // import { data } from '../0415Data.js'
 
@@ -154,27 +155,35 @@ function Main(){
   const overlay = useRef();
   const scroll = useRef(0);
   const scrollLog = useRef([]);
-  const [quiz, setQuiz] = useState(false)
-  const [type, setType] = useState(StaticNon2);
+  const [quiz1, setQuiz1] = useState(false)
+  const [quiz2, setQuiz2] = useState(false)
+  const [type, setType] = useState(StaticNon1);
   const [completionCode, setCompletionCode] = useState("");
   const [scrollData, setScrollData] = useState([]);
 
   let PersonID;
 
   function getQuiz(){
-    setQuiz(true);
-    scrollLog.current.push(Date.now()); // Check the total elapsed time
+    // scrollLog.current.push(Date.now()); // Check the total elapsed time
     setScrollData(scrollLog.current);
-    console.log("quiz set");
     axios.get('ajaxGet', {
       params: {
         "action": "setQuiz"
       }
     }).then(response => {
       console.log("SUCCESS", response);
+      if(response.data.isQuiz==1){
+        setQuiz1(true);
+        setQuiz2(false);
+        console.log("quiz1 set");
+      }else if(response.data.isQuiz==2){
+        setQuiz1(false);
+        setQuiz2(true);
+        console.log("quiz2 set");
+      }
     }).catch(error => {
       console.log(error);
-    });;
+    });
   }
 
   useEffect(() => {
@@ -195,9 +204,16 @@ function Main(){
       }
       console.log(response.data);
       if(response.data.isQuiz==1){
-        console.log(response.data.isQuiz);
-        setQuiz(true)
+        setQuiz1(true);
+        setQuiz2(false);
+        console.log("quiz1 get");
+      }else if(response.data.isQuiz==2){
+        setQuiz1(false);
+        setQuiz2(true);
+        console.log("quiz2 get");
       }else{
+        setQuiz1(false);
+        setQuiz2(false);
         console.log("type changed");
         setType(response.data.nextStory);
       }
@@ -208,14 +224,10 @@ function Main(){
 
   return(
     <>
+      {quiz1 && <Quiz1 ScrollData={scrollData} type={type} PersonID={PersonID}/>}
+      {quiz2 && <Quiz2 ScrollData={scrollData} type={type} PersonID={PersonID}/>}
       {
-        quiz &&
-        <>
-          <Quiz ScrollData={scrollData} type={type} PersonID={PersonID}/>
-        </>
-      }
-      {
-        !quiz &&
+        (!quiz1 && !quiz2) &&
         <div style={{width: "100%", height: "100%"}} className="PageContents">
           <div className="Viz">
           {
