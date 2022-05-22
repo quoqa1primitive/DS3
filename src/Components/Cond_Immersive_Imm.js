@@ -32,21 +32,21 @@ function OverlayII({ scroll, scrollLog, quiz, onClick }, ref){
   },[])
 
   function handleWheel(e){
-    console.log(e);
+    // console.log(e);
     e.preventDefault();
     e.stopPropagation();
 
     const speed = 1, smooth = 12, limit = 15 / window.devicePixelRatio ;
     const delta = e.wheelDelta
     ref1.current.scrollTop += (Math.abs(delta * speed) > limit? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed))
-    console.log(e.target)
+    // console.log(e.target)
     // e.target.scrollTop = Math.max(0, Math.min(e.target.scrollTop, e.target.scrollHeight - window.innerHeight)) // limit scrolling
   }
 
   function handleScroll(e){
-    console.log(e.target.scrollTop);
+    // console.log(e.target.scrollTop);
     scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
-    scrollLog.current.push([Date.now() - startTime, scroll.current.toFixed(3)]);
+    // scrollLog.current.push([Date.now() - startTime, scroll.current.toFixed(3)]);
   }
 
   return (
