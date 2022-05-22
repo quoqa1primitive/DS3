@@ -6,6 +6,9 @@ import "survey-core/survey.css";
 import "./styles/Quiz.css";
 import axios from 'axios';
 
+import img1 from '../Immersive.JPG';
+import img2 from '../Static.JPG';
+
 function SurveyComponent3(props){
   Survey
     .StylesManager
@@ -129,6 +132,17 @@ function SurveyComponent3(props){
 function Quiz2(props){
   return(
     <div className="SurveyContainer">
+      <div style={{ display: "flex", flexDirection: "row", position: "relative", marginTop: "100px", marginBottom: "45px" }}>
+        <div style={{ display: "flex", flexDirection: "column", textAlign: "center", fontSize: "30px"}}>
+          <div> A </div>
+          <img src={ img1 } width='305px' height='200px' />
+        </div>
+        <div style={{width: "50px"}}/>
+        <div style={{ display: "flex", flexDirection: "column", textAlign: "center", fontSize: "30px"}}>
+          <div> B </div>
+          <img src={ img2 } width='305px' height='200px' />
+        </div>
+      </div>
       <SurveyComponent3 ScrollData={props.ScrollData} type={props.type} PersonID={props.PersonID}/>
     </div>
   )
