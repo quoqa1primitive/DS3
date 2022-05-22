@@ -46,7 +46,7 @@ function OverlayII({ scroll, scrollLog, quiz, onClick }, ref){
   function handleScroll(e){
     console.log(e.target.scrollTop);
     scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
-    scrollLog.current.push([Date.now() - startTime, scroll.current]);
+    scrollLog.current.push([Date.now() - startTime, scroll.current.toFixed(3)]);
   }
 
   return (

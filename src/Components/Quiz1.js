@@ -116,7 +116,7 @@ function SurveyComponent2(props){
     resultData = sender.data;
     resultData["PersonID"] = props.PersonID;
     resultData["type"] = props.type;
-    resultData["scroll"] = props.ScrollData.map(([a, b]) => [a, Number(b).toFixed(3)]);
+    resultData["scroll"] = props.ScrollData;
     resultData["winHeight"] = window.innerHeight;
     resultData["zoomLevel"] = Math.round(window.devicePixelRatio * 100)
     const results = JSON.stringify(resultData);
