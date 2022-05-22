@@ -7,9 +7,9 @@ import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElem
 import './styles/Cond_Static_Non_2.css';
 import { TextComponent, title, text1, text2, text3, text4, text5, text6 } from './BasicElements.js';
 
-import img1 from '../Static-11.JPG';
-import img2 from '../Static-12.JPG';
-import img3 from '../Static-13.JPG';
+import img1 from '../Static-21.JPG';
+import img2 from '../Static-22.JPG';
+import img3 from '../Static-23.JPG';
 
 function OverlaySN2({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();

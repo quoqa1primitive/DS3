@@ -7,9 +7,9 @@ import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElem
 import './styles/Cond_Static_Imm.css';
 import { TextComponent, title, text1, text2, text3, text4, text5 } from './BasicElements.js';
 
-import img1 from '../Static-01.jpg';
-import img2 from '../Static-02.jpg';
-import img3 from '../Static-03.jpg';
+import img1 from '../Static-21.JPG';
+import img2 from '../Static-22.JPG';
+import img3 from '../Static-23.JPG';
 
 function OverlaySI({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
