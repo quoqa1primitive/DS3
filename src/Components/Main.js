@@ -206,11 +206,9 @@ function Main(){
       if(response.data.isQuiz==1){
         setQuiz1(true);
         setQuiz2(false);
-        console.log("quiz1 get");
       }else if(response.data.isQuiz==2){
         setQuiz1(false);
         setQuiz2(true);
-        console.log("quiz2 get");
       }else{
         setQuiz1(false);
         setQuiz2(false);
