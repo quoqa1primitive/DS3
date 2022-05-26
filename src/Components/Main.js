@@ -155,8 +155,9 @@ function Main(){
   const overlay = useRef();
   const scroll = useRef(0);
   const scrollLog = useRef([]);
+  const [sequence, setSequence] = useState([StaticNon1, ImmersiveImm])
   const [quiz1, setQuiz1] = useState(false)
-  const [quiz2, setQuiz2] = useState(false)
+  const [quiz2, setQuiz2] = useState(true)
   const [type, setType] = useState(ImmersiveImm);
   const [completionCode, setCompletionCode] = useState("");
   const [scrollData, setScrollData] = useState([]);
@@ -172,6 +173,9 @@ function Main(){
       }
     }).then(response => {
       console.log("SUCCESS", response);
+      setSequence(response.data.task);
+      setSequence([StaticNon1, ImmersiveImm]);
+      setSequence([ImmersiveImm, StaticNon1]);
       if(response.data.isQuiz==1){
         setQuiz1(true);
         setQuiz2(false);
@@ -223,7 +227,7 @@ function Main(){
   return(
     <>
       {quiz1 && <Quiz1 ScrollData={scrollData} type={type} PersonID={PersonID}/>}
-      {quiz2 && <Quiz2 ScrollData={scrollData} type={type} PersonID={PersonID}/>}
+      {quiz2 && <Quiz2 ScrollData={scrollData} type={type} PersonID={PersonID} Sequence={sequence}/>}
       {
         (!quiz1 && !quiz2) &&
         <div style={{width: "100%", height: "100%"}} className="PageContents">

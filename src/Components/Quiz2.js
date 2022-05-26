@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import showdown from 'showdown';
 import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
@@ -6,6 +6,7 @@ import "survey-core/survey.css";
 import "./styles/Quiz.css";
 import axios from 'axios';
 
+import {StaticNon1} from './BasicElements.js'
 import img1 from '../Immersive.JPG';
 import img2 from '../Static.JPG';
 
@@ -15,12 +16,12 @@ function SurveyComponent3(props){
     .applyTheme("default");
 
   let json = {
-    "title": "Questionnaire",
+    "title": "You just read two articles of the same content, but shown in different styles.",
     "elements": [
       {
         "type": "matrixdropdown",
         "name": "UCS",
-        "title": "Please fill out the below.",
+        "title": " Please answer the following questions that compare how you experienced them.",
         "isRequired": true,
         "columns": [
           {
@@ -31,7 +32,7 @@ function SurveyComponent3(props){
             "choices": [
               {
                 "value": -3,
-                "text": "&emsp;A was ~&emsp;<br/>"
+                "text": "&emsp;A&emsp;<br/>"
               },
               {
                 "value": -2,
@@ -55,20 +56,20 @@ function SurveyComponent3(props){
               },
               {
                 "value": 3,
-                "text": "&emsp;B was ~&emsp;<br/>"
+                "text": "&emsp;B&emsp;<br/>"
               }
             ]
           },
           {
             "name": "comment",
-            "title": "Please describe what made difference(if exists)",
+            "title": "Please explain your answer in detail",
             "isRequired": true,
             "cellType": "comment"
           }
         ],
         "rows": [
           "Which version was<br/> <b>more interesting</b>?",
-          "Which version was<br/> <b>more easy to understand</b>?",
+          "Which version was<br/> <b>easier to understand</b>?",
           "Which version was<br/> <b>more persuasive</b>?",
           "Which version was<br/> <b>more trustworthy</b>?"
         ]
@@ -130,17 +131,22 @@ function SurveyComponent3(props){
 }
 
 function Quiz2(props){
+
+  useEffect(()=>{
+    console.log(props);
+  })
+
   return(
     <div className="SurveyContainer">
       <div style={{ display: "flex", flexDirection: "row", position: "relative", marginTop: "100px", marginBottom: "45px" }}>
         <div style={{ display: "flex", flexDirection: "column", textAlign: "center", fontSize: "30px"}}>
           <div> A </div>
-          <img src={ img1 } width='305px' height='200px' />
+          <img src={ props.Sequence[0] == StaticNon1? img2 : img1 } width='305px' height='200px' />
         </div>
         <div style={{width: "50px"}}/>
         <div style={{ display: "flex", flexDirection: "column", textAlign: "center", fontSize: "30px"}}>
           <div> B </div>
-          <img src={ img2 } width='305px' height='200px' />
+          <img src={ props.Sequence[0] == StaticNon1? img1 : img2 } width='305px' height='200px' />
         </div>
       </div>
       <SurveyComponent3 ScrollData={props.ScrollData} type={props.type} PersonID={props.PersonID}/>
