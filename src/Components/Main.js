@@ -155,7 +155,7 @@ function Main(){
   const overlay = useRef();
   const scroll = useRef(0);
   const scrollLog = useRef([]);
-  const [sequence, setSequence] = useState([StaticNon1, ImmersiveImm])
+  const [sequence, setSequence] = useState([])
   const [quiz1, setQuiz1] = useState(false)
   const [quiz2, setQuiz2] = useState(true)
   const [type, setType] = useState(ImmersiveImm);
@@ -174,8 +174,6 @@ function Main(){
     }).then(response => {
       console.log("SUCCESS", response);
       setSequence(response.data.task);
-      setSequence([StaticNon1, ImmersiveImm]);
-      setSequence([ImmersiveImm, StaticNon1]);
       if(response.data.isQuiz==1){
         setQuiz1(true);
         setQuiz2(false);
