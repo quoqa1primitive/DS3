@@ -157,7 +157,7 @@ function Main(){
   const scrollLog = useRef([]);
   const [sequence, setSequence] = useState([])
   const [quiz1, setQuiz1] = useState(false)
-  const [quiz2, setQuiz2] = useState(true)
+  const [quiz2, setQuiz2] = useState(false)
   const [type, setType] = useState(ImmersiveImm);
   const [completionCode, setCompletionCode] = useState("");
   const [scrollData, setScrollData] = useState([]);

@@ -32,6 +32,11 @@ const opts = {
   materialType: "MeshPhongMaterial"
 };
 
+// animation
+export const groupVarNum = 7;
+export const camVarNum = 7;
+export const totalFrame = 1000;
+
 export const XAXIS1 = 10000;
 export const YAXIS1 = 10001;
 export const YAXIS2 = 10010;
@@ -138,4 +143,57 @@ function TextComponent(props){
 //
 // }
 
-export {Line, TextBox, Rect, TextComponent};
+function interpolate(startVal, endVal, duration, time, postType){
+  // values => posX, posY, posZ, rotX, rotY, rotZ, opacity
+  const bezier = require('bezier-easing');
+  let bezierFunc = bezier(0.4, 0, 0.4, 1);
+
+  let progress = time / duration;
+
+  return (postType == 'sin') ? startVal + 1000 * Math.sin(bezierFunc(progress) * Math.PI) :
+  (postType == 'bezier')? startVal + (endVal - startVal) * bezierFunc(progress) :
+  (postType == 'stopper')? startVal :
+  (postType == 'linear')? startVal + (endVal - startVal) * progress : progress;
+}
+
+function statesConverter(initStates, stoppers, initValues){
+  let states = [], values = [];
+  // Required!!!  states[0] = 0, states[-1] = 1
+  for(let i=0; i<initStates.length; i++){
+    if(i == 0){
+      states.push(initStates[i]);
+      states.push(initStates[i] + stoppers[i]);
+    }else if(i == initStates.length - 1){
+      states.push(initStates[i] - stoppers[i]);
+      states.push(initStates[i]);
+    }else{
+      states.push(initStates[i] - stoppers[i]);
+      states.push(initStates[i] + stoppers[i]);
+    }
+    values.push(initValues[i]);
+    values.push(initValues[i]);
+  }
+  return {states: states, values: values};
+}
+
+function AnimationGenerator(initStates, stoppers, initValues, posts){
+  let animation = [];
+  let states_values = statesConverter(initStates, stoppers, initValues);
+
+  for(let i=0; i<totalFrame; i++){
+    let currentStep = states_values.states.findIndex((ele) => ele > i / totalFrame) - 1;
+    let currentPost = (currentStep % 2 == 1) ? posts[Math.floor(currentStep / 2)] : 'stopper';
+
+    let interpolated = interpolate(
+      states_values.values[currentStep],
+      states_values.values[currentStep + 1],
+      states_values.states[currentStep + 1] - states_values.states[currentStep],
+      i / totalFrame - states_values.states[currentStep],
+      currentPost
+    );
+    animation = animation.concat(interpolated)
+  }
+  return animation;
+}
+
+export {Line, TextBox, Rect, TextComponent, statesConverter, AnimationGenerator};

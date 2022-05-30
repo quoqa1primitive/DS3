@@ -5,6 +5,7 @@ import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@r
 
 import './styles/Cond_Immersive_Imm.css';
 import { Immersive, TextComponent, title, text1, text2, text3, text4, text5, text6, Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js';
+import { totalFrame, groupVarNum, camVarNum, statesConverter, AnimationGenerator } from './BasicElements.js';
 
 function OverlayII({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
@@ -26,7 +27,6 @@ function OverlayII({ scroll, scrollLog, quiz, onClick }, ref){
   }));
 
   useEffect(()=>{
-    // console.log(ref1);
     ref1.current.addEventListener('wheel', handleWheel, {passive: false});
     ref1.current.addEventListener('scroll', handleScroll, {passive: true});
   },[])
@@ -75,10 +75,6 @@ function OverlayII({ scroll, scrollLog, quiz, onClick }, ref){
 OverlayII = React.forwardRef(OverlayII);
 
 const bezier = require('bezier-easing');
-
-const STEP_XY = 100;
-const STEP_ZY = 101;
-const STEP_ZX = 110;
 
 let scale = 6.25;
 const tickLength = 0.6;
@@ -345,140 +341,38 @@ function MainGroup2({step, position, target, opacity}){
   )
 }
 
-function VisComponent({camera, scroll, ...props}){
+function VisComponent({camera, scroll, states, stoppers, animations, ...props}){
   const group = useRef();
   const [step, setStep] = useState(0);
   const [opacity, setOpacity] = useState(0.2);
-
-  const length = 6;
-  let boxes = [], texts = [], sp = [];
-  for(let i=0; i<length; i++){
-    boxes[i] = document.getElementById("text" + (i+1).toString()).getBoundingClientRect();
-  }
-  const scrollHeight = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight);
-
-  for(let i=0; i<length; i++){
-    texts[i] = scrollHeight - window.innerHeight * 0.5 + boxes[i].top + boxes[i].height * 0.5 + 100;
-  }
-
-  for(let i=0; i<length; i++){
-    sp[i] = texts[i] / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  }
-
-  const durMargin = 0.04;
-  const div1 = [sp[0] - durMargin, sp[0] + durMargin];
-  const div2 = [sp[1] - durMargin, sp[1] + durMargin];
-  const div3 = [sp[2] - durMargin, sp[2] + durMargin * 0.5];
-  const div4 = [sp[3] - durMargin * 0.5, sp[3] + durMargin * 0.5];
-  const div5 = [sp[4] - durMargin * 0.5, sp[4] + durMargin * 0.5];
-  const div6 = [sp[5] - durMargin * 0.5, sp[5] + durMargin * 0.5];
-
+  const [steps, setSteps] = useState(statesConverter(states, stoppers, new Array(states.length)).states)
 
   useFrame(() => {
     const et = scroll.current;
+    console.log(et);
+    let idx = Math.floor(et * totalFrame) == 1000? 999 : Math.floor(et * totalFrame);
+    let posX = animations[0][idx];
+    let posY = animations[1][idx];
+    let rotY = animations[2][idx];
+    let rotZ = animations[3][idx];
+    let opac = animations[4][idx];
 
-    let bezierFunc = bezier(0.4, 0, 0.4, 1);
-    let bzVal = 0;
+    setStep(steps.findIndex((ele) => ele >= et) - 1)
+    group.current.position.setX(posX);
+    group.current.position.setY(posY);
+    group.current.rotation.y = rotY;
+    group.current.rotation.z = rotZ;
+    setOpacity(opac);
 
+    let camPosX = animations[5][idx];
+    let camPosY = animations[6][idx];
+    let camZoom = animations[7][idx];
 
-    if(et < div1[0]){
-      setStep(1);
-      // bzVal = bezierFunc((et - 0) / div1[0]);
-      // group.current.rotation.y = -Math.PI / 6 * (1 - bzVal);
-      // group.current.rotation.z = 0;
-      // camera.current.position.y = 2000 * (1 - bzVal);
-      setOpacity(1.0);
-      // camera.current.updateProjectionMatrix();
-      group.current.rotation.y = 0;
-      group.current.rotation.z = 0;
-      camera.current.position.y = 0;
-      camera.current.updateProjectionMatrix();
-    }else if(et < div1[1]){
-      setStep(2);
-      setOpacity(1.0);
-      group.current.rotation.y = 0;
-      group.current.rotation.z = 0;
-      camera.current.position.y = 0;
-      camera.current.updateProjectionMatrix();
-    }else if(et < div2[0]){
-      setStep(3);
-      let et2 = et - div1[1];
-      let dur2 = div2[0] - div1[1];
-      bzVal = bezierFunc(et2 / dur2);
-      group.current.rotation.y = Math.PI / 2 * bzVal;
-      group.current.rotation.z = 0;
-      camera.current.position.y = 1000 * Math.sin(bzVal * Math.PI);
-      camera.current.updateProjectionMatrix();
-    }else if(et < div2[1]){
-      setStep(4);
-      group.current.rotation.y = Math.PI / 2;
-      group.current.rotation.z = 0;
-      camera.current.position.y = 1000 * Math.sin(bzVal * Math.PI);
-      camera.current.updateProjectionMatrix();
-    }else if(et < div3[0]){
-      setStep(5);
-      let et3 = et - div2[1];
-      let dur3 = div3[0] - div2[1];
-      bzVal = bezierFunc(et3 / dur3);
-      group.current.rotation.y = Math.PI / 2;
-      group.current.rotation.z = Math.PI / 2 * bzVal;
-      camera.current.position.x = -1000 * Math.sin(bzVal * Math.PI);
-      camera.current.updateProjectionMatrix();
-    }else if(et < div3[1]){
-      setStep(6);
-      group.current.rotation.y = Math.PI / 2;
-      group.current.rotation.z = Math.PI / 2;
-      camera.current.position.x = 0;
-    }else if(et < div4[0]){
-      setStep(7);
-      let et4 = et - div3[1];
-      let dur4 = div4[0] - div3[1];
-      bzVal = bezierFunc(et4 / dur4);
-      group.current.position.setX(30 * bzVal);
-      group.current.position.setY(10 * bzVal);
-      camera.current.zoom = 6.25 + 5.75 * bzVal;
-      setOpacity(1 - 0.8 * bzVal);
-      camera.current.updateProjectionMatrix();
-    }else if(et < div4[1]){
-      setStep(8);
-      group.current.position.setX(30);
-      group.current.position.setY(10);
-      camera.current.zoom = 12.00;
-      setOpacity(0.2);
-      camera.current.updateProjectionMatrix();
-    }else if(et < div5[0]){
-      setStep(9);
-      let et5 = et - div4[1];
-      let dur5 = div5[0] - div4[1];
-      bzVal = bezierFunc(et5 / dur5);
-      camera.current.zoom = 9.00 + 3.00 * (1 - bzVal);
-      group.current.position.setX(30 + -50 * bzVal);
-      group.current.position.setY(10 * (1 - bzVal));
-      setOpacity(0.2 + 0.8 * bzVal);
-      camera.current.updateProjectionMatrix();
-    }else if(et < div5[1]){
-      setStep(10);
-      group.current.position.setX(-20);
-      group.current.position.setY(0);
-      camera.current.zoom = 9.00;
-      setOpacity(1.0);
-      camera.current.updateProjectionMatrix();
-    }else if(et < div6[0]){
-      setStep(11);
-      let et6 = et - div5[1];
-      let dur6 = div6[0] - div5[1];
-      bzVal = bezierFunc(et6 / dur6);
-      group.current.position.setX(-20 + 20 * bzVal);
-      camera.current.zoom = 6.25 + 2.75 * (1 - bzVal);
-      setOpacity(0.2 + 0.8 * (1-bzVal));
-      camera.current.updateProjectionMatrix();
-    }else{
-      setStep(12);
-      group.current.position.setX(0);
-      camera.current.zoom = 6.25;
-      camera.current.updateProjectionMatrix();
-    }
+    camera.current.position.setX(camPosX);
+    camera.current.position.setY(camPosY);
+    camera.current.zoom = camZoom;
 
+    camera.current.updateProjectionMatrix();
     camera.current.lookAt(0, 0, 0);
   });
 
@@ -506,6 +400,73 @@ function VisComponent({camera, scroll, ...props}){
 function CanvasII({overlay, scroll}) {
   const canvas = useRef();
   const mainCamera = useRef();
+  const [states_values, setStates_values] = useState([])
+  const [states, setStates] = useState([0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 1.00]);
+  const [stoppers, setStoppers] = useState([0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 1.00]);
+  const [animations, setAnimations] = useState([]);
+
+  useLayoutEffect(() => {
+    console.log("setStates");
+    const length = 6;
+    let boxes = [], texts = [], sp = [];
+    for(let i=0; i<length; i++){
+      boxes[i] = document.getElementById("text" + (i+1).toString()).getBoundingClientRect();
+    }
+    const scrollHeight = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight);
+
+    for(let i=0; i<length; i++){
+      texts[i] = scrollHeight - window.innerHeight * 0.5 + boxes[i].top + boxes[i].height * 0.5 + 100;
+    }
+
+    for(let i=0; i<length; i++){
+      sp[i] = texts[i] / (document.getElementById("pageController").scrollHeight - window.innerHeight);
+    }
+
+    setStates([0.00, sp[0], sp[1], sp[2], sp[3], sp[4], sp[5], 1.00]);
+    setStoppers([0.00, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.00]);
+  }, []);
+
+  useEffect(() =>{
+    console.log("setGroupAnimation");
+
+    let posts_1 = ['bezier', 'bezier', 'bezier', 'bezier', 'bezier', 'bezier', 'bezier'];
+    let posts_2 = ['bezier', 'sin', 'bezier', 'bezier', 'bezier', 'bezier', 'bezier'];
+    let posts_3 = ['bezier', 'bezier', 'sin', 'bezier', 'bezier', 'bezier', 'bezier'];
+
+    let groupVal_posX = [0, 0, 0, 0, 30, -20, 0, 0];
+    let groupVal_posY = [0, 0, 0, 0, 10, 0, 0, 0];
+    let groupVal_rotX = [0, 0, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2];
+    let groupVal_rotY = [0, 0, 0, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2];
+    let groupVal_opac = [1, 1, 1, 1, 0.2, 1.0, 0.2, 0.2];
+
+    let groupAnimation_posX = AnimationGenerator(states, stoppers, groupVal_posX, posts_1)
+    let groupAnimation_posY = AnimationGenerator(states, stoppers, groupVal_posY, posts_1)
+    let groupAnimation_rotX = AnimationGenerator(states, stoppers, groupVal_rotX, posts_1)
+    let groupAnimation_rotY = AnimationGenerator(states, stoppers, groupVal_rotY, posts_1)
+    let groupAnimation_opac = AnimationGenerator(states, stoppers, groupVal_opac, posts_1)
+
+    let camVal_posX = [0, 0, 0, 0, 0, 0, 0, 0];
+    let camVal_posY = [0, 0, 0, 0, 0, 0, 0, 0];
+    let camVal_zoom = [6.25, 6.25, 6.25, 6.25, 12, 9, 6.25, 6.25];
+
+    let camAnimation_posX = AnimationGenerator(states, stoppers, camVal_posX, posts_3)
+    let camAnimation_posY = AnimationGenerator(states, stoppers, camVal_posY, posts_2)
+    let camAnimation_zoom = AnimationGenerator(states, stoppers, camVal_zoom, posts_1)
+
+    let animations = [];
+    animations.push(groupAnimation_posX);
+    animations.push(groupAnimation_posY);
+    animations.push(groupAnimation_rotX);
+    animations.push(groupAnimation_rotY);
+    animations.push(groupAnimation_opac);
+
+    animations.push(camAnimation_posX);
+    animations.push(camAnimation_posY);
+    animations.push(camAnimation_zoom);
+    setAnimations(animations)
+
+    console.log(animations);
+  }, [states, stoppers])
 
   return (
     <div className={"CanvasII"}>
@@ -529,7 +490,7 @@ function CanvasII({overlay, scroll}) {
         <ambientLight
           intensity={0.5}/>
         <Suspense fallback={null}>
-          <VisComponent camera={mainCamera} scroll={scroll} />
+          <VisComponent states={states} camera={mainCamera} states={states} stoppers={stoppers} animations={animations} scroll={scroll} />
         </Suspense>
       </Canvas>
     </div>
