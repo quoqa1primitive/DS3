@@ -270,32 +270,11 @@ function AxGr({step, position}){
 }
 
 function MainGroup1({step, position, target}){
-  const rectWidth = 6, rectDepth = 2;
+  const xStep = 8;
 
   return(
     <group position={position}>
-      {
-        xyzProps.dataA1.map((item, idx) => {
-          return <mesh key={idx}
-            position={[
-              xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
-              0,
-              zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2]}>
-              <Rect width={rectWidth} height={item} depth={rectDepth} color={new THREE.Color("#512C8A")} opacity={idx==xyzProps.dataA1.length-1?1:1}/>
-            </mesh>
-        })
-      }
-      {
-        xyzProps.dataB1.map((item, idx) => {
-          return <mesh key={idx}
-              position={[
-                xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
-                0,
-                zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}>
-              <Rect key={idx} width={rectWidth} height={item} depth={rectDepth} color={new THREE.Color("#2F9B39")} opacity={idx==xyzProps.dataB1.length-1?1:1}/>
-            </mesh>
-        })
-      }
+      <LineMark vertices={[[xStep*0, 10], [xStep*1, 35], [xStep*2, 25], [xStep*3, 55], [xStep*4, 30], [xStep*5, 35], [xStep*6, 40], [xStep*7, 20]]} width={0.75} depth={10} color={new THREE.Color("#2F9B39")} opacity={1}/>
     </group>
   )
 }

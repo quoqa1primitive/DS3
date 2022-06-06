@@ -75,6 +75,70 @@ function Rect({ width, height, depth, color, opacity }){
   )
 }
 
+function getPt(v1, v2, v3, thickness){
+  let vector1 = new THREE.Vector2(v2[0] - v1[0], v2[1] - v1[1]);
+  let vector2 = new THREE.Vector2(v3[0] - v2[0], v3[1] - v2[1]);
+
+  let angle1 = -vector1.angle() + Math.PI / 2 + Math.PI * 2;
+  if(angle1 > (Math.PI * 2)) angle1 -= Math.PI * 2;
+  let angle2 = -vector2.angle() + Math.PI / 2 + Math.PI * 2;
+  if(angle2 > (Math.PI * 2)) angle2 -= Math.PI * 2;
+
+  let angle = (Math.PI - angle1 + angle2) / 2;
+  let newThickness = thickness / Math.sin(angle);
+
+  let vectorP = vector2.clone().normalize().rotateAround(new THREE.Vector2(0, 0), angle).multiplyScalar(newThickness);
+  return [vectorP.x/2, vectorP.y/2];
+}
+
+function LineMark({ vertices, width, depth, color, opacity }){
+	let shape, geometry, mesh, extrudeSetting;
+	extrudeSetting = {
+		steps: 2,
+		depth: depth,
+		bevelEnabled: false
+	};
+
+  let cLen = vertices.length;
+  let tempPt;
+  shape = new THREE.Shape();
+  let tempPts = []
+
+  tempPts.push(getPt([2*vertices[0][0]-vertices[1][0], vertices[1][1]], vertices[0], vertices[1], width));
+  shape.moveTo(vertices[0][0]-tempPts[0][0], vertices[0][1]-tempPts[0][1]);
+  shape.lineTo(vertices[0][0]+tempPts[0][0], vertices[0][1]+tempPts[0][1]);
+
+  for(let j=0; j<cLen-2; j++){
+    tempPts.push(getPt(vertices[j], vertices[j+1], vertices[j+2], width));
+    shape.lineTo(vertices[j+1][0]+tempPts[j+1][0], vertices[j+1][1]+tempPts[j+1][1]);
+  }
+
+  tempPts.push(getPt(vertices[cLen-2], vertices[cLen-1], [2*vertices[cLen-1][0]-vertices[cLen-2][0], vertices[cLen-2][1]], width));
+  shape.lineTo(vertices[cLen-1][0]+tempPts[cLen-1][0], vertices[cLen-1][1]+tempPts[cLen-1][1]);
+
+  for(let j=cLen-1; j>=0; j--){
+    shape.lineTo(vertices[j][0]-tempPts[j][0], vertices[j][1]-tempPts[j][1]);
+  }
+
+	// make geometry & mesh
+	geometry = new THREE.ExtrudeGeometry(shape, extrudeSetting);
+  const edges = useMemo(() => new THREE.EdgesGeometry(geometry));
+
+  return(
+    <>
+      <mesh raycast={() => null}>
+        <extrudeGeometry args={[shape, extrudeSetting]} />
+        <meshStandardMaterial color={color} transparent={true} opacity={opacity} />
+      </mesh>
+      <mesh raycast={() => null}>
+        <lineSegments geometry={edges} renderOrder={100}>
+          <lineBasicMaterial color="lightgrey"/>
+        </lineSegments>
+      </mesh>
+    </>
+  )
+}
+
 function TextComponent(props){
   const [string, setString] = useState(props.text);
   const [margin, setMargin] = useState(props.margin);
@@ -147,4 +211,4 @@ function AnimationGenerator(initStates, stoppers, initValues, posts){
   return animation;
 }
 
-export {Line, TextBox, Rect, TextComponent, statesConverter, AnimationGenerator};
+export {Line, TextBox, Rect, LineMark, TextComponent, statesConverter, AnimationGenerator};
