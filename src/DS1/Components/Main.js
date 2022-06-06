@@ -4,9 +4,9 @@ import { useFrame } from '@react-three/fiber'
 import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
 import "survey-core/survey.css";
-import { StaticNon1, StaticNon2, StaticImm, AnimatedNon, AnimatedImm, ImmersiveNon, ImmersiveImm, EndOfTask} from './BasicElements.js';
+import { StaticNon1, StaticNon2, StaticImm, AnimatedNon, AnimatedImm, ImmersiveNon, ImmersiveImm, EndOfTask} from '../../BasicElements/Constants.js';
+import '../../BasicElements/Main.css'
 
-import './styles/Main.css'
 import { OverlaySI, CanvasSI } from './Cond_Static_Imm.js';
 import { OverlayAI, CanvasAI } from './Cond_Animated_Imm.js';
 import { OverlayII, CanvasII } from './Cond_Immersive_Imm.js';

@@ -3,9 +3,10 @@ import React, { useRef, useEffect, useLayoutEffect, useState, useImperativeHandl
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
 
-import './styles/Cond_Immersive_Imm.css';
-import { Immersive, TextComponent, title, text1, text2, text3, text4, text5, text6, Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './BasicElements.js';
-import { totalFrame, groupVarNum, camVarNum, statesConverter, AnimationGenerator } from './BasicElements.js';
+import '../styles/Cond_Immersive_Imm.css';
+import { TextComponent, Line, TextBox, Rect } from '../../BasicElements/BasicElements.js';
+import { statesConverter, AnimationGenerator } from '../../BasicElements/BasicElements.js';
+import { title, text1, text2, text3, text4, text5, text6, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, groupVarNum, camVarNum } from '../../BasicElements/Constants.js';
 
 function OverlayII({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
@@ -433,36 +434,33 @@ function CanvasII({overlay, scroll}) {
     let posts_2 = ['bezier', 'sin', 'bezier', 'bezier', 'bezier', 'bezier', 'bezier'];
     let posts_3 = ['bezier', 'bezier', 'sin', 'bezier', 'bezier', 'bezier', 'bezier'];
 
-    let groupVal_posX = [0, 0, 0, 0, 30, -20, 0, 0];
-    let groupVal_posY = [0, 0, 0, 0, 10, 0, 0, 0];
-    let groupVal_rotX = [0, 0, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2];
-    let groupVal_rotY = [0, 0, 0, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2];
-    let groupVal_opac = [1, 1, 1, 1, 0.2, 1.0, 0.2, 0.2];
+    let animations = [];
+    let groupVals = [];
 
-    let groupAnimation_posX = AnimationGenerator(states, stoppers, groupVal_posX, posts_1)
-    let groupAnimation_posY = AnimationGenerator(states, stoppers, groupVal_posY, posts_1)
-    let groupAnimation_rotX = AnimationGenerator(states, stoppers, groupVal_rotX, posts_1)
-    let groupAnimation_rotY = AnimationGenerator(states, stoppers, groupVal_rotY, posts_1)
-    let groupAnimation_opac = AnimationGenerator(states, stoppers, groupVal_opac, posts_1)
+    let groupVal_posX = [0, 0, 0, 0, 30, -20, 0, 0];
+    animations.push(AnimationGenerator(states, stoppers, groupVal_posX, posts_1));
+
+    let groupVal_posY = [0, 0, 0, 0, 10, 0, 0, 0];
+    animations.push(AnimationGenerator(states, stoppers, groupVal_posY, posts_1));
+
+    let groupVal_rotX = [0, 0, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2];
+    animations.push(AnimationGenerator(states, stoppers, groupVal_rotX, posts_1));
+
+    let groupVal_rotY = [0, 0, 0, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2, Math.PI/2];
+    animations.push(AnimationGenerator(states, stoppers, groupVal_rotY, posts_1));
+
+    let groupVal_opac = [1, 1, 1, 1, 0.2, 1.0, 0.2, 0.2];
+    animations.push(AnimationGenerator(states, stoppers, groupVal_opac, posts_1));
 
     let camVal_posX = [0, 0, 0, 0, 0, 0, 0, 0];
+    animations.push(AnimationGenerator(states, stoppers, camVal_posX, posts_3));
+
     let camVal_posY = [0, 0, 0, 0, 0, 0, 0, 0];
+    animations.push(AnimationGenerator(states, stoppers, camVal_posY, posts_2));
+
     let camVal_zoom = [6.25, 6.25, 6.25, 6.25, 12, 9, 6.25, 6.25];
+    animations.push(AnimationGenerator(states, stoppers, camVal_zoom, posts_1));
 
-    let camAnimation_posX = AnimationGenerator(states, stoppers, camVal_posX, posts_3)
-    let camAnimation_posY = AnimationGenerator(states, stoppers, camVal_posY, posts_2)
-    let camAnimation_zoom = AnimationGenerator(states, stoppers, camVal_zoom, posts_1)
-
-    let animations = [];
-    animations.push(groupAnimation_posX);
-    animations.push(groupAnimation_posY);
-    animations.push(groupAnimation_rotX);
-    animations.push(groupAnimation_rotY);
-    animations.push(groupAnimation_opac);
-
-    animations.push(camAnimation_posX);
-    animations.push(camAnimation_posY);
-    animations.push(camAnimation_zoom);
     setAnimations(animations)
 
     console.log(animations);
@@ -490,7 +488,13 @@ function CanvasII({overlay, scroll}) {
         <ambientLight
           intensity={0.5}/>
         <Suspense fallback={null}>
-          <VisComponent states={states} camera={mainCamera} states={states} stoppers={stoppers} animations={animations} scroll={scroll} />
+          <VisComponent
+            states={states}
+            camera={mainCamera}
+            states={states}
+            stoppers={stoppers}
+            animations={animations}
+            scroll={scroll} />
         </Suspense>
       </Canvas>
     </div>

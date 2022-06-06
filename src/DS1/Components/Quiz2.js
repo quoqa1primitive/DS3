@@ -3,10 +3,10 @@ import showdown from 'showdown';
 import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
 import "survey-core/survey.css";
-import "./styles/Quiz.css";
+import "../../BasicElements/Quiz.css";
 import axios from 'axios';
 
-import {StaticNon1} from './BasicElements.js'
+import {StaticNon1} from '../../BasicElements/Constants.js'
 import img1 from '../Immersive.JPG';
 import img2 from '../Static.JPG';
 

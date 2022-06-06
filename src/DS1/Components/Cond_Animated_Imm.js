@@ -3,10 +3,11 @@ import React, { useRef, useEffect, useLayoutEffect, useState, useImperativeHandl
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
 
-import './styles/Cond_Animated_Non.css';
-import { Line, TextBox, Rect, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, TextComponent, title, text1, text2, text3, text4, text5 } from './BasicElements.js'
+import { Line, TextBox, Rect, TextComponent } from '../../BasicElements/BasicElements.js'
+import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1, title, text1, text2, text3, text4, text5 } from '../../BasicElements/Constants.js'
+import '../styles/Cond_Animated_Imm.css';
 
-function OverlayAN({ scroll, scrollLog, quiz, onClick }, ref){
+function OverlayAI({ scroll, scrollLog, quiz, onClick }, ref){
   const ref1 = useRef();
   const ref2 = useRef();
   const [startTime, setStartTime] = useState(Date.now());
@@ -27,7 +28,7 @@ function OverlayAN({ scroll, scrollLog, quiz, onClick }, ref){
 
   return (
     <div
-      className="PageController PageControllerAN"
+      className="PageController PageControllerAI"
       id="pageController"
       ref={ref1}
       onScroll={(e) => {
@@ -40,9 +41,13 @@ function OverlayAN({ scroll, scrollLog, quiz, onClick }, ref){
         </div>
       </div>
       <div className={"Texts"}>
-        <TextComponent id={"text1"} left={"calc(50% - 200px + 420px)"} text={text1.concat("\n", text2)} margin={"750px"} />
-        <TextComponent id={"text3"} left={"calc(50% - 200px + 420px)"} text={text3} margin={"750px"} />
-        <TextComponent id={"text4"} left={"calc(50% - 200px + 420px)"} text={text4.concat('\n', text5)} margin={"0px"} />
+        <TextComponent id={"text1"} text={text1} left={"calc(50% + 240px)"} margin={"240px"} />
+        <TextComponent id={"text2"} text={text2} left={"calc(50% - 200px)"} margin={"510px"} />
+
+        <TextComponent id={"text3"} text={text3} left={"calc(50% + 450px - 200px)"} margin={"750px"} />
+
+        <TextComponent id={"text4"} text={text4} left={"calc(50% - 450px - 100px)"} margin={"750px"} />
+        <TextComponent id={"text5"} text={text5} left={"calc(50% - 200px)"} margin={"0px"} />
         {
           isFirstButton &&
           <div className="ButtonContainer" >
@@ -61,7 +66,7 @@ function OverlayAN({ scroll, scrollLog, quiz, onClick }, ref){
   )
 }
 
-OverlayAN = React.forwardRef(OverlayAN);
+OverlayAI = React.forwardRef(OverlayAI);
 
 const bezier = require('bezier-easing');
 
@@ -336,12 +341,12 @@ function VisComponent({camera, scroll, ...props}){
   )
 }
 
-function CanvasAN({overlay, scroll}) {
+function CanvasAI({overlay, scroll}) {
   const canvas = useRef();
   const mainCamera = useRef();
 
   return (
-    <div className={"CanvasAN"}>
+    <div className={"CanvasAI"}>
       <Canvas
         ref={canvas}
         onCreated={(state) => state.events.connect(overlay.current.ref1)}
@@ -369,4 +374,4 @@ function CanvasAN({overlay, scroll}) {
   )
 }
 
-export { OverlayAN, CanvasAN };
+export { OverlayAI, CanvasAI };
