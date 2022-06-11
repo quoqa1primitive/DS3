@@ -8,14 +8,14 @@ import { StaticNon1, StaticNon2, StaticImm, AnimatedNon, AnimatedImm, ImmersiveN
 import { If } from '../../BasicElements/BasicElements.js';
 import '../../BasicElements/Main.css'
 
-import { OverlaySI, CanvasSI } from './Cond_Static_Imm.js';
-import { OverlayAI, CanvasAI } from './Cond_Animated_Imm.js';
+import { Overlays } from './Overlays.js';
+import { CanvasSI } from './Cond_Static_Imm.js';
+import { CanvasAI } from './Cond_Animated_Imm.js';
 import { CanvasII } from './Cond_Immersive_Imm.js';
-import { OverlayII } from './Overlays.js';
-import { OverlaySN, CanvasSN } from './Cond_Static_Non.js';
-import { OverlaySN2, CanvasSN2 } from './Cond_Static_Non_2.js';
-import { OverlayAN, CanvasAN } from './Cond_Animated_Non.js';
-import { OverlayIN, CanvasIN } from './Cond_Immersive_Non.js';
+import { CanvasSN } from './Cond_Static_Non.js';
+import { CanvasSN2 } from './Cond_Static_Non_2.js';
+import { CanvasAN } from './Cond_Animated_Non.js';
+import { CanvasIN } from './Cond_Immersive_Non.js';
 import Quiz1 from './Quiz1.js';
 import Quiz2 from './Quiz2.js';
 
@@ -160,7 +160,7 @@ function Main2(){
   const [sequence, setSequence] = useState([])
   const [quiz1, setQuiz1] = useState(false)
   const [quiz2, setQuiz2] = useState(false)
-  const [type, setType] = useState(ImmersiveImm);
+  const [type, setType] = useState(StaticNon2);
   const [completionCode, setCompletionCode] = useState("");
   const [scrollData, setScrollData] = useState([]);
 
@@ -231,33 +231,23 @@ function Main2(){
       <If if={!quiz1 && !quiz2}>
         <div style={{width: "100%", height: "100%"}} className="PageContents">
           <div className="Viz">
-            <If if={type == ImmersiveNon}>
-              <CanvasIN overlay={overlay} scroll={scroll} />
-              <OverlayIN ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </If>
-            <If if={type == ImmersiveImm}>
-              <CanvasII overlay={overlay} scroll={scroll} />
-              <OverlayII ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </If>
-            <If if={type == AnimatedNon}>
-              <CanvasAN overlay={overlay} scroll={scroll} />
-              <OverlayAN ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </If>
-            <If if={type == AnimatedImm}>
-              <CanvasAI overlay={overlay} scroll={scroll} />
-              <OverlayAI ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </If>
-            <If if={type == StaticNon1}>
-              <OverlaySN ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </If>
-            <If if={type == StaticNon2}>
-              <OverlaySN2 ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </If>
-            <If if={type == StaticImm}>
-              <OverlaySI ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </If>
             <If if={type == EndOfTask}>
               <CompletionPage completionCode={completionCode} type={type} PersonID={PersonID}/>
+            </If>
+            <If if={type != EndOfTask}>
+              <If if={type == ImmersiveNon}>
+                <CanvasIN overlay={overlay} scroll={scroll} />
+              </If>
+              <If if={type == ImmersiveImm}>
+                <CanvasII overlay={overlay} scroll={scroll} />
+              </If>
+              <If if={type == AnimatedNon}>
+                <CanvasAN overlay={overlay} scroll={scroll} />
+              </If>
+              <If if={type == AnimatedImm}>
+                <CanvasAI overlay={overlay} scroll={scroll} />
+              </If>
+              <Overlays mode={type} ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
             </If>
           </div>
         </div>

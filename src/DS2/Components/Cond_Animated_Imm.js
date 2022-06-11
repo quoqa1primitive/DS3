@@ -7,67 +7,6 @@ import { Line, TextBox, Rect, TextComponent } from '../../BasicElements/BasicEle
 import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1, title, text1, text2, text3, text4, text5, xyzProps } from '../../BasicElements/Constants.js'
 import '../styles/Cond_Animated_Imm.css';
 
-function OverlayAI({ scroll, scrollLog, quiz, onClick }, ref){
-  const ref1 = useRef();
-  const ref2 = useRef();
-  const [startTime, setStartTime] = useState(Date.now());
-  const [isFirstButton, setIsFirstButton] = useState(true);
-
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-     ref1.current.focus();
-    },
-    get ref1() {
-        return ref1.current;
-    },
-    get ref2() {
-        return ref2.current;
-    }
-    // ... whatever else one may need
-  }));
-
-  return (
-    <div
-      className="PageController PageControllerAI"
-      id="pageController"
-      ref={ref1}
-      onScroll={(e) => {
-        scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight);
-        scrollLog.current.push([Date.now() - startTime, scroll.current]);
-      }}>
-      <div className="TitleContainer">
-        <div className="Title">
-          {title}
-        </div>
-      </div>
-      <div className={"Texts"}>
-        <TextComponent id={"text1"} text={text1} left={"calc(50% + 240px)"} margin={"240px"} />
-        <TextComponent id={"text2"} text={text2} left={"calc(50% - 200px)"} margin={"510px"} />
-
-        <TextComponent id={"text3"} text={text3} left={"calc(50% + 450px - 200px)"} margin={"750px"} />
-
-        <TextComponent id={"text4"} text={text4} left={"calc(50% - 450px - 100px)"} margin={"750px"} />
-        <TextComponent id={"text5"} text={text5} left={"calc(50% - 200px)"} margin={"0px"} />
-        {
-          isFirstButton &&
-          <div className="ButtonContainer" >
-            <button className="Button" ref={ref2} type="button" onClick={()=>{ setIsFirstButton(false); }}> Go to Quiz </button>
-          </div>
-        }
-        {
-          !isFirstButton &&
-          <div className="ButtonContainer" >
-            <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick(); setIsFirstButton(true); }}> Go to Quiz </button>
-            <div style={{ textAlign: "center", margin: "10px auto 0px auto" }}> ※ If you are ready to take a quiz, ※ <br/> ※ Please press the button again ※ </div>
-          </div>
-        }
-      </div>
-    </div>
-  )
-}
-
-OverlayAI = React.forwardRef(OverlayAI);
-
 const bezier = require('bezier-easing');
 
 const scale = 6.25;
@@ -360,4 +299,4 @@ function CanvasAI({overlay, scroll}) {
   )
 }
 
-export { OverlayAI, CanvasAI };
+export { CanvasAI };

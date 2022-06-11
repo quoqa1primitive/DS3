@@ -15,7 +15,7 @@ export const EndOfTask = -1;
 // DS1 animation
 export const groupVarNum = 7;
 export const camVarNum = 7;
-export const totalFrame = 500;
+export const totalFrame = 1000;
 
 export const XAXIS1 = 10000;
 export const YAXIS1 = 10001;
