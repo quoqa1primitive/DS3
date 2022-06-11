@@ -160,7 +160,7 @@ function Main2(){
   const [sequence, setSequence] = useState([])
   const [quiz1, setQuiz1] = useState(false)
   const [quiz2, setQuiz2] = useState(false)
-  const [type, setType] = useState(StaticNon2);
+  const [type, setType] = useState(ImmersiveImm);
   const [completionCode, setCompletionCode] = useState("");
   const [scrollData, setScrollData] = useState([]);
 
