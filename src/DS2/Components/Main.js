@@ -5,11 +5,13 @@ import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
 import "survey-core/survey.css";
 import { StaticNon1, StaticNon2, StaticImm, AnimatedNon, AnimatedImm, ImmersiveNon, ImmersiveImm, EndOfTask} from '../../BasicElements/Constants.js';
+import { If } from '../../BasicElements/BasicElements.js';
 import '../../BasicElements/Main.css'
 
 import { OverlaySI, CanvasSI } from './Cond_Static_Imm.js';
 import { OverlayAI, CanvasAI } from './Cond_Animated_Imm.js';
-import { OverlayII, CanvasII } from './Cond_Immersive_Imm.js';
+import { CanvasII } from './Cond_Immersive_Imm.js';
+import { OverlayII } from './Overlays.js';
 import { OverlaySN, CanvasSN } from './Cond_Static_Non.js';
 import { OverlaySN2, CanvasSN2 } from './Cond_Static_Non_2.js';
 import { OverlayAN, CanvasAN } from './Cond_Animated_Non.js';
@@ -224,66 +226,42 @@ function Main2(){
 
   return(
     <>
-      {quiz1 && <Quiz1 ScrollData={scrollData} type={type} PersonID={PersonID}/>}
-      {quiz2 && <Quiz2 ScrollData={scrollData} type={type} PersonID={PersonID} Sequence={sequence}/>}
-      {
-        (!quiz1 && !quiz2) &&
+      <If if={quiz1}><Quiz1 ScrollData={scrollData} type={type} PersonID={PersonID}/></If>
+      <If if={quiz2}><Quiz2 ScrollData={scrollData} type={type} PersonID={PersonID} Sequence={sequence}/></If>
+      <If if={!quiz1 && !quiz2}>
         <div style={{width: "100%", height: "100%"}} className="PageContents">
           <div className="Viz">
-          {
-            (type == ImmersiveNon) &&
-            <>
+            <If if={type == ImmersiveNon}>
               <CanvasIN overlay={overlay} scroll={scroll} />
-              <OverlayIN ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </>
-          }
-          {
-            (type == ImmersiveImm) &&
-            <>
+              <OverlayIN ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+            </If>
+            <If if={type == ImmersiveImm}>
               <CanvasII overlay={overlay} scroll={scroll} />
-              <OverlayII ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </>
-          }
-          {
-            (type == AnimatedNon) &&
-            <>
+              <OverlayII ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+            </If>
+            <If if={type == AnimatedNon}>
               <CanvasAN overlay={overlay} scroll={scroll} />
-              <OverlayAN ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </>
-          }
-          {
-            (type == AnimatedImm) &&
-            <>
+              <OverlayAN ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+            </If>
+            <If if={type == AnimatedImm}>
               <CanvasAI overlay={overlay} scroll={scroll} />
-              <OverlayAI ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </>
-          }
-          {
-            (type == StaticNon1) &&
-            <>
-              <OverlaySN ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </>
-          }
-          {
-            (type == StaticNon2) &&
-            <>
-              <OverlaySN2 ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </>
-          }
-          {
-            (type == StaticImm) &&
-            <>
-              <OverlaySI ref={overlay} overlay={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
-            </>
-          }
-          {
-            type == EndOfTask &&
-            <CompletionPage completionCode={completionCode} type={type} PersonID={PersonID}/>
-          }
+              <OverlayAI ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+            </If>
+            <If if={type == StaticNon1}>
+              <OverlaySN ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+            </If>
+            <If if={type == StaticNon2}>
+              <OverlaySN2 ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+            </If>
+            <If if={type == StaticImm}>
+              <OverlaySI ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+            </If>
+            <If if={type == EndOfTask}>
+              <CompletionPage completionCode={completionCode} type={type} PersonID={PersonID}/>
+            </If>
           </div>
         </div>
-      }
-
+      </If>
     </>
   )
 }

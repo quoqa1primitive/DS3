@@ -4,93 +4,16 @@ import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
 
 import '../styles/Cond_Immersive_Imm.css';
-import { TextComponent, Line, TextBox, Rect } from '../../BasicElements/BasicElements.js';
+import { Line, TextBox, Rect, If } from '../../BasicElements/BasicElements.js';
 import { LineMark } from '../../BasicElements/BasicElements.js';
 import { statesConverter, AnimationGenerator } from '../../BasicElements/BasicElements.js';
-import { title, text1, text2, text3, text4, text5, text6, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, groupVarNum, camVarNum } from '../../BasicElements/Constants.js';
-
-function OverlayII({ scroll, scrollLog, quiz, onClick }, ref){
-  const ref1 = useRef();
-  const ref2 = useRef();
-  const [startTime, setStartTime] = useState(Date.now());
-  const [isFirstButton, setIsFirstButton] = useState(true);
-
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-     ref1.current.focus();
-    },
-    get ref1() {
-        return ref1.current;
-    },
-    get ref2() {
-        return ref2.current;
-    }
-    // ... whatever else one may need
-  }));
-
-  useEffect(()=>{
-    ref1.current.addEventListener('wheel', handleWheel, {passive: false});
-    ref1.current.addEventListener('scroll', handleScroll, {passive: true});
-  },[])
-
-  function handleWheel(e){
-    // console.log(e);
-    e.preventDefault();
-    e.stopPropagation();
-
-    const speed = 1, smooth = 12, limit = 15 / window.devicePixelRatio ;
-    const delta = e.wheelDelta
-    ref1.current.scrollTop += (Math.abs(delta * speed) > limit? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed))
-    // console.log(e.target)
-    // e.target.scrollTop = Math.max(0, Math.min(e.target.scrollTop, e.target.scrollHeight - window.innerHeight)) // limit scrolling
-  }
-
-  function handleScroll(e){
-    // console.log(e.target.scrollTop);
-    scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
-    // scrollLog.current.push([Date.now() - startTime, scroll.current.toFixed(3)]);
-  }
-
-  return (
-    <div
-      className="PageController PageControllerII"
-      id="pageController"
-      ref={ref1}>
-      <div className="TitleContainer">
-        <div className="Title">{title}</div>
-      </div>
-      <div className={"Texts"}>
-        <TextComponent id={"text1"} text={text1} left={"calc(50% + 240px)"}         margin={"800px"} />
-        <TextComponent id={"text2"} text={text2} left={"calc(50% + 450px - 200px)"} margin={"800px"} />
-        <TextComponent id={"text3"} text={text3} left={"calc(50% - 450px + 140px)"} margin={"600px"} />
-        <TextComponent id={"text4"} text={text4} left={"calc(50% - 450px + 340px)"} margin={"600px"} />
-        <TextComponent id={"text5"} text={text5} left={"calc(50% - 450px + 540px)"} margin={"600px"} />
-        <TextComponent id={"text6"} text={text6} left={"calc(50% - 450px + 240px)"} margin={"500px"} />
-        <div className="ButtonContainer" >
-          <button className="Button" ref={ref2} type="button" onClick={()=>{ onClick()}}> Go to Quiz </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-OverlayII = React.forwardRef(OverlayII);
+import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, groupVarNum, camVarNum } from '../../BasicElements/Constants.js';
 
 const bezier = require('bezier-easing');
 
 let scale = 6.25;
 const tickLength = 0.6;
 const speed = 0.035;
-
-const xyzProps = {
-  xSteps: 2,  xLength: 60,  xPadding: 15,
-  ySteps: 11, yLength: 60,  yPadding: 0,
-  zSteps: 3,  zLength: 100, zPadding: 10,
-  dataA1: [50, 60, 60, 70, 70, 120, 170, 180, 190, 190, 200, 200],
-  dataB1: [40, 40, 50, 60, 60, 80, 80, 100, 100, 120, 130, 140],
-  dataA2: [45, 45, 40, 45, 40, 45, 40, 35, 30, 35, 30, 30],
-  dataB2: [40, 40, 35, 35, 45, 50, 55, 60, 60, 60, 65, 65]
-}
 
 const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
 const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
@@ -104,13 +27,10 @@ function AxGr({step, position}){
       {
         Array(xSteps).fill(0).map((x, y) => x + y).map((item, idx) => {
           return <mesh key={idx} position={[xPadding + item * ((xLength - 2 * xPadding) / (xSteps - 1)), -tickLength, zLength]}>
-              {
-                (step <= 2) &&
-                <>
-                  <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-                  <TextBox text={String.fromCharCode(88+item)} anchorX={"center"} anchorY={"top"} /> // Label
-                </>
-              }
+              <If if={step <= 2}>
+                <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
+                <TextBox text={String.fromCharCode(88+item)} anchorX={"center"} anchorY={"top"} /> // Label
+              </If>
               {
                 (step <= 4) &&
                 <Line key={idx+100} color={"lightgrey"} start={[0, tickLength, 0]} end={[0, tickLength, -zLength]} /> // Grid
@@ -330,7 +250,7 @@ function VisComponent({camera, scroll, states, stoppers, animations, ...props}){
 
   useFrame(() => {
     const et = scroll.current;
-    console.log(et);
+    // console.log(et);
     let idx = Math.floor(et * totalFrame) == 1000? 999 : Math.floor(et * totalFrame);
     let posX = animations[0][idx];
     let posY = animations[1][idx];
@@ -482,4 +402,4 @@ function CanvasII({overlay, scroll}) {
   )
 }
 
-export { CanvasII, OverlayII };
+export { CanvasII };

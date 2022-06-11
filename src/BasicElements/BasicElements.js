@@ -211,4 +211,8 @@ function AnimationGenerator(initStates, stoppers, initValues, posts){
   return animation;
 }
 
-export {Line, TextBox, Rect, LineMark, TextComponent, statesConverter, AnimationGenerator};
+function If(props){
+  return <>{props.if && props.children}</>;
+};
+
+export {Line, TextBox, Rect, LineMark, TextComponent, statesConverter, AnimationGenerator, If};
