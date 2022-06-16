@@ -18,6 +18,10 @@ const opts = {
   materialType: "MeshPhongMaterial"
 };
 
+function Image(){
+
+}
+
 function Line({ start, end, color }) {
   const ref = useRef();
   useLayoutEffect(() => {
@@ -158,21 +162,99 @@ function TextComponent(props){
   )
 }
 
-function interpolate(startVal, endVal, duration, time, postType){
-  // values => posX, posY, posZ, rotX, rotY, rotZ, opacity
-  const bezier = require('bezier-easing');
-  let bezierFunc = bezier(0.4, 0, 0.4, 1);
-
-  let progress = time / duration;
-
-  return (postType == 'sin') ? startVal + 1000 * Math.sin(bezierFunc(progress) * Math.PI) :
-  (postType == 'bezier')? startVal + (endVal - startVal) * bezierFunc(progress) :
-  (postType == 'stopper')? startVal :
-  (postType == 'linear')? startVal + (endVal - startVal) * progress : progress;
+function transitionsExtender(transitions, target, lastFrame){
+  let newTransitions = [];
+  transitions.forEach(element =>{
+    if(element.target == target){
+      newTransitions.push(element);
+    }
+  });
+  for(let i=0; i<=lastFrame; i++){
+    let now = newTransitions.find(element => element.from.frame <= i && element.to.frame > i);
+    if(now == undefined){ // is not included in any of transitions
+      for(let j=i; j<=lastFrame; j++){ // then find nearest next transition
+        let nextTransition = newTransitions.find(element => element.from.frame == j);
+        if(nextTransition != undefined){
+          newTransitions.push({
+            "target": target,
+            "from": {"frame": i, "clip": nextTransition.from.clip},
+            "to": {"frame": j, "clip": nextTransition.from.clip},
+            "easing": "bezier", "motion": {"type": "linear"}
+          });
+          break; // if found, break for loop and keep searching not included frame(i)
+        }else if(nextTransition == undefined && j==lastFrame && i!=lastFrame){
+          // if not found until the last, copy the last clip
+          let nextTransition = newTransitions.find(element => element.to.frame == i);
+          newTransitions.push({
+            "target": target,
+            "from": {"frame": i, "clip": nextTransition.to.clip},
+            "to": {"frame": lastFrame, "clip": nextTransition.to.clip},
+            "easing": "bezier", "motion": {"type": "linear"}
+          });
+        }
+      }
+    }
+  }
+  return newTransitions;
 }
 
-function statesConverter(initStates, stoppers, initValues){
-  let states = [], values = [];
+function getClipData(clips, target, name){
+  return clips.find(element => (element.target == target && element.name == name));
+}
+
+function interpolate(startVal, endVal, duration, time, postType, motion){
+  function calcInterpolation(startVal, endVal, progress, postType){
+    let easedVal = (postType == 'bezier')? startVal + (endVal - startVal) * bezierFunc(progress) :
+      (postType == 'stopper')? startVal :
+      (postType == 'linear')? startVal + (endVal - startVal) * progress : progress
+    return easedVal;
+  }
+  // values => posX, posY, posZ, rotX, rotY, rotZ, opacity
+  const bezier = require('bezier-easing');
+  const bezierFunc = bezier(0.4, 0, 0.4, 1);
+  const progress = time / duration;
+
+  let interpolatedVal;
+  if(startVal.hasOwnProperty("zoom")){
+    interpolatedVal = {
+      "target": startVal.target,
+      "pos": [
+        calcInterpolation(startVal.pos[0], endVal.pos[0], progress, postType, motion),
+        calcInterpolation(startVal.pos[1], endVal.pos[1], progress, postType, motion),
+        calcInterpolation(startVal.pos[2], endVal.pos[2], progress, postType, motion),
+      ],
+      "rot": [
+        calcInterpolation(startVal.rot[0], endVal.rot[0], progress, postType, motion),
+        calcInterpolation(startVal.rot[1], endVal.rot[1], progress, postType, motion),
+        calcInterpolation(startVal.rot[2], endVal.rot[2], progress, postType, motion),
+      ],
+      "zoom": calcInterpolation(startVal.zoom, endVal.zoom, progress, postType, motion),
+    }
+  }else{
+    interpolatedVal = {
+      "target": startVal.target,
+      "pos": [
+        calcInterpolation(startVal.pos[0], endVal.pos[0], progress, postType, motion),
+        calcInterpolation(startVal.pos[1], endVal.pos[1], progress, postType, motion),
+        calcInterpolation(startVal.pos[2], endVal.pos[2], progress, postType, motion),
+      ],
+      "rot": [
+        calcInterpolation(startVal.rot[0], endVal.rot[0], progress, postType, motion),
+        calcInterpolation(startVal.rot[1], endVal.rot[1], progress, postType, motion),
+        calcInterpolation(startVal.rot[2], endVal.rot[2], progress, postType, motion),
+      ],
+      "opacity": calcInterpolation(startVal.opacity, endVal.opacity, progress, postType, motion),
+    }
+  }
+  if(motion.type == "sin"){
+    interpolatedVal[motion.attribute][motion.args.axis] += motion.args.height * Math.sin(bezierFunc(progress) * Math.PI);
+  }
+
+  return interpolatedVal;
+}
+
+function statesConverter(initStates, stoppers){
+  let states = [];
   // Required!!!  states[0] = 0, states[-1] = 1
   for(let i=0; i<initStates.length; i++){
     if(i == 0){
@@ -183,32 +265,49 @@ function statesConverter(initStates, stoppers, initValues){
       states.push(initStates[i]);
     }else{
       states.push(initStates[i] - stoppers[i]);
+      states.push(initStates[i]);
       states.push(initStates[i] + stoppers[i]);
     }
-    values.push(initValues[i]);
-    values.push(initValues[i]);
   }
-  return {states: states, values: values};
+  return states;
 }
 
-function AnimationGenerator(initStates, stoppers, initValues, posts){
-  let animation = [];
-  let states_values = statesConverter(initStates, stoppers, initValues);
+function AnimationGenerator(initStates, stoppers, clips, transitions){
+  let targets = ["group1", "camera"];
+  let states = statesConverter(initStates, stoppers);
+  let animations = [];
 
-  for(let i=0; i<totalFrame; i++){
-    let currentStep = states_values.states.findIndex((ele) => ele > i / totalFrame) - 1;
-    let currentPost = (currentStep % 2 == 1) ? posts[Math.floor(currentStep / 2)] : 'stopper';
+  for(let t=0; t<targets.length; t++){
+    let newTransition = transitionsExtender(transitions, targets[t] ,initStates.length - 1);
+    let animation = [];
+    for(let i=0; i<totalFrame; i++){
+      let currentStep = states.findIndex((ele) => ele > i / totalFrame) - 1;
+      let timeframe = Math.floor((currentStep+1)/3);
+      let transition = newTransition.find(element => (element.from.frame*3 <= currentStep && element.to.frame*3 > currentStep));
+      let startClip = getClipData(clips, targets[t], transition.from.clip);
+      let endClip = getClipData(clips, targets[t], transition.to.clip);
 
-    let interpolated = interpolate(
-      states_values.values[currentStep],
-      states_values.values[currentStep + 1],
-      states_values.states[currentStep + 1] - states_values.states[currentStep],
-      i / totalFrame - states_values.states[currentStep],
-      currentPost
-    );
-    animation = animation.concat(interpolated)
+      if(currentStep == transition.from.frame*3){
+        animation = animation.concat(startClip);
+      }else if(currentStep == transition.to.frame*3-1){
+        animation = animation.concat(endClip);
+      }else{
+        animation = animation.concat(interpolate(
+          startClip,
+          endClip,
+          states[transition.to.frame*3-1]-states[transition.from.frame*3+1],
+          i/totalFrame-states[transition.from.frame*3+1],
+          transition.easing,
+          transition.motion
+        ));
+      }
+    }
+    animations.push({
+      "target": targets[t],
+      "animation": animation
+    });
   }
-  return animation;
+  return animations;
 }
 
 function If(props){

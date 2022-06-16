@@ -9,15 +9,10 @@ import { If } from '../../BasicElements/BasicElements.js';
 import '../../BasicElements/Main.css'
 
 import { Overlays } from './Overlays.js';
-import { CanvasSI } from './Cond_Static_Imm.js';
-import { CanvasAI } from './Cond_Animated_Imm.js';
-import { CanvasII } from './Cond_Immersive_Imm.js';
-import { CanvasSN } from './Cond_Static_Non.js';
-import { CanvasSN2 } from './Cond_Static_Non_2.js';
-import { CanvasAN } from './Cond_Animated_Non.js';
-import { CanvasIN } from './Cond_Immersive_Non.js';
-import Quiz1 from './Quiz1.js';
-import Quiz2 from './Quiz2.js';
+import { CanvasA } from './Viz_Animated.js';
+import { CanvasI } from './Viz_Immersive.js';
+import Quiz1 from './Quiz_1.js';
+import Quiz2 from './Quiz_2.js';
 
 // import { data } from '../0415Data.js'
 
@@ -235,19 +230,13 @@ function Main2(){
               <CompletionPage completionCode={completionCode} type={type} PersonID={PersonID}/>
             </If>
             <If if={type != EndOfTask}>
-              <If if={type == ImmersiveNon}>
-                <CanvasIN overlay={overlay} scroll={scroll} />
-              </If>
-              <If if={type == ImmersiveImm}>
-                <CanvasII overlay={overlay} scroll={scroll} />
-              </If>
-              <If if={type == AnimatedNon}>
-                <CanvasAN overlay={overlay} scroll={scroll} />
-              </If>
-              <If if={type == AnimatedImm}>
-                <CanvasAI overlay={overlay} scroll={scroll} />
-              </If>
               <Overlays mode={type} ref={overlay} scroll={scroll} scrollLog={scrollLog} onClick={getQuiz} />
+              <If if={type == ImmersiveImm || type == ImmersiveNon}>
+                <CanvasI mode={type} overlay={overlay} scroll={scroll} />
+              </If>
+              <If if={type == AnimatedImm || type == AnimatedNon}>
+                <CanvasA mode={type} overlay={overlay} scroll={scroll} />
+              </If>
             </If>
           </div>
         </div>

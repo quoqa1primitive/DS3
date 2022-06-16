@@ -1,11 +1,10 @@
-.PageControllerAN .TitleContainer {
+.CanvasAI {
   position: relative;
+  top: calc(50% - 320px - 100px);
+  left: calc(50% - 420px);
+  width: 840px;
+  height: 640px;
 }
-
-.PageControllerAN .Texts {
-  margin-top: max(1000px, 100vh);
-}
-
 
 .CanvasAN {
   position: relative;

@@ -15,7 +15,7 @@ export const EndOfTask = -1;
 // DS1 animation
 export const groupVarNum = 7;
 export const camVarNum = 7;
-export const totalFrame = 1000;
+export const totalFrame = 500;
 
 export const XAXIS1 = 10000;
 export const YAXIS1 = 10001;
@@ -33,6 +33,7 @@ export const xyzProps = {
   dataB2: [30, 40, 40, 50, 50, 50, 60, 70, 70, 70, 70, 80]
 }
 
+// DS1 overlays
 export const title = `Does Urbanization Affect
 Food Consumption Pattern?
 `

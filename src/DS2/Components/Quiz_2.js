@@ -131,11 +131,6 @@ function SurveyComponent3(props){
 }
 
 function Quiz2(props){
-
-  useEffect(()=>{
-    console.log(props);
-  })
-
   return(
     <div className="SurveyContainer">
       <div style={{ display: "flex", flexDirection: "row", position: "relative", marginTop: "100px", marginBottom: "45px" }}>

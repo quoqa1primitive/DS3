@@ -3,29 +3,15 @@ import React, { useRef, useEffect, useLayoutEffect, useState, useImperativeHandl
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
 
+import { AnimatedNon, AnimatedImm } from '../../BasicElements/Constants.js';
 import { Line, TextBox, Rect, TextComponent } from '../../BasicElements/BasicElements.js'
-import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1, title, text1, text2, text3, text4, text5 } from '../../BasicElements/Constants.js'
-import '../styles/Cond_Animated_Non.css';
+import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js'
+import '../styles/Cond_Animated.css';
 
 const bezier = require('bezier-easing');
 
-const STEP_XY = 100;
-const STEP_ZY = 101;
-const STEP_ZX = 110;
-
 const scale = 6.25;
 const tickLength = 0.6;
-const speed = 0.035;
-
-const xyzProps = {
-  xSteps: 2,  xLength: 60,  xPadding: 15,
-  ySteps: 11, yLength: 60,  yPadding: 0,
-  zSteps: 3,  zLength: 100, zPadding: 10,
-  dataA1: [30, 60, 70, 80, 90, 130, 140, 150, 150, 170, 180, 210],
-  dataB1: [90, 90, 100, 100, 110, 120, 120, 140, 140, 150, 160, 180],
-  dataA2: [60, 60, 60, 55, 55, 55, 50, 50, 50, 45, 40, 40],
-  dataB2: [30, 40, 40, 50, 50, 50, 60, 70, 70, 70, 70, 80]
-}
 
 const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
 const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
@@ -280,12 +266,12 @@ function VisComponent({camera, scroll, ...props}){
   )
 }
 
-function CanvasAN({overlay, scroll}) {
+function CanvasA({mode, overlay, scroll}) {
   const canvas = useRef();
   const mainCamera = useRef();
 
   return (
-    <div className={"CanvasAN"}>
+    <div className={"CanvasA" + (mode==AnimatedNon?'N':'I')}>
       <Canvas
         ref={canvas}
         onCreated={(state) => state.events.connect(overlay.current.ref1)}
@@ -313,4 +299,4 @@ function CanvasAN({overlay, scroll}) {
   )
 }
 
-export { CanvasAN };
+export { CanvasA };
