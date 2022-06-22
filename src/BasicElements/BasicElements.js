@@ -7,17 +7,6 @@ import fonts from "./fonts";
 import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame } from './Constants.js'
 extend({ Text });
 
-const opts = {
-  font: "roboto",
-  fontSize: "2.5",
-  color: "black",
-  maxWidth: 300,
-  lineHeight: 1,
-  letterSpacing: 0,
-  textAlign: "justify",
-  materialType: "MeshPhongMaterial"
-};
-
 function Image(){
 
 }
@@ -35,10 +24,50 @@ function Line({ start, end, color }) {
   )
 }
 
-function TextBox({text, anchorX, anchorY, label}){
+function TextBox({position=[0, 0, 0], lookAt=true, text, textType, zoom=6.25, anchorX, anchorY, label, ...props}){
   const ref = useRef();
+  const background = useRef();
+  const [fontSize, setFontSize] = useState(6.25);
+  const [opts, setOpts] = useState(() => getOpts(textType));
+  function getOpts(type){
+    return type == "title"? {
+      font: "Noto Sans",
+      fontSize: 7.5,
+      color: "black",
+      maxWidth: 100,
+      lineHeight: 1.15,
+      letterSpacing: 0,
+      textAlign: "center",
+      materialType: "MeshPhongMaterial"
+    } : type == "plain"? {
+        font: "Noto Sans",
+        fontSize: 2.5,
+        color: "black",
+        maxWidth: 65,
+        lineHeight: 1.15,
+        letterSpacing: 0,
+        textAlign: "left",
+        materialType: "MeshPhongMaterial",
+        outlineColor: new THREE.Color("rgb(248, 245, 240)"),
+        outlineOpacity: 0.50,
+        outlineWidth: 0.75,
+        outlineBlur: 5,
+    } : {
+      font: "Noto Sans",
+      fontSize: 2.5,
+      color: "black",
+      maxWidth: 65,
+      lineHeight: 1.15,
+      letterSpacing: 0,
+      textAlign: "left",
+      materialType: "MeshPhongMaterial"
+    }
+  }
+
   useFrame((state) => {
-    ref.current.lookAt(new THREE.Vector3(state.camera.position.x, state.camera.position.y, state.camera.position.z));
+    if(lookAt){
+      ref.current.lookAt(new THREE.Vector3(state.camera.position.x, state.camera.position.y, state.camera.position.z));
+    }
     if(label == XAXIS1){
       // ref.current.rotateX(Math.PI / 2);
     }else if(label == YAXIS1){
@@ -51,11 +80,13 @@ function TextBox({text, anchorX, anchorY, label}){
   })
 
   return(
-    <text {...opts} ref={ref} text={text + ""} font={fonts[opts.font]} anchorX={anchorX} anchorY={anchorY}>
-      {opts.materialType === "MeshPhongMaterial" ? (
-        <meshPhongMaterial attach="material" color={opts.color} side={THREE.DoubleSide} />
-      ) : null}
-    </text>
+    <group position={position} scale={6.25/zoom}>
+      <text {...opts} ref={ref} text={text + ""} font={fonts[opts.font]} anchorX={anchorX} anchorY={anchorY}>
+        {opts.materialType === "MeshPhongMaterial" ? (
+          <meshPhongMaterial attach="material" color={opts.color} side={THREE.DoubleSide} />
+        ) : null}
+      </text>
+    </group>
   )
 }
 
@@ -307,6 +338,7 @@ function AnimationGenerator(initStates, stoppers, clips, transitions){
       "animation": animation
     });
   }
+  console.log(animations)
   return animations;
 }
 

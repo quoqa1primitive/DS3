@@ -11,7 +11,7 @@
   background-color: rgba(248, 245, 240, 0.90);
 }
 
-.CanvasAI {
+.DS1 .CanvasAI {
   position: relative;
   top: calc(50% - 320px - 100px);
   left: calc(50% - 420px);

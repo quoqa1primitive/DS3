@@ -225,7 +225,7 @@ function Main2(){
       <If if={quiz2}><Quiz2 ScrollData={scrollData} type={type} PersonID={PersonID} Sequence={sequence}/></If>
       <If if={!quiz1 && !quiz2}>
         <div style={{width: "100%", height: "100%"}} className="PageContents">
-          <div className="Viz">
+          <div className="Viz DS2">
             <If if={type == EndOfTask}>
               <CompletionPage completionCode={completionCode} type={type} PersonID={PersonID}/>
             </If>

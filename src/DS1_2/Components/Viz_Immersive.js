@@ -6,6 +6,7 @@ import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@r
 import { LineMark, Line, TextBox, Rect, If } from '../../BasicElements/BasicElements.js';
 import { statesConverter, AnimationGenerator } from '../../BasicElements/BasicElements.js';
 import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, groupVarNum, camVarNum } from '../../BasicElements/Constants.js';
+import { title, text1, text2, text3, text4, text5, text6 } from '../../BasicElements/Constants.js';
 import { ImmersiveNon, ImmersiveImm } from '../../BasicElements/Constants.js';
 import '../styles/Canvas.css';
 
@@ -210,21 +211,75 @@ function MainGroup2({step, position, target, opacity}){
   )
 }
 
-function VisComponent({camera, scroll, states, stoppers, animations, ...props}){
+function TextGroup({texts, position, zoom, type}){
+
+  return (
+    <group>{
+      texts.map((text, idx) =>
+        <TextBox
+          key={"textBox_"+type+idx}
+          text={text}
+          textType={type}
+          zoom={zoom}
+          position={position[idx]}
+          lookAt={false}
+          anchorX={"center"}
+          anchorY={"top"}
+        />
+      )}
+    </group>
+  )
+}
+
+function TextComponent({idx, animations, ...props}){
+  const textGroup = useRef();
+  const textLength = 1000;
+  const textPos = [-xyzProps.xLength / 2, -xyzProps.yLength / 2, -xyzProps.zLength / 2];
+  const xWidth = -2*textPos[0]
+  const titles = [title];
+  const texts = [text1, text2, text3, text4, text5, text6];
+  const [zoom, setZoom] = useState(6.25);
+
+  useFrame(() => {
+    let animation_camera = animations[1]["animation"][idx];
+    setZoom(animation_camera.zoom);
+
+    textGroup.current.position.setX(animation_camera.pos[0] * 0.9);
+    textGroup.current.position.setY(animation_camera.pos[1] * 0.9 + idx / totalFrame * textLength);
+    textGroup.current.position.setZ(animation_camera.pos[2] * 0.9);
+  });
+
+  return(
+    <group position={textPos} ref={textGroup}>
+      <TextGroup texts={titles} type={"title"}
+        position={[[0, xyzProps.yLength / 2, 0]]} />
+      <TextGroup texts={texts} type={"plain"}
+        zoom={zoom}
+        position={[
+          [0, -100, 0],
+          [xWidth*0.75, -320, 0],
+          [0, -480, 0],
+          [0, -640, 0],
+          [0, -830, 0],
+          [0, -1000, 0]
+        ]} />
+    </group>
+  );
+}
+
+function VisComponent({camera, idx, steps, animations, ...props}){
   const group = useRef();
   const [step, setStep] = useState(0);
   const [opacity, setOpacity] = useState(0.2);
-  const [steps, setSteps] = useState(statesConverter(states, stoppers));
 
-  useFrame(() => {
-    const et = scroll.current;
-    // console.log(et);
-    let idx = Math.floor(et * totalFrame) == totalFrame? totalFrame-1 : Math.floor(et * totalFrame);
+  useFrame((state) => {
+    // console.log(state);
+    let preStep = steps.findIndex((ele) => ele >= idx/totalFrame) - 1;
+    setStep(2*Math.floor((preStep-1)/3)+(preStep%3==1?1:2));
+
     let animation_group1 = animations[0]["animation"][idx];
     let animation_camera = animations[1]["animation"][idx];
-
-    let preStep = steps.findIndex((ele) => ele >= et) - 1;
-    setStep(2*Math.floor((preStep-1)/3)+(preStep%3==1?1:2));
+    setOpacity(animation_group1.opacity);
 
     group.current.position.setX(animation_group1.pos[0]);
     group.current.position.setY(animation_group1.pos[1]);
@@ -232,7 +287,6 @@ function VisComponent({camera, scroll, states, stoppers, animations, ...props}){
     group.current.rotation.x = animation_group1.rot[0];
     group.current.rotation.y = animation_group1.rot[1];
     group.current.rotation.z = animation_group1.rot[2];
-    setOpacity(animation_group1.opacity);
 
     camera.current.position.setX(animation_camera.pos[0]);
     camera.current.position.setY(animation_camera.pos[1]);
@@ -257,27 +311,59 @@ function VisComponent({camera, scroll, states, stoppers, animations, ...props}){
         <MainGroup1 step={step} position={centerPos} xyzProps={xyzProps} />
       </If>
       <If if={step >= 4}>
-          <MainGroup2 step={step} position={centerPos} xyzProps={xyzProps} opacity={opacity} />
+        <MainGroup2 step={step} position={centerPos} xyzProps={xyzProps} opacity={opacity} />
       </If>
     </group>
   )
 }
 
-function CanvasI({mode, overlay, scroll}) {
+const OrthoCamera = React.forwardRef((props, ref) => {
+  return(
+    <>
+      <OrthographicCamera ref={ref} makeDefault
+        position={[0, 0, 1000 * props.scale]}
+        near={0}
+        far={50000 * props.scale}
+        zoom={1 * props.scale}
+        />
+      <OrbitControls
+        camera={ref.current}
+        enablePan={false}
+        enableZoom={false}
+        enableRotate={false}
+        zoomSpeed={0.25/props.scale}
+        style={{zIndex: 5}}/>
+      <ambientLight
+        intensity={0.5}/>
+    </>
+  );
+});
+
+function CanvasI({mode}) {
   const canvas = useRef();
-  const mainCamera = useRef();
-  const [stateCalculated, setStateCalculated] = useState(false)
+  const mainCamera = React.createRef();
+
+  let scroll = 0;
+  const [idx, setIdx] = useState(0);
+
   const stoppers = useMemo(() => [0.01, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.01]);
-  const [states, setStates] = useState([0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 1.00]);
-  const [animations, setAnimations] = useState([]);
+  const clipPositions = useMemo(() => [0.00, 0.11, 0.32, 0.52, 0.68, 0.83, 0.99, 1.00]);
   const clips = useMemo(() => getClips());
   const transitions = useMemo(() => getTransitions());
+  const dsLength = 1000;
+  const speed = 0.35, smooth = 12, limit = 3 / window.devicePixelRatio;
+
+  const [animations, setAnimations] = useState([]);
+  const [steps, setSteps] = useState([]);
 
   function getClips(){
     let clips = [];
     clips.push({
-      "target": "group1", "name": "group1_init",
-      "pos": [0, 0, 0], "rot": [0, 0, 0], "opacity": 1,
+      "target": "group1",
+      "name": "group1_init",
+      "pos": [0, 0, 0],
+      "rot": [0, 0, 0],
+      "opacity": 1,
     });
     clips.push({
       "target": "group1", "name": "group1_XY",
@@ -362,7 +448,8 @@ function CanvasI({mode, overlay, scroll}) {
     });
     transitions.push({
       "target": "group1",
-      "from": {"frame": 5, "clip": "group1_zoom2"}, "to": {"frame": 6, "clip": "group1_last"},
+      "from": {"frame": 5, "clip": "group1_zoom2"},
+      "to": {"frame": 6, "clip": "group1_last"},
       "easing": "bezier",
       "motion": {
         "type": "linear", // sin, linear, ...
@@ -433,61 +520,36 @@ function CanvasI({mode, overlay, scroll}) {
 
     return transitions;
   }
+  function handleWheel(e){
+    e.preventDefault();
+    e.stopPropagation();
 
-  useLayoutEffect(() => {
-    console.log("setStates");
-    const length = 6;
-    let boxes = [], texts = [], sp = [];
-    for(let i=0; i<length; i++){
-      boxes[i] = document.getElementById("text" + (i+1).toString()).getBoundingClientRect();
-    }
-    const scrollHeight = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight);
+    const delta = e.wheelDelta;
+    const normalizedScroll = (Math.abs(delta * speed) > limit? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed));
+    scroll = Math.max(0, Math.min(scroll + normalizedScroll / dsLength, 1)); // limit the progress equal or under 1
+    setIdx(Math.floor(scroll * totalFrame) == totalFrame? totalFrame-1 : Math.floor(scroll * totalFrame));
+  }
 
-    for(let i=0; i<length; i++){
-      texts[i] = scrollHeight - window.innerHeight * 0.5 + boxes[i].top + boxes[i].height * 0.5 + 100;
-      sp[i] = texts[i] / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-    }
-
-    setStates([0.00, sp[0], sp[1], sp[2], sp[3], sp[4], sp[5], 1.00]);
-    setStateCalculated(true);
+  useLayoutEffect(() =>{
+    canvas.current.addEventListener('wheel', handleWheel, {passive: false});
+    setAnimations(AnimationGenerator(clipPositions, stoppers, clips, transitions));
+    setSteps(statesConverter(clipPositions, stoppers));
   }, []);
-
-  useEffect(() =>{
-    if(stateCalculated){
-      setAnimations(AnimationGenerator(states, stoppers, clips, transitions));
-    }
-  }, [states])
 
   return (
     <div className={"CanvasI" + (mode==ImmersiveNon?'N':'I')}>
       <Canvas
         ref={canvas}
-        onCreated={(state) => state.events.connect(overlay.current.ref1)}
         dpr={Math.max(window.devicePixelRatio, 2)}>
-        <OrthographicCamera ref={mainCamera} makeDefault
-          position={[0, 0, 1000 * scale]}
-          near={0}
-          far={50000 * scale}
-          zoom={1 * scale}
-          />
-        <OrbitControls
-          camera={mainCamera.current}
-          enablePan={false}
-          enableZoom={false}
-          enableRotate={false}
-          zoomSpeed={0.25/scale}
-          style={{zIndex: 5}}/>
-        <ambientLight
-          intensity={0.5}/>
-        <Suspense fallback={null}>
-          <VisComponent
-            states={states}
-            camera={mainCamera}
-            states={states}
-            stoppers={stoppers}
-            animations={animations}
-            scroll={scroll} />
-        </Suspense>
+        <OrthoCamera ref={mainCamera} scale={scale}/>
+        <VisComponent
+          camera={mainCamera}
+          idx={idx}
+          steps={steps}
+          animations={animations}/>
+        <TextComponent
+          idx={idx}
+          animations={animations}/>
       </Canvas>
     </div>
   )

@@ -1,0 +1,103 @@
+/*
+   1110 = ImmersiveImm;
+   1010 = ImmersiveNon;
+   1101 = AnimatedImm;
+   1001 = AnimatedNon;
+   1100 = StaticImm;
+   1000 = StaticNon1;
+   1011 = StaticNon2;
+ */
+
+
+.PageController1110 .TitleContainer {
+  position: relative;
+}
+
+.PageController1110 .Texts {
+  top: calc(50vh + 300px);
+}
+
+.PageController1110 .TextContainer {
+  box-shadow: 0px 0px 10px 10px rgba(248, 245, 240, 0.90);
+  background-color: rgba(248, 245, 240, 0.90);
+}
+
+.PageController1010 .TitleContainer {
+  position: relative;
+}
+
+.PageController1010 .Texts {
+  margin-top: max(1000px, 100vh);
+}
+
+.PageController1010 .TextContainer {
+}
+
+.PageController1101 .TitleContainer {
+  position: relative;
+}
+
+.PageController1101 .Texts {
+  margin-top: max(1000px, 100vh);
+}
+
+.PageController1101 .TextContainer {
+  box-shadow: 0px 0px 10px 10px rgba(248, 245, 240, 0.90);
+  background-color: rgba(248, 245, 240, 0.90);
+}
+
+.PageController1001 .TitleContainer {
+  position: relative;
+}
+
+.PageController1001 .Texts {
+  margin-top: max(1000px, 100vh);
+}
+
+.PageController1100 .TitleContainer {
+  position: relative;
+}
+
+.PageController1100 .Texts {
+  margin-top: 250px;
+}
+
+.PageController1100 .TextContainer {
+  position: absolute;
+  box-shadow: 0px 0px 10px 10px rgba(248, 245, 240, 0.90);
+  background-color: rgba(248, 245, 240, 0.90);
+}
+
+.PageController1100 .ButtonContainer {
+  margin: calc(-435px + 30px + 750px + 144px + 400px) auto 100px auto;
+}
+
+.PageController1000 .TitleContainer {
+  position: relative;
+}
+
+.PageController1000 .Texts {
+  margin-top: 250px;
+}
+
+.PageController1000 .TextContainer {
+
+}
+
+.PageController1011 .TitleContainer {
+  position: relative;
+}
+
+.PageController1011 .Texts {
+  margin-top: 250px;
+}
+
+.PageController1011 .Texts .SubTexts{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.PageController1011 .TextContainer {
+  position: absolute;
+}

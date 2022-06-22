@@ -13,7 +13,7 @@
   background-color: rgba(204, 204, 204, 0.85); */
 }
 
-.CanvasIN {
+.DS1 .CanvasIN {
   position: relative;
   top: calc(50% - 320px - 100px);
   left: calc(50% - 450px - 200px);
