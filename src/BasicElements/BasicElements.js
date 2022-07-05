@@ -26,9 +26,7 @@ function Line({ start, end, color }) {
 
 function TextBox({position=[0, 0, 0], lookAt=true, text, textType, zoom=6.25, anchorX, anchorY, label, ...props}){
   const ref = useRef();
-  const background = useRef();
-  const [fontSize, setFontSize] = useState(6.25);
-  const [opts, setOpts] = useState(() => getOpts(textType));
+  const opts = useMemo(() => getOpts(textType));
   function getOpts(type){
     return type == "title"? {
       font: "Noto Sans",
@@ -81,7 +79,12 @@ function TextBox({position=[0, 0, 0], lookAt=true, text, textType, zoom=6.25, an
 
   return(
     <group position={position} scale={6.25/zoom}>
-      <text {...opts} ref={ref} text={text + ""} font={fonts[opts.font]} anchorX={anchorX} anchorY={anchorY}>
+      <text {...opts}
+        ref={ref}
+        text={text + ""}
+        font={fonts[opts.font]}
+        anchorX={anchorX}
+        anchorY={anchorY}>
         {opts.materialType === "MeshPhongMaterial" ? (
           <meshPhongMaterial attach="material" color={opts.color} side={THREE.DoubleSide} />
         ) : null}
@@ -92,7 +95,7 @@ function TextBox({position=[0, 0, 0], lookAt=true, text, textType, zoom=6.25, an
 
 function Rect({ width, height, depth, color, opacity }){
   let myHeight = height / 5;
-  const geometry = new THREE.BoxGeometry(width, myHeight, depth);
+  const geometry = useMemo(() => new THREE.BoxGeometry(width, myHeight, depth));
   const edges = useMemo(() => new THREE.EdgesGeometry(geometry));
 
   return(
