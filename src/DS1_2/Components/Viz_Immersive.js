@@ -23,6 +23,8 @@ const centerPos = [
 ];
 const rectDepth = 2;
 const ratio = 5 / 3;
+const color1 = new THREE.Color("#512C8A");
+const color2 = new THREE.Color("#2F9B39");
 
 // const AxGr = React.memo(function AxGr(step, ...props){
 //   const XAxis1 =
@@ -265,74 +267,81 @@ function MainGroup1(props){
   const xStep = 8;
   const rectWidth = 6, rectDepth = 2;
 
-  return(
-    <group position={centerPos}>
-      {
-        xyzProps.dataA1.map((item, idx) => {
-          return <mesh key={idx}
+  const BarGroup1 = useMemo(() =>
+  <group position={centerPos}>
+    {
+      xyzProps.dataA1.map((item, idx) => {
+        return <mesh key={idx}
+          position={[
+            xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
+            0,
+            zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2]}>
+            <Rect width={rectWidth} height={item} depth={rectDepth} color={color1} opacity={idx==xyzProps.dataA1.length-1?1:1}/>
+          </mesh>
+      })
+    }
+    {
+      xyzProps.dataB1.map((item, idx) => {
+        return <mesh key={idx}
             position={[
-              xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
+              xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
               0,
-              zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2]}>
-              <Rect width={rectWidth} height={item} depth={rectDepth} color={new THREE.Color("#512C8A")} opacity={idx==xyzProps.dataA1.length-1?1:1}/>
-            </mesh>
-        })
-      }
-      {
-        xyzProps.dataB1.map((item, idx) => {
-          return <mesh key={idx}
-              position={[
-                xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
-                0,
-                zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}>
-              <Rect key={idx} width={rectWidth} height={item} depth={rectDepth} color={new THREE.Color("#2F9B39")} opacity={idx==xyzProps.dataB1.length-1?1:1}/>
-            </mesh>
-        })
-      }
-    </group>
+              zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}>
+            <Rect key={idx} width={rectWidth} height={item} depth={rectDepth} color={color2} opacity={idx==xyzProps.dataB1.length-1?1:1}/>
+          </mesh>
+      })
+    }
+  </group>, []);
+
+  return(
+    <>{BarGroup1}</>
   );
 }
 
 function MainGroup2({step, opacity}){
+
+  const BarGroup2 = useMemo(() =>
+  <group position={centerPos}>
+    {
+      xyzProps.dataA1.map((item, idx) => {
+        return <mesh
+          key={idx}
+          position={[
+            0 + xyzProps.dataA2[idx] / ratio /2,
+            0,
+            zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2]}>
+            <Rect width={xyzProps.dataA2[idx] / ratio} height={item} depth={rectDepth} color={color1}
+              opacity={
+                step<=8? (idx >= 5)? opacity : 1
+                  : step<=10? (idx > 4)? opacity : (idx < 4)? 1.2 - opacity : 1
+                  : (idx < 4)? 1.2 - opacity: 1
+                }
+            />
+          </mesh>
+      })
+    }
+    {
+      xyzProps.dataB1.map((item, idx) => {
+        return <mesh
+          key={idx}
+          position={[
+            0 + xyzProps.dataB2[idx] / ratio / 2,
+            0,
+            zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}>
+            <Rect width={xyzProps.dataB2[idx] / ratio} height={item} depth={rectDepth} color={color2}
+              opacity={
+                step<=8? (idx >= 5)? opacity : 1
+                  : step<=10? (idx > 4 )? opacity : (idx < 4)? 1.2 - opacity : 1
+                  : (idx < 4)? 1.2 - opacity: 1
+                }
+            />
+          </mesh>
+      })
+    }
+  </group>, [step, opacity]);
+
   return(
-    <group position={centerPos}>
-      {
-        xyzProps.dataA1.map((item, idx) => {
-          return <mesh
-            key={idx}
-            position={[
-              0 + xyzProps.dataA2[idx] / ratio /2,
-              0,
-              zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2]}>
-              <Rect width={xyzProps.dataA2[idx] / ratio} height={item} depth={rectDepth} color={new THREE.Color("#512C8A")}
-                opacity={
-                  step<=8? (idx >= 5)? opacity : 1
-                    : step<=10? (idx > 4)? opacity : (idx < 4)? 1.2 - opacity : 1
-                    : (idx < 4)? 1.2 - opacity: 1
-                  }
-              />
-            </mesh>
-        })
-      }
-      {
-        xyzProps.dataB1.map((item, idx) => {
-          return <mesh
-            key={idx}
-            position={[
-              0 + xyzProps.dataB2[idx] / ratio / 2,
-              0,
-              zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}>
-              <Rect width={xyzProps.dataB2[idx] / ratio} height={item} depth={rectDepth} color={new THREE.Color("#2F9B39")}
-                opacity={
-                  step<=8? (idx >= 5)? opacity : 1
-                    : step<=10? (idx > 4 )? opacity : (idx < 4)? 1.2 - opacity : 1
-                    : (idx < 4)? 1.2 - opacity: 1
-                  }
-              />
-            </mesh>
-        })
-      }
-    </group>
+    <>{BarGroup2}</>
   )
 }
 
@@ -611,7 +620,7 @@ function CanvasI({mode}) {
     let newIdx = Math.floor(scroll * totalFrame) == totalFrame? totalFrame-1 : Math.floor(scroll * totalFrame);
     if(idx != newIdx){
       setIdx(newIdx);
-      console.log("idx changed to: ", idx, newIdx);
+      // console.log("idx changed to: ", idx, newIdx);
     }
     // animate();
   }, [speed, limit, totalFrame]);

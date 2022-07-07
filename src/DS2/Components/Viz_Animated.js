@@ -266,7 +266,7 @@ function VisComponent({camera, scroll, ...props}){
   )
 }
 
-function CanvasA({mode, overlay, scroll}) {
+function CanvasA({mode, scroll}) {
   const canvas = useRef();
   const mainCamera = useRef();
 
@@ -274,7 +274,6 @@ function CanvasA({mode, overlay, scroll}) {
     <div className={"CanvasA" + (mode==AnimatedNon?'N':'I')}>
       <Canvas
         ref={canvas}
-        onCreated={(state) => state.events.connect(overlay.current.ref1)}
         dpr={Math.max(window.devicePixelRatio, 2)}>
         <OrthographicCamera ref={mainCamera} makeDefault
           position={[0, 0, 1000 * scale]}

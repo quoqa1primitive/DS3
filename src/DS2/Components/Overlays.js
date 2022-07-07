@@ -8,7 +8,7 @@ import img1 from '../Static-21.JPG';
 import img2 from '../Static-22.JPG';
 import img3 from '../Static-23.JPG';
 
-function Overlays({ scroll, scrollLog = [], onClick, mode }, ref){
+function Overlays({ onClick, mode }, ref){
   const ref1 = useRef();
   const ref2 = useRef();
   const [startTime, setStartTime] = useState(Date.now());
@@ -28,26 +28,28 @@ function Overlays({ scroll, scrollLog = [], onClick, mode }, ref){
   }));
 
   useEffect(()=>{
-    ref1.current.addEventListener('wheel', handleWheel, {passive: false});
-    ref1.current.addEventListener('scroll', handleScroll, {passive: true});
+    // ref1.current.addEventListener('wheel', handleWheel, {passive: false});
+    // ref1.current.addEventListener('scroll', handleScroll, {passive: true});
   },[])
 
   function handleWheel(e){
     // console.log(e);
-    e.preventDefault();
-    e.stopPropagation();
-
-    const speed = 0.35, smooth = 12, limit = 15 / window.devicePixelRatio ;
-    const delta = e.wheelDelta
-    ref1.current.scrollTop += (Math.abs(delta * speed) > limit? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed))
-    // console.log(e.target)
-    // e.target.scrollTop = Math.max(0, Math.min(e.target.scrollTop, e.target.scrollHeight - window.innerHeight)) // limit scrolling
+    // e.preventDefault();
+    // e.stopPropagation();
+    //
+    // const speed = 0.35, smooth = 12, limit = 15 / window.devicePixelRatio ;
+    // const delta = e.wheelDelta
+    // // 이 부분을 수정하면 Canvas에 전달해줄 scrollTop을 지정해줄 수 있다.
+    // // scrollTop을 수정하지 않고 Canvas에 전달하여 텍스트 뭉치의 위치를 옮겨주면 된다.
+    // const normalizedScroll = (Math.abs(delta * speed) > limit? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed));
+    // const dsLength = (e.target.scrollHeight - window.innerHeight);
+    // scroll.current = Math.max(0, Math.min(scroll.current + normalizedScroll / dsLength, 1)); // limit the progress equal or under 1
+    // console.log(scroll.current);
   }
 
   function handleScroll(e){
     // console.log(e.target.scrollTop);
-    scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
-    // scrollLog.current.push([Date.now() - startTime, scroll.current.toFixed(3)]);
+    // scroll.current = e.target.scrollTop / (e.target.scrollHeight - window.innerHeight)
   }
 
   return (
@@ -67,18 +69,14 @@ function Overlays({ scroll, scrollLog = [], onClick, mode }, ref){
         </div>
       </If>
       <If if={mode == ImmersiveImm}>
-        <div className="TitleContainer"><div className="Title">{title}</div></div>
-        <div className={"Texts"}>
-          <TextComponent id={"text1"} text={text1} left={"calc(50% + 240px)"}         margin={"800px"} />
-          <TextComponent id={"text2"} text={text2} left={"calc(50% + 450px - 200px)"} margin={"800px"} />
-          <TextComponent id={"text3"} text={text3} left={"calc(50% - 450px + 140px)"} margin={"600px"} />
-          <TextComponent id={"text4"} text={text4} left={"calc(50% - 450px + 340px)"} margin={"600px"} />
-          <TextComponent id={"text5"} text={text5} left={"calc(50% - 450px + 540px)"} margin={"600px"} />
-          <TextComponent id={"text6"} text={text6} left={"calc(50% - 450px + 240px)"} margin={"500px"} />
-          <div className="ButtonContainer" >
-            <button className="Button" ref={ref2} type="button" onClick={()=>{onClick()}}> Go to Quiz </button>
-          </div>
-        </div>
+        <div className="TitleContainer"><div className="Title">{""}</div></div>
+        {
+          // <div className={"Texts"} style={{height: "4000px"}}>
+          // <div className="ButtonContainer" >
+          //   <button className="Button" ref={ref2} type="button" onClick={()=>{onClick()}}> Go to Quiz </button>
+          // </div>
+          // </div>
+        }
       </If>
       <If if={mode == AnimatedImm}>
         <div className="TitleContainer"><div className="Title">{title}</div></div>
