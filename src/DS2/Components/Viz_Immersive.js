@@ -1,176 +1,54 @@
 import * as THREE from 'three'
-import React, { useRef, useCallback, useEffect, useLayoutEffect, useState, useImperativeHandle, useMemo, Suspense } from 'react'
-import { Canvas, useFrame, extend } from '@react-three/fiber'
-import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
+import React, { useRef, useCallback, useEffect, useLayoutEffect, useState, useMemo, Suspense } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { OrbitControls, OrthographicCamera } from '@react-three/drei';
+import { Sky } from '../../BasicElements/Sky.js';
 
-import { LineMark, Line, TextBox, Rect, If } from '../../BasicElements/BasicElements.js';
+import { stoppers_DS2, clipPositions_DS2, getClips, getTransitions } from './Animations.js';
+import { Ocean, Disc, Line, ChangePoint, Rect, TextBox, If } from '../../BasicElements/BasicElements.js';
 import { statesConverter, AnimationGenerator } from '../../BasicElements/BasicElements.js';
-import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, groupVarNum, camVarNum } from '../../BasicElements/Constants.js';
-import { title, text1, text2, text3, text4, text5, text6 } from '../../BasicElements/Constants.js';
+import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, TextComponentHeight } from '../../BasicElements/Constants2.js';
+import { title, text1, text2, text3, text4, text5 } from '../../BasicElements/Constants2.js';
 import { ImmersiveNon, ImmersiveImm } from '../../BasicElements/Constants.js';
 import '../styles/Canvas.css';
 
 let scale = 6.25;
 const tickLength = 0.6;
 
-const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
-const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
-const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
+const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = 0;
+const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = 0;
+const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = 0;
 const centerPos = [
-  -xyzProps.xLength / 2,
-  -xyzProps.yLength / 2,
-  -xyzProps.zLength / 2
+  -xLength / 2,
+  -yLength / 2,
+  -zLength / 2
 ];
-const rectDepth = 2;
-const ratio = 5 / 3;
+const color_beige = new THREE.Color("#f8f5f0");
 const color1 = new THREE.Color("#512C8A");
 const color2 = new THREE.Color("#2F9B39");
+const color3 = new THREE.Color("#A49096");
+const color4 = new THREE.Color("#B4A0A6");
+const color_greenTop = new THREE.Color("#328039");
+const color_ocean1 = new THREE.Color("#7db5ff");
+const color_ocean2 = new THREE.Color("#8cdbed");
 
-// const AxGr = React.memo(function AxGr(step, ...props){
-//   const XAxis1 =
-//     <>
-//       {
-//         Array(xSteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-//           return <mesh key={idx} position={[xPadding + item * ((xLength - 2 * xPadding) / (xSteps - 1)), -tickLength, zLength]}>
-//             <If if={step <= 2}>
-//               <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-//               <TextBox text={String.fromCharCode(88+item)} anchorX={"center"} anchorY={"top"} /> // Label
-//             </If>
-//             <If if={step <= 4}>
-//               <Line key={idx+100} color={"lightgrey"} start={[0, tickLength, 0]} end={[0, tickLength, -zLength]} /> // Grid
-//             </If>
-//             <If if={step <= 2}>
-//               <TextBox position={[-4, (idx==0?xyzProps.dataA1[0]:xyzProps.dataB1[0]) / 5 + 3, 0]}
-//                 text={"Jan."} anchorX={"center"} anchorY={"bottom"} label={null}/>
-//               <TextBox position={[4, (idx==0?xyzProps.dataA1[xyzProps.dataA1.length - 1]:xyzProps.dataB1[xyzProps.dataB1.length - 1]) / 5 + 3, 0]}
-//                 text={"Dec."} anchorX={"center"} anchorY={"bottom"} label={null}/>
-//             </If>
-//           </mesh>
-//         })
-//       }
-//       <If if={step <= 2}>
-//         <TextBox
-//        position={[xLength / 2, -6, zLength]}
-//           text={"City"} anchorX={"center"} anchorY={"bottom"} label={XAXIS1}/>
-//       </If>
-//     </>
-//
-//   const YAxis1 =
-//   <>
-//     {
-//       Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-//         return <mesh key={idx} position={[-tickLength, item * ((yLength - 2 * yPadding) / (ySteps - 1)), 0]}>
-//           <If if={step >= 1 && step <= 4}>
-//             <Line key={idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} /> // Tick
-//             <TextBox text={0 + 30 * item} anchorX={"right"} anchorY={"middle"} /> // Label
-//           </If>
-//           <If if={step <= 4}>
-//             <Line key={idx+100} color={"lightgrey"} start={[tickLength, 0, 0]} end={[xLength, 0, 0]} /> // Grid
-//           </If>
-//           <If if={step >= 2 && step <= 5}>
-//             <Line key={idx+200} color={"lightgrey"} start={[xLength, 0, 0]} end={[xLength, 0, zLength]} /> // Grid
-//           </If>
-//         </mesh>
-//       })
-//     }
-//     <If if={step >= 1 && step <= 4}>
-//       <group position={[-6, yLength / 2, -6]}>
-//         <TextBox text={"Food Consumption(ton)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS1}/>
-//       </group>
-//     </If>
-//   </>
-//
-//   const YAxis2 =
-//   <>
-//     {
-//       Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-//         return <mesh key={idx} position={[yPadding + item * ((yLength - 2 * yPadding) / (ySteps - 1)), -tickLength, -tickLength]}>
-//           <If if={step >= 6}>
-//             <Line key={idx} color={"black"} start={[0, 0, tickLength]} end={[0, 0, 0]} /> // Tick
-//             <TextBox text={0 + 10 * item} anchorX={"right"} anchorY={"middle"} /> // Label
-//           </If>
-//           <If if={step >= 5}>
-//               <Line key={idx+100} color={"lightgrey"} start={[0, 0, 0]} end={[0, 0, zLength]} /> // Grid
-//           </If>
-//         </mesh>
-//       })
-//     }
-//     <If if={step >= 6}>
-//       <group position={[xLength / 2, 0, -6]}>
-//         <TextBox text={"Vegetable + Grain Consumption(%)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS2}/>
-//       </group>
-//     </If>
-//   </>
-//
-//   const ZAxis1 =
-//   <>
-//     {
-//       Array(xyzProps.dataA1.length).fill(0).map((x, y) => x + y).map((item, idx) => {
-//         return <mesh key={idx} position={[0, -tickLength, zPadding + item * ((zLength - 2 * zPadding) / (zSteps - 1))]}>
-//           <If if={step >= 4}>
-//             <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-//             <TextBox text={1 + 1 * item} anchorX={"center"} anchorY={"top"} /> // Label
-//           </If>
-//           <Line key={idx+100} color={"lightgrey"} start={[0, tickLength, 0]} end={[xLength, tickLength, 0]} /> // Grid
-//         </mesh>
-//       })
-//     }
-//     <If if={step >= 4}>
-//       <group position={[-6, -6, zLength / 2]}>
-//         <TextBox text={"Month"} anchorX={"center"} anchorY={"bottom"} label={ZAXIS1}/>
-//       </group>
-//     </If>
-//   </>
-//
-//   return(
-//     <group position={centerPos}>
-//       {XAxis1}
-//       {YAxis1}
-//       {ZAxis1}
-//       {YAxis2}
-//       <If if={step <= 4}>
-//         <Line color={"black"} start={[0, 0, zLength]} end={[xLength, 0, zLength]} /> // X-Axis
-//         <Line color={"black"} start={[0, 0, 0]} end={[0, yLength, 0]} /> // Y-Axis
-//       </If>
-//       <If if={step == 5}>
-//         <Line color={"black"} start={[xLength, 0, 0]} end={[xLength, yLength, 0]} /> // Second Y-Axis
-//       </If>
-//       <Line color={"black"} start={[0, 0, 0]} end={[0, 0, zLength]} /> // Z-Axis
-//       <If if={step >= 4}>
-//         <Line color={"black"} start={[0, 0, 0]} end={[xLength, 0, 0]} /> // X-Axis2
-//       </If>
-//     </group>
-//   )
-// });
 
-//
 function AxGr({step}){
   const XAxis1 = useMemo(() =>
     <>
       {
         Array(xSteps).fill(0).map((x, y) => x + y).map((item, idx) => {
           return <mesh key={idx} position={[xPadding + item * ((xLength - 2 * xPadding) / (xSteps - 1)), -tickLength, zLength]}>
-            <If if={step <= 2}>
-              <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-              <TextBox text={String.fromCharCode(88+item)} anchorX={"center"} anchorY={"top"} /> // Label
-            </If>
-            <If if={step <= 4}>
-              <Line key={idx+100} color={"lightgrey"} start={[0, tickLength, 0]} end={[0, tickLength, -zLength]} /> // Grid
-            </If>
-            <If if={step <= 2}>
-              <group position={[-4, (idx==0?xyzProps.dataA1[0]:xyzProps.dataB1[0]) / 5 + 3, 0]}>
-                <TextBox text={"Jan."} anchorX={"center"} anchorY={"bottom"} label={null}/> // X-Axis2
-              </group>
-              <group position={[4, (idx==0?xyzProps.dataA1[xyzProps.dataA1.length - 1]:xyzProps.dataB1[xyzProps.dataB1.length - 1]) / 5 + 3, 0]}>
-                <TextBox text={"Dec."} anchorX={"center"} anchorY={"bottom"} label={null}/> // X-Axis2
-              </group>
+            <If if={true}>
+              <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} />
+              <TextBox text={0 + idx * 1 + "M"} anchorX={"center"} anchorY={"top"} />
             </If>
           </mesh>
         })
       }
-      <If if={step <= 2}>
+      <If if={true}>
         <group position={[xLength / 2, -6, zLength]}>
-          <TextBox text={"City"} anchorX={"center"} anchorY={"bottom"} label={XAXIS1}/>
+          <TextBox text={"Population"} anchorX={"center"} anchorY={"bottom"} label={XAXIS1}/>
         </group>
       </If>
     </>, [step]);
@@ -179,65 +57,18 @@ function AxGr({step}){
   <>
     {
       Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-        return <mesh key={idx} position={[-tickLength, item * ((yLength - 2 * yPadding) / (ySteps - 1)), 0]}>
-          <If if={step >= 1 && step <= 4}>
-            <Line key={idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} /> // Tick
-            <TextBox text={0 + 30 * item} anchorX={"right"} anchorY={"middle"} /> // Label
-          </If>
-          <If if={step <= 4}>
-            <Line key={idx+100} color={"lightgrey"} start={[tickLength, 0, 0]} end={[xLength, 0, 0]} /> // Grid
-          </If>
-          <If if={step >= 2 && step <= 5}>
-            <Line key={idx+200} color={"lightgrey"} start={[xLength, 0, 0]} end={[xLength, 0, zLength]} /> // Grid
+        return <mesh key={idx} position={[-tickLength, xyzProps.yPadding + (item + 1) * (yLength - 2 * yPadding) / ySteps, 0]}>
+          <If if={idx % 2 == 0}>
+            <Line key={idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} />
+            <TextBox text={(idx>=(ySteps-2)?"> ":"") + (5 + 5 * item) + "K"} anchorX={"right"} anchorY={"middle"} />
+            <Line key={idx+100} color={"lightgrey"} start={[tickLength, 0, 0]} end={[xLength, 0, 0]} />
           </If>
         </mesh>
       })
     }
-    <If if={step >= 1 && step <= 4}>
-      <group position={[-6, yLength / 2, -6]}>
-        <TextBox text={"Food Consumption(ton)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS1}/>
-      </group>
-    </If>
-  </>, [step]);
-
-  const YAxis2 = useMemo(() =>
-  <>
-    {
-      Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-        return <mesh key={idx} position={[yPadding + item * ((yLength - 2 * yPadding) / (ySteps - 1)), -tickLength, -tickLength]}>
-          <If if={step >= 6}>
-            <Line key={idx} color={"black"} start={[0, 0, tickLength]} end={[0, 0, 0]} /> // Tick
-            <TextBox text={0 + 10 * item} anchorX={"right"} anchorY={"middle"} /> // Label
-          </If>
-          <If if={step >= 5}>
-              <Line key={idx+100} color={"lightgrey"} start={[0, 0, 0]} end={[0, 0, zLength]} /> // Grid
-          </If>
-        </mesh>
-      })
-    }
-    <If if={step >= 6}>
-      <group position={[xLength / 2, 0, -6]}>
-        <TextBox text={"Vegetable + Grain Consumption(%)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS2}/>
-      </group>
-    </If>
-  </>, [step]);
-
-  const ZAxis1 = useMemo(() =>
-  <>
-    {
-      Array(xyzProps.dataA1.length).fill(0).map((x, y) => x + y).map((item, idx) => {
-        return <mesh key={idx} position={[0, -tickLength, zPadding + item * ((zLength - 2 * zPadding) / (zSteps - 1))]}>
-          <If if={step >= 4}>
-            <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-            <TextBox text={1 + 1 * item} anchorX={"center"} anchorY={"top"} /> // Label
-          </If>
-          <Line key={idx+100} color={"lightgrey"} start={[0, tickLength, 0]} end={[xLength, tickLength, 0]} /> // Grid
-        </mesh>
-      })
-    }
-    <If if={step >= 4}>
-      <group position={[-6, -6, zLength / 2]}>
-        <TextBox text={"Month"} anchorX={"center"} anchorY={"bottom"} label={ZAXIS1}/>
+    <If if={true}>
+      <group position={[-10, yLength / 2, 6]}>
+        <TextBox text={"Median Household Income(A$)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS1}/>
       </group>
     </If>
   </>, [step]);
@@ -246,106 +77,119 @@ function AxGr({step}){
     <group position={centerPos}>
       {XAxis1}
       {YAxis1}
-      {ZAxis1}
-      {YAxis2}
-      <If if={step <= 4}>
-        <Line color={"black"} start={[0, 0, zLength]} end={[xLength, 0, zLength]} /> // X-Axis
-        <Line color={"black"} start={[0, 0, 0]} end={[0, yLength, 0]} /> // Y-Axis
+      <If if={true}>
+        <Line color={"black"} start={[0, 0, zLength]} end={[xLength, 0, zLength]} />
+        <Line color={"black"} start={[0, 0, 0]} end={[0, yLength, 0]} />
       </If>
-      <If if={step == 5}>
-        <Line color={"black"} start={[xLength, 0, 0]} end={[xLength, yLength, 0]} /> // Second Y-Axis
+      <If if={step >= 2 && step <= 3}>
+        <ChangePoint
+          color={"black"} linewidth={3} text={"Change Point"}
+          start={[0, yLength / 2, zLength+1]}
+          end={[xLength, yLength / 2, zLength+1]} />
       </If>
-      <Line color={"black"} start={[0, 0, 0]} end={[0, 0, zLength]} /> // Z-Axis
-      <If if={step >= 4}>
-        <Line color={"black"} start={[0, 0, 0]} end={[xLength, 0, 0]} /> // X-Axis2
+      <If if={step >= 9}>
+        <ChangePoint
+          color={"black"} linewidth={3} text={"Change Point"}
+          start={[0, yLength * 0.74, zLength+1]}
+          end={[xLength, yLength * 0.74, zLength+1]} />
       </If>
     </group>
   )
 }
 
-function MainGroup1(props){
-  const xStep = 8;
-  const rectWidth = 6, rectDepth = 2;
+function DiscGroup(props){
+  const ref = useRef();
 
-  const BarGroup1 = useMemo(() =>
+  let scaleWeight = 1;
+  let discPosition = xyzProps.yPadding;
+  let radius = [10, 12, 15, 18, 42, 35, 31, 19, 11, 5];
+  let xMax = 50;
+  let height = (xyzProps.yLength - xyzProps.yPadding * 2) / (radius.length);
+  let animationSpeed = 1.5;
+
+  const animating = false;
+
+  useFrame((clock) =>{
+    if(props.step >= 3 && props.step <= 8 && animating){
+      // corner view makes discGroup breathe...?
+      ref.current.position.x = xyzProps.xPadding + 2.0 * Math.sin(clock.clock.elapsedTime);
+      ref.current.position.y = 0                 + 1.5 * Math.sin(clock.clock.elapsedTime);
+      ref.current.position.z = -4                + 2.0 * Math.sin(clock.clock.elapsedTime);
+
+      ref.current.rotation.x = 2.5 * Math.PI / 360 + 0.8 * Math.PI / 360 * Math.sin(animationSpeed * 0.7 * clock.clock.elapsedTime);
+      ref.current.rotation.y = 0.0 * Math.PI / 360 + 0.0 * Math.PI / 360 * Math.sin(animationSpeed * 1.3 * clock.clock.elapsedTime + 1);
+      ref.current.rotation.z = -2.0 * Math.PI / 360 + 0.0 * Math.PI / 360 * Math.sin(animationSpeed * 0.6 * clock.clock.elapsedTime + 2);
+    }else{
+      // init the positiona and rotation for legibility
+      ref.current.position.x = xyzProps.xPadding + (ref.current.position.x - xyzProps.xPadding) * 0.85;
+      ref.current.position.y = 0 + ref.current.position.y * 0.85;
+      ref.current.position.z = 0 + ref.current.position.z * 0.85;
+
+      ref.current.rotation.x = 0 + ref.current.rotation.x * 0.85;
+      ref.current.rotation.y = 0 + ref.current.rotation.y * 0.85;
+      ref.current.rotation.z = 0 + ref.current.rotation.z * 0.85;
+    }
+  })
+
+  const DiscGroup1 = useMemo(() =>
   <group position={centerPos}>
+    <group ref={ref} position={[xyzProps.xPadding, 0, 0]}>
     {
-      xyzProps.dataA1.map((item, idx) => {
-        return <mesh key={idx}
-          position={[
-            xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
-            0,
-            zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2]}>
-            <Rect width={rectWidth} height={item} depth={rectDepth} color={color1} opacity={idx==xyzProps.dataA1.length-1?1:1}/>
-          </mesh>
+      Array(10).fill(0).map((x, y) => x + y).map((item, idx) => {
+        return(
+          <Disc
+            key={idx}
+            bottomPosition={discPosition + (idx+0.5) * height}
+            radius={radius[idx] * (xyzProps.xLength - xyzProps.xPadding * 2) / xMax}
+            height={height - 0.1}
+            color={color_greenTop}
+            greenTop={(idx == radius.length-1) || (radius[idx+1] < radius[idx])} />
+        );
       })
     }
-    {
-      xyzProps.dataB1.map((item, idx) => {
-        return <mesh key={idx}
-            position={[
-              xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / (idx == 0?  -1.5 : 1.5),
-              0,
-              zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}>
-            <Rect key={idx} width={rectWidth} height={item} depth={rectDepth} color={color2} opacity={idx==xyzProps.dataB1.length-1?1:1}/>
-          </mesh>
-      })
-    }
+    </group>
   </group>, []);
 
   return(
-    <>{BarGroup1}</>
+    <>{DiscGroup1}</>
   );
 }
 
-function MainGroup2({step, opacity}){
+function OceanGroup(props){
+  const ref = useRef();
 
-  const BarGroup2 = useMemo(() =>
-  <group position={centerPos}>
-    {
-      xyzProps.dataA1.map((item, idx) => {
-        return <mesh
-          key={idx}
-          position={[
-            0 + xyzProps.dataA2[idx] / ratio /2,
-            0,
-            zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2]}>
-            <Rect width={xyzProps.dataA2[idx] / ratio} height={item} depth={rectDepth} color={color1}
-              opacity={
-                step<=8? (idx >= 5)? opacity : 1
-                  : step<=10? (idx > 4)? opacity : (idx < 4)? 1.2 - opacity : 1
-                  : (idx < 4)? 1.2 - opacity: 1
-                }
-            />
-          </mesh>
-      })
+  let scaleWeight = 1;
+  let radius = [10, 12, 15, 18, 42, 35, 31, 19, 11, 5];
+  let height = (xyzProps.yLength - xyzProps.yPadding * 2) / (radius.length);
+
+  useFrame((clock) =>{
+    if(props.step >= 3){
+      // water level shift
+      ref.current.position.y = props.waterLevel * 100 + 0 * Math.sin(0.4 * clock.clock.elapsedTime);
+    }else{
+      // init the position
+      ref.current.position.y = props.waterLevel * 100;
     }
-    {
-      xyzProps.dataB1.map((item, idx) => {
-        return <mesh
-          key={idx}
-          position={[
-            0 + xyzProps.dataB2[idx] / ratio / 2,
-            0,
-            zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2]}>
-            <Rect width={xyzProps.dataB2[idx] / ratio} height={item} depth={rectDepth} color={color2}
-              opacity={
-                step<=8? (idx >= 5)? opacity : 1
-                  : step<=10? (idx > 4 )? opacity : (idx < 4)? 1.2 - opacity : 1
-                  : (idx < 4)? 1.2 - opacity: 1
-                }
-            />
-          </mesh>
-      })
-    }
-  </group>, [step, opacity]);
+  })
+
+  const OceanGroup1 = useMemo(() =>
+    <group ref={ref} position={[0, 0, 4000]}>
+      {
+        <group position={[0, -xyzProps.yLength/2, 0]}>
+          <Rect width={10000} height={1} depth={10000} color={color_ocean2} opacity={0.8}/>
+        </group>
+      }
+      {
+        // <Ocean surfacePosition={-xyzProps.yLength/2} />
+      }
+    </group>, []);
 
   return(
-    <>{BarGroup2}</>
-  )
+    <>{OceanGroup1}</>
+  );
 }
 
-function TextGroup({texts, position, zoom, type}){
+function TextGroup({texts, position, type}){
 
   return (
     <group>{
@@ -354,7 +198,6 @@ function TextGroup({texts, position, zoom, type}){
           key={"textBox_"+type+idx}
           text={text}
           textType={type}
-          zoom={zoom}
           position={position[idx]}
           lookAt={false}
           anchorX={"center"}
@@ -367,40 +210,32 @@ function TextGroup({texts, position, zoom, type}){
 
 const TextComponent = React.forwardRef((props, ref) =>{
 
-  const textPos = [-xyzProps.xLength / 2, -xyzProps.yLength / 2, -xyzProps.zLength / 2];
-  const xWidth = -2*textPos[0]
   const titles = [title];
-  const texts = [text1, text2, text3, text4, text5, text6];
+  const texts = [text1, text2, text3, text4, text5];
 
   return(
-    <group position={textPos} ref={ref}>
+    <group ref={ref}>
       <TextGroup texts={titles} type={"title"}
-        position={[[0, xyzProps.yLength / 2, 0]]} />
+        position={[[0, -0.000 * TextComponentHeight, 0]]} />
       <TextGroup texts={texts} type={"plain"}
-        zoom={props.zoom}
         position={[
-          [0, -100, 0],
-          [xWidth*0.75, -320, 0],
-          [0, -480, 0],
-          [0, -640, 0],
-          [0, -830, 0],
-          [0, -1000, 0]
+          [0, -0.160 * TextComponentHeight, 0],
+          [0, -0.330 * TextComponentHeight, 0],
+          [0, -0.500 * TextComponentHeight, 0],
+          [0, -0.700 * TextComponentHeight, 0],
+          [0, -0.985 * TextComponentHeight, 0],
         ]} />
     </group>
   );
 });
 
 const VisComponent = React.forwardRef((props, ref) =>{
-
-
   return(
     <group position={[0, 0, 0]} ref={ref}>
       <AxGr step={props.step} />
-      <If if={props.step < 4}>
-        <MainGroup1 />
-      </If>
-      <If if={props.step >= 4}>
-        <MainGroup2 step={props.step} opacity={props.opacity} />
+      <If if={true}>
+        <DiscGroup step={props.step} />
+        <OceanGroup waterLevel={props.waterLevel} step={props.step} />
       </If>
     </group>
   )
@@ -422,8 +257,13 @@ const OrthoCamera = React.forwardRef((props, ref) => {
         enableRotate={false}
         zoomSpeed={0.25/props.zoom}
         style={{zIndex: 5}}/>
-      <ambientLight
-        intensity={0.5}/>
+      {
+        <ambientLight intensity={0.6} color={color_beige} />
+        // <hemisphereLight intensity={2.6} skyColor={color_beige} isSky={true} />
+      }
+      {
+        <Sky />
+      }
     </>
   );
 });
@@ -434,208 +274,72 @@ function CanvasI({mode}) {
   // 해당 정보는 CanvasI가 eventListener를 통해 얻은 scroll value를 실제 스크롤이 아닌, progress 정도로 변환한 진행 척도와 함께 전달됩니다.
 
   const canvas = useRef();
-  const speed = 0.35, smooth = 12, limit = 2 / window.devicePixelRatio;
-  const dsLength = 1000;
+  const speed = 0.35, smooth = 12, limit = 2.5 / window.devicePixelRatio;
   let scroll = 0;
+  let target = 0;
   const [idx, setIdx] = useState(0);
 
   // animation에 관련한 정보들은 페이지가 처음 읽힐 때 memo가 이루어집니다.(baked)
-  const stoppers = useMemo(() => [0.01, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.01], []);
-  const clipPositions = useMemo(() => [0.00, 0.11, 0.32, 0.52, 0.68, 0.83, 0.99, 1.00], []);
-  function getClips(){
-    let clips = [];
-    clips.push({
-      "target": "group1",
-      "name": "group1_init",
-      "pos": [0, 0, 0],
-      "rot": [0, 0, 0],
-      "opacity": 1,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_XY",
-      "pos": [0, 0, 0], "rot": [0, Math.PI/2, 0], "opacity": 1,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_ZY",
-      "pos": [0, 0, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 1,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_zoom1",
-      "pos": [30, 10, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 0.2,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_zoom2",
-      "pos": [-20, 0, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 1,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_last",
-      "pos": [0, 0, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 0.2,
-    });
-
-    clips.push({
-      "target": "camera", "name": "cam_init",
-      "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 6.25,
-    });
-    clips.push({
-      "target": "camera", "name": "cam_zoom1",
-      "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 12,
-    });
-    clips.push({
-      "target": "camera", "name": "cam_zoom2",
-      "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 9,
-    });
-    return clips;
-  }
-  function getTransitions(){
-    let transitions = [];
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 1, "clip": "group1_init"}, "to": {"frame": 2, "clip": "group1_XY"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 2, "clip": "group1_XY"}, "to": {"frame": 3, "clip": "group1_ZY"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 3, "clip": "group1_ZY"}, "to": {"frame": 4, "clip": "group1_zoom1"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 4, "clip": "group1_zoom1"}, "to": {"frame": 5, "clip": "group1_zoom2"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 5, "clip": "group1_zoom2"},
-      "to": {"frame": 6, "clip": "group1_last"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 1, "clip": "cam_init"}, "to": {"frame": 2, "clip": "cam_init"},
-      "easing": "bezier",
-      "motion": {
-        "attribute": "pos",
-        "type": "sin", // sin, linear, ...
-        "args": {
-          "axis": 1, // 0=x, 1=y, 2=z, pos should have axis
-          "height": 1000 // sin should have height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 2, "clip": "cam_init"}, "to": {"frame": 3, "clip": "cam_init"},
-      "easing": "bezier",
-      "motion": {
-        "attribute": "pos",
-        "type": "sin", // sin, linear, ...
-        "args": {
-          "axis": 0, // 0=x, 1=y, 2=z, pos should have axis
-          "height": -1000 // sin should have height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 3, "clip": "cam_init"}, "to": {"frame": 4, "clip": "cam_zoom1"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 4, "clip": "cam_zoom1"}, "to": {"frame": 5, "clip": "cam_zoom2"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 5, "clip": "cam_zoom2"}, "to": {"frame": 6, "clip": "cam_init"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-
-    return transitions;
-  }
+  const stoppers = useMemo(() => stoppers_DS2, []);
+  const clipPositions = useMemo(() => clipPositions_DS2, []);
   const clips = useMemo(() => getClips(), []);
   const transitions = useMemo(() => getTransitions(), []);
-  const animations = useMemo(() => AnimationGenerator(clipPositions, stoppers, clips, transitions), []);
+  const animations = useMemo(() => AnimationGenerator(totalFrame, clipPositions, stoppers, clips, transitions), []);
   const steps = useMemo(() => statesConverter(clipPositions, stoppers), []);
 
   // 핸들 휠은 그냥 휠 이벤트가 발견되면 scroll을 계산하고, idx를 찾아서 수정합니다.
   // CanvasI의 유일한 state는 idx입니다! 이는 CanvasComponents로 넘겨지며, 이외의 Components들은 바뀔 일이 없어야 합니다.
   const handleWheel = useCallback((e) => {
+    let currentIdx = Math.floor(scroll * totalFrame) == totalFrame? totalFrame-1 : Math.floor(scroll * totalFrame);
+    // animation[1] here is camera animation which always has "zoom"
     const delta = e.wheelDelta;
-    const normalizedScroll = (Math.abs(delta * speed) > limit? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed));
-    scroll = Math.max(0, Math.min(scroll + normalizedScroll / dsLength, 1)); // limit the progress equal or under 1
+    const normalizedScroll = (Math.abs(delta * speed) > limit ? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed));
+
+    scroll = Math.max(0, Math.min(scroll + normalizedScroll / 1000, 1)); // limit the progress equal or under 1
     let newIdx = Math.floor(scroll * totalFrame) == totalFrame? totalFrame-1 : Math.floor(scroll * totalFrame);
     if(idx != newIdx){
-      setIdx(newIdx);
+      target = newIdx;
       // console.log("idx changed to: ", idx, newIdx);
     }
-    // animate();
   }, [speed, limit, totalFrame]);
+
+  // here is animation request for make idx smooth
+  const requestRef = React.useRef();
+  const previousTimeRef = React.useRef();
+
+  const animate = time => {
+    if (previousTimeRef.current != undefined) {
+      const deltaTime = time - previousTimeRef.current;
+      // console.log(target);
+      // Pass on a function to the setter of the state
+      // to make sure we always have the latest state
+      setIdx(prevIdx => {
+        // console.log(prevIdx);
+        return (Math.floor(prevIdx + (target - prevIdx) * 0.07))}
+      );
+    }
+    previousTimeRef.current = time;
+    requestRef.current = requestAnimationFrame(animate);
+  }
 
   useLayoutEffect(() =>{
     canvas.current.addEventListener('wheel', handleWheel, {passive: false});
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
   return (
     <div className={"CanvasI" + (mode==ImmersiveNon?'N':'I')}>
-      <Canvas
-        ref={canvas}
-        dpr={Math.max(window.devicePixelRatio, 2)}>
-        <CanvasComponents idx={idx} steps={steps} animations={animations} />
-      </Canvas>
+      <Suspense fallback={<></>}>
+        <Canvas
+          ref={canvas}
+          dpr={Math.max(window.devicePixelRatio, 2)}
+          gl={{ alpha: true, antialias: true, toneMapping: THREE.NoToneMapping }}
+          linear flat
+          >
+          <CanvasComponents idx={idx} steps={steps} animations={animations} />
+        </Canvas>
+      </Suspense>
     </div>
   )
 }
@@ -645,11 +349,11 @@ function CanvasComponents({idx, steps, animations, ...props}){
   const mainViz = useRef();
   const mainText = useRef();
 
+  const {gl} = useThree();
+
   const [step, setStep] = useState(0);
   const [zoom, setZoom] = useState(6.25);
-  const [opacity, setOpacity] = useState(1);
-
-  const textLength = 1000;
+  const [waterLevel, setWaterLevel] = useState(1);
 
   useFrame((state, delta) => {
     let preStep = steps.findIndex((ele) => ele >= idx/totalFrame) - 1;
@@ -659,7 +363,7 @@ function CanvasComponents({idx, steps, animations, ...props}){
     let animation_camera = animations[1]["animation"][idx];
 
     if(mainViz.current && mainText.current && mainCamera.current){
-      setOpacity(animation_group1.opacity);
+      setWaterLevel(animation_group1.waterLevel);
       mainViz.current.position.setX(animation_group1.pos[0]);
       mainViz.current.position.setY(animation_group1.pos[1]);
       mainViz.current.position.setZ(animation_group1.pos[2]);
@@ -668,25 +372,35 @@ function CanvasComponents({idx, steps, animations, ...props}){
       mainViz.current.rotation.z = animation_group1.rot[2];
 
       setZoom(animation_camera.zoom);
-      mainText.current.position.setX(animation_camera.pos[0] * 0.9);
-      mainText.current.position.setY(animation_camera.pos[1] * 0.9 + idx / totalFrame * textLength);
-      mainText.current.position.setZ(animation_camera.pos[2] * 0.9);
-
       mainCamera.current.position.setX(animation_camera.pos[0]);
       mainCamera.current.position.setY(animation_camera.pos[1]);
       mainCamera.current.position.setZ(animation_camera.pos[2]);
       mainCamera.current.zoom = animation_camera.zoom;
-
       mainCamera.current.updateProjectionMatrix();
       mainCamera.current.lookAt(0, 0, 0);
+
+      mainText.current.position.multiply(new THREE.Vector3(0, 0, 0));
+      mainText.current.lookAt(mainCamera.current.position.x, mainCamera.current.position.y, mainCamera.current.position.z);
+      mainText.current.position.setY(idx / totalFrame * TextComponentHeight * 6.25 / mainCamera.current.zoom);
+      mainText.current.position.multiply(new THREE.Vector3(
+        0, 1, 0
+      )).add(new THREE.Vector3(
+        mainCamera.current.position.x * 0.9,
+        mainCamera.current.position.y * 0.9,
+        mainCamera.current.position.z * 0.9
+      ));
     }
   });
+
+  useLayoutEffect(() => {
+    console.log(gl);
+  }, []);
 
   return(
     <>
       <OrthoCamera ref={mainCamera} zoom={zoom} />
-      <VisComponent ref={mainViz} step={step} opacity={opacity} />
-      <TextComponent ref={mainText} zoom={zoom} />
+      <VisComponent ref={mainViz} step={step} waterLevel={waterLevel} />
+      <TextComponent ref={mainText} />
     </>
   )
 }

@@ -8,7 +8,6 @@ import { StaticNon1, StaticNon2, StaticImm, AnimatedNon, AnimatedImm, ImmersiveN
 import { If } from '../../BasicElements/BasicElements.js';
 import '../../BasicElements/Main.css'
 
-import { Overlays } from './Overlays.js';
 import { CanvasA } from './Viz_Animated.js';
 import { CanvasI } from './Viz_Immersive.js';
 import Quiz1 from './Quiz_1.js';
@@ -149,6 +148,8 @@ function CompletionPage(props){
 }
 
 function Main2(){
+  const overlay = useRef();
+  const scroll = useRef(0);
   const scrollLog = useRef([]);
   const [sequence, setSequence] = useState([])
   const [quiz1, setQuiz1] = useState(false)
@@ -223,17 +224,16 @@ function Main2(){
       <If if={quiz2}><Quiz2 ScrollData={scrollData} type={type} PersonID={PersonID} Sequence={sequence}/></If>
       <If if={!quiz1 && !quiz2}>
         <div style={{width: "100%", height: "100%"}} className="PageContents">
-          <div className="Viz DS1_2">
+          <div className="Viz DS2">
             <If if={type == EndOfTask}>
               <CompletionPage completionCode={completionCode} type={type} PersonID={PersonID}/>
             </If>
             <If if={type != EndOfTask}>
-              <Overlays mode={type} onClick={getQuiz} />
               <If if={type == ImmersiveImm || type == ImmersiveNon}>
-                <CanvasI mode={type} />
+                <CanvasI mode={type} overlay={overlay} scroll={scroll} />
               </If>
               <If if={type == AnimatedImm || type == AnimatedNon}>
-                <CanvasA mode={type} />
+                <CanvasA mode={type} overlay={overlay} scroll={scroll} />
               </If>
             </If>
           </div>

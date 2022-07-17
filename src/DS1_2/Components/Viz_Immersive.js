@@ -5,7 +5,7 @@ import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@r
 
 import { LineMark, Line, TextBox, Rect, If } from '../../BasicElements/BasicElements.js';
 import { statesConverter, AnimationGenerator } from '../../BasicElements/BasicElements.js';
-import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, groupVarNum, camVarNum } from '../../BasicElements/Constants.js';
+import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, TextComponentHeight, groupVarNum, camVarNum } from '../../BasicElements/Constants.js';
 import { title, text1, text2, text3, text4, text5, text6 } from '../../BasicElements/Constants.js';
 import { ImmersiveNon, ImmersiveImm } from '../../BasicElements/Constants.js';
 import '../styles/Canvas.css';
@@ -26,124 +26,6 @@ const ratio = 5 / 3;
 const color1 = new THREE.Color("#512C8A");
 const color2 = new THREE.Color("#2F9B39");
 
-// const AxGr = React.memo(function AxGr(step, ...props){
-//   const XAxis1 =
-//     <>
-//       {
-//         Array(xSteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-//           return <mesh key={idx} position={[xPadding + item * ((xLength - 2 * xPadding) / (xSteps - 1)), -tickLength, zLength]}>
-//             <If if={step <= 2}>
-//               <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-//               <TextBox text={String.fromCharCode(88+item)} anchorX={"center"} anchorY={"top"} /> // Label
-//             </If>
-//             <If if={step <= 4}>
-//               <Line key={idx+100} color={"lightgrey"} start={[0, tickLength, 0]} end={[0, tickLength, -zLength]} /> // Grid
-//             </If>
-//             <If if={step <= 2}>
-//               <TextBox position={[-4, (idx==0?xyzProps.dataA1[0]:xyzProps.dataB1[0]) / 5 + 3, 0]}
-//                 text={"Jan."} anchorX={"center"} anchorY={"bottom"} label={null}/>
-//               <TextBox position={[4, (idx==0?xyzProps.dataA1[xyzProps.dataA1.length - 1]:xyzProps.dataB1[xyzProps.dataB1.length - 1]) / 5 + 3, 0]}
-//                 text={"Dec."} anchorX={"center"} anchorY={"bottom"} label={null}/>
-//             </If>
-//           </mesh>
-//         })
-//       }
-//       <If if={step <= 2}>
-//         <TextBox
-//        position={[xLength / 2, -6, zLength]}
-//           text={"City"} anchorX={"center"} anchorY={"bottom"} label={XAXIS1}/>
-//       </If>
-//     </>
-//
-//   const YAxis1 =
-//   <>
-//     {
-//       Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-//         return <mesh key={idx} position={[-tickLength, item * ((yLength - 2 * yPadding) / (ySteps - 1)), 0]}>
-//           <If if={step >= 1 && step <= 4}>
-//             <Line key={idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} /> // Tick
-//             <TextBox text={0 + 30 * item} anchorX={"right"} anchorY={"middle"} /> // Label
-//           </If>
-//           <If if={step <= 4}>
-//             <Line key={idx+100} color={"lightgrey"} start={[tickLength, 0, 0]} end={[xLength, 0, 0]} /> // Grid
-//           </If>
-//           <If if={step >= 2 && step <= 5}>
-//             <Line key={idx+200} color={"lightgrey"} start={[xLength, 0, 0]} end={[xLength, 0, zLength]} /> // Grid
-//           </If>
-//         </mesh>
-//       })
-//     }
-//     <If if={step >= 1 && step <= 4}>
-//       <group position={[-6, yLength / 2, -6]}>
-//         <TextBox text={"Food Consumption(ton)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS1}/>
-//       </group>
-//     </If>
-//   </>
-//
-//   const YAxis2 =
-//   <>
-//     {
-//       Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-//         return <mesh key={idx} position={[yPadding + item * ((yLength - 2 * yPadding) / (ySteps - 1)), -tickLength, -tickLength]}>
-//           <If if={step >= 6}>
-//             <Line key={idx} color={"black"} start={[0, 0, tickLength]} end={[0, 0, 0]} /> // Tick
-//             <TextBox text={0 + 10 * item} anchorX={"right"} anchorY={"middle"} /> // Label
-//           </If>
-//           <If if={step >= 5}>
-//               <Line key={idx+100} color={"lightgrey"} start={[0, 0, 0]} end={[0, 0, zLength]} /> // Grid
-//           </If>
-//         </mesh>
-//       })
-//     }
-//     <If if={step >= 6}>
-//       <group position={[xLength / 2, 0, -6]}>
-//         <TextBox text={"Vegetable + Grain Consumption(%)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS2}/>
-//       </group>
-//     </If>
-//   </>
-//
-//   const ZAxis1 =
-//   <>
-//     {
-//       Array(xyzProps.dataA1.length).fill(0).map((x, y) => x + y).map((item, idx) => {
-//         return <mesh key={idx} position={[0, -tickLength, zPadding + item * ((zLength - 2 * zPadding) / (zSteps - 1))]}>
-//           <If if={step >= 4}>
-//             <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-//             <TextBox text={1 + 1 * item} anchorX={"center"} anchorY={"top"} /> // Label
-//           </If>
-//           <Line key={idx+100} color={"lightgrey"} start={[0, tickLength, 0]} end={[xLength, tickLength, 0]} /> // Grid
-//         </mesh>
-//       })
-//     }
-//     <If if={step >= 4}>
-//       <group position={[-6, -6, zLength / 2]}>
-//         <TextBox text={"Month"} anchorX={"center"} anchorY={"bottom"} label={ZAXIS1}/>
-//       </group>
-//     </If>
-//   </>
-//
-//   return(
-//     <group position={centerPos}>
-//       {XAxis1}
-//       {YAxis1}
-//       {ZAxis1}
-//       {YAxis2}
-//       <If if={step <= 4}>
-//         <Line color={"black"} start={[0, 0, zLength]} end={[xLength, 0, zLength]} /> // X-Axis
-//         <Line color={"black"} start={[0, 0, 0]} end={[0, yLength, 0]} /> // Y-Axis
-//       </If>
-//       <If if={step == 5}>
-//         <Line color={"black"} start={[xLength, 0, 0]} end={[xLength, yLength, 0]} /> // Second Y-Axis
-//       </If>
-//       <Line color={"black"} start={[0, 0, 0]} end={[0, 0, zLength]} /> // Z-Axis
-//       <If if={step >= 4}>
-//         <Line color={"black"} start={[0, 0, 0]} end={[xLength, 0, 0]} /> // X-Axis2
-//       </If>
-//     </group>
-//   )
-// });
-
-//
 function AxGr({step}){
   const XAxis1 = useMemo(() =>
     <>
@@ -354,7 +236,6 @@ function TextGroup({texts, position, zoom, type}){
           key={"textBox_"+type+idx}
           text={text}
           textType={type}
-          zoom={zoom}
           position={position[idx]}
           lookAt={false}
           anchorX={"center"}
@@ -373,18 +254,18 @@ const TextComponent = React.forwardRef((props, ref) =>{
   const texts = [text1, text2, text3, text4, text5, text6];
 
   return(
-    <group position={textPos} ref={ref}>
+    <group ref={ref}>
       <TextGroup texts={titles} type={"title"}
-        position={[[0, xyzProps.yLength / 2, 0]]} />
+        position={[[0, -0.000 * TextComponentHeight, 0]]} />
       <TextGroup texts={texts} type={"plain"}
         zoom={props.zoom}
         position={[
-          [0, -100, 0],
-          [xWidth*0.75, -320, 0],
-          [0, -480, 0],
-          [0, -640, 0],
-          [0, -830, 0],
-          [0, -1000, 0]
+          [0, -0.100 * TextComponentHeight, 0],
+          [xWidth*0.75, -0.320 * TextComponentHeight, 0],
+          [0, -0.480 * TextComponentHeight, 0],
+          [0, -0.640 * TextComponentHeight, 0],
+          [0, -0.830 * TextComponentHeight, 0],
+          [0, -1.000 * TextComponentHeight, 0],
         ]} />
     </group>
   );
@@ -603,12 +484,11 @@ function CanvasI({mode}) {
         }
       }
     });
-
     return transitions;
   }
   const clips = useMemo(() => getClips(), []);
   const transitions = useMemo(() => getTransitions(), []);
-  const animations = useMemo(() => AnimationGenerator(clipPositions, stoppers, clips, transitions), []);
+  const animations = useMemo(() => AnimationGenerator(totalFrame, clipPositions, stoppers, clips, transitions), []);
   const steps = useMemo(() => statesConverter(clipPositions, stoppers), []);
 
   // 핸들 휠은 그냥 휠 이벤트가 발견되면 scroll을 계산하고, idx를 찾아서 수정합니다.
@@ -668,17 +548,23 @@ function CanvasComponents({idx, steps, animations, ...props}){
       mainViz.current.rotation.z = animation_group1.rot[2];
 
       setZoom(animation_camera.zoom);
-      mainText.current.position.setX(animation_camera.pos[0] * 0.9);
-      mainText.current.position.setY(animation_camera.pos[1] * 0.9 + idx / totalFrame * textLength);
-      mainText.current.position.setZ(animation_camera.pos[2] * 0.9);
-
       mainCamera.current.position.setX(animation_camera.pos[0]);
       mainCamera.current.position.setY(animation_camera.pos[1]);
       mainCamera.current.position.setZ(animation_camera.pos[2]);
       mainCamera.current.zoom = animation_camera.zoom;
-
       mainCamera.current.updateProjectionMatrix();
       mainCamera.current.lookAt(0, 0, 0);
+
+      mainText.current.position.multiply(new THREE.Vector3(0, 0, 0));
+      mainText.current.lookAt(mainCamera.current.position.x, mainCamera.current.position.y, mainCamera.current.position.z);
+      mainText.current.position.setY(idx / totalFrame * TextComponentHeight * 6.25 / mainCamera.current.zoom);
+      mainText.current.position.multiply(new THREE.Vector3(
+        0, 1, 0
+      )).add(new THREE.Vector3(
+        mainCamera.current.position.x * 0.9,
+        mainCamera.current.position.y * 0.9,
+        mainCamera.current.position.z * 0.9
+      ));
     }
   });
 
