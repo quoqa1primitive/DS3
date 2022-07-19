@@ -62,7 +62,6 @@ function Ocean({ surfacePosition, ...props }) {
   );
 }
 
-
 function Disc({ bottomPosition, radius, height, color, opacity=1, greenTop=false, ...props }){
   const ref = useRef();
   const color4 = new THREE.Color("#B4A0A6");
@@ -177,15 +176,6 @@ function TextBox({position=[0, 0, 0], lookAt=true, text, textType="default", anc
   useFrame((state) => {
     if(lookAt){
       ref.current.lookAt(new THREE.Vector3(state.camera.position.x, state.camera.position.y, state.camera.position.z));
-    }
-    // console.log(textType)
-    if((textType=="title") || (textType=="plain")) {
-      ref.current.scale.set(
-        6.25/state.camera.zoom,
-        6.25/state.camera.zoom,
-        1
-      );
-      refPosition.current.position.setComponent(1, position[1] * 6.25 / state.camera.zoom)
     }
     if(label == XAXIS1){
       // ref.current.rotateX(Math.PI / 2);

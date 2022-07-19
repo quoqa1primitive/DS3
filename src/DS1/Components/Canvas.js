@@ -1,13 +1,16 @@
 import * as THREE from 'three'
 import React, { useRef, useCallback, useEffect, useLayoutEffect, useState, useImperativeHandle, useMemo, Suspense } from 'react'
-import { Canvas, useFrame, extend } from '@react-three/fiber'
+import { Canvas as THREECanvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
+import { MiniMap } from '../../BasicElements/MiniMap.js';
 
-import { LineMark, Line, TextBox, Rect, If } from '../../BasicElements/BasicElements.js';
+import * as IMM from '../Animations/Immersive.js';
+import * as ANM from '../Animations/Animated.js';
+import { Line, TextBox, Rect, If } from '../../BasicElements/BasicElements.js';
 import { statesConverter, AnimationGenerator } from '../../BasicElements/BasicElements.js';
 import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, TextComponentHeight, groupVarNum, camVarNum } from '../../BasicElements/Constants.js';
 import { title, text1, text2, text3, text4, text5, text6 } from '../../BasicElements/Constants.js';
-import { ImmersiveNon, ImmersiveImm } from '../../BasicElements/Constants.js';
+import { Immersive, Animated } from '../../BasicElements/Constants.js';
 import '../styles/Canvas.css';
 
 let scale = 6.25;
@@ -227,7 +230,7 @@ function MainGroup2({step, opacity}){
   )
 }
 
-function TextGroup({texts, position, zoom, type}){
+function TextGroup({texts, position, type}){
 
   return (
     <group>{
@@ -258,7 +261,6 @@ const TextComponent = React.forwardRef((props, ref) =>{
       <TextGroup texts={titles} type={"title"}
         position={[[0, -0.000 * TextComponentHeight, 0]]} />
       <TextGroup texts={texts} type={"plain"}
-        zoom={props.zoom}
         position={[
           [0, -0.100 * TextComponentHeight, 0],
           [xWidth*0.75, -0.320 * TextComponentHeight, 0],
@@ -272,8 +274,6 @@ const TextComponent = React.forwardRef((props, ref) =>{
 });
 
 const VisComponent = React.forwardRef((props, ref) =>{
-
-
   return(
     <group position={[0, 0, 0]} ref={ref}>
       <AxGr step={props.step} />
@@ -284,7 +284,7 @@ const VisComponent = React.forwardRef((props, ref) =>{
         <MainGroup2 step={props.step} opacity={props.opacity} />
       </If>
     </group>
-  )
+  );
 });
 
 const OrthoCamera = React.forwardRef((props, ref) => {
@@ -304,223 +304,86 @@ const OrthoCamera = React.forwardRef((props, ref) => {
         zoomSpeed={0.25/props.zoom}
         style={{zIndex: 5}}/>
       <ambientLight
-        intensity={0.5}/>
+        intensity={0.6}/>
     </>
   );
 });
 
-function CanvasI({mode}) {
+function Canvas({mode}) {
   // CanvasI는 mode 정보를 받아서 어떤 크기로 Canvas를 만들지 결정합니다.
   // 또한 CanvasComponents; Camera, Viz, Texts의 frame별 행동(animation)을 결정하기 위한 기저 변수들을 memo합니다.
   // 해당 정보는 CanvasI가 eventListener를 통해 얻은 scroll value를 실제 스크롤이 아닌, progress 정도로 변환한 진행 척도와 함께 전달됩니다.
 
   const canvas = useRef();
-  const speed = 0.35, smooth = 12, limit = 2 / window.devicePixelRatio;
-  const dsLength = 1000;
+  const speed = 0.35, smooth = 12, limit = 2.5 / window.devicePixelRatio;
   let scroll = 0;
+  let target = 0;
   const [idx, setIdx] = useState(0);
 
   // animation에 관련한 정보들은 페이지가 처음 읽힐 때 memo가 이루어집니다.(baked)
-  const stoppers = useMemo(() => [0.01, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.01], []);
-  const clipPositions = useMemo(() => [0.00, 0.11, 0.32, 0.52, 0.68, 0.83, 0.99, 1.00], []);
-  function getClips(){
-    let clips = [];
-    clips.push({
-      "target": "group1",
-      "name": "group1_init",
-      "pos": [0, 0, 0],
-      "rot": [0, 0, 0],
-      "opacity": 1,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_XY",
-      "pos": [0, 0, 0], "rot": [0, Math.PI/2, 0], "opacity": 1,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_ZY",
-      "pos": [0, 0, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 1,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_zoom1",
-      "pos": [30, 10, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 0.2,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_zoom2",
-      "pos": [-20, 0, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 1,
-    });
-    clips.push({
-      "target": "group1", "name": "group1_last",
-      "pos": [0, 0, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 0.2,
-    });
-
-    clips.push({
-      "target": "camera", "name": "cam_init",
-      "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 6.25,
-    });
-    clips.push({
-      "target": "camera", "name": "cam_zoom1",
-      "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 12,
-    });
-    clips.push({
-      "target": "camera", "name": "cam_zoom2",
-      "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 9,
-    });
-    return clips;
-  }
-  function getTransitions(){
-    let transitions = [];
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 1, "clip": "group1_init"}, "to": {"frame": 2, "clip": "group1_XY"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 2, "clip": "group1_XY"}, "to": {"frame": 3, "clip": "group1_ZY"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 3, "clip": "group1_ZY"}, "to": {"frame": 4, "clip": "group1_zoom1"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 4, "clip": "group1_zoom1"}, "to": {"frame": 5, "clip": "group1_zoom2"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "group1",
-      "from": {"frame": 5, "clip": "group1_zoom2"},
-      "to": {"frame": 6, "clip": "group1_last"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 1, "clip": "cam_init"}, "to": {"frame": 2, "clip": "cam_init"},
-      "easing": "bezier",
-      "motion": {
-        "attribute": "pos",
-        "type": "sin", // sin, linear, ...
-        "args": {
-          "axis": 1, // 0=x, 1=y, 2=z, pos should have axis
-          "height": 1000 // sin should have height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 2, "clip": "cam_init"}, "to": {"frame": 3, "clip": "cam_init"},
-      "easing": "bezier",
-      "motion": {
-        "attribute": "pos",
-        "type": "sin", // sin, linear, ...
-        "args": {
-          "axis": 0, // 0=x, 1=y, 2=z, pos should have axis
-          "height": -1000 // sin should have height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 3, "clip": "cam_init"}, "to": {"frame": 4, "clip": "cam_zoom1"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 4, "clip": "cam_zoom1"}, "to": {"frame": 5, "clip": "cam_zoom2"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    transitions.push({
-      "target": "camera",
-      "from": {"frame": 5, "clip": "cam_zoom2"}, "to": {"frame": 6, "clip": "cam_init"},
-      "easing": "bezier",
-      "motion": {
-        "type": "linear", // sin, linear, ...
-        "args": {
-          // if sin, there must exist height
-        }
-      }
-    });
-    return transitions;
-  }
-  const clips = useMemo(() => getClips(), []);
-  const transitions = useMemo(() => getTransitions(), []);
-  const animations = useMemo(() => AnimationGenerator(totalFrame, clipPositions, stoppers, clips, transitions), []);
-  const steps = useMemo(() => statesConverter(clipPositions, stoppers), []);
+  const stoppers        = useMemo(() => IMM.stoppers_DS1, []);
+  const clipPositions   = useMemo(() => IMM.clipPositions_DS1, []);
+  const clips           = useMemo(() => IMM.getClips(), []);
+  const transitions     = useMemo(() => IMM.getTransitions(), []);
+  const animations      = useMemo(() => AnimationGenerator(totalFrame, clipPositions, stoppers, clips, transitions), []);
+  const steps           = useMemo(() => statesConverter(clipPositions, stoppers), []);
 
   // 핸들 휠은 그냥 휠 이벤트가 발견되면 scroll을 계산하고, idx를 찾아서 수정합니다.
   // CanvasI의 유일한 state는 idx입니다! 이는 CanvasComponents로 넘겨지며, 이외의 Components들은 바뀔 일이 없어야 합니다.
   const handleWheel = useCallback((e) => {
+    let currentIdx = Math.floor(scroll * totalFrame) == totalFrame? totalFrame-1 : Math.floor(scroll * totalFrame);
+    // animation[1] here is camera animation which always has "zoom"
     const delta = e.wheelDelta;
-    const normalizedScroll = (Math.abs(delta * speed) > limit? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed));
-    scroll = Math.max(0, Math.min(scroll + normalizedScroll / dsLength, 1)); // limit the progress equal or under 1
+    const normalizedScroll = (Math.abs(delta * speed) > limit ? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed));
+
+    scroll = Math.max(0, Math.min(scroll + normalizedScroll / 1000, 1)); // limit the progress equal or under 1
     let newIdx = Math.floor(scroll * totalFrame) == totalFrame? totalFrame-1 : Math.floor(scroll * totalFrame);
     if(idx != newIdx){
-      setIdx(newIdx);
+      target = newIdx;
       // console.log("idx changed to: ", idx, newIdx);
     }
-    // animate();
   }, [speed, limit, totalFrame]);
+
+  const requestRef = React.useRef();
+  const previousTimeRef = React.useRef();
+
+  const animate = time => {
+    if (previousTimeRef.current != undefined) {
+      const deltaTime = time - previousTimeRef.current;
+      console.log(target);
+      // Pass on a function to the setter of the state
+      // to make sure we always have the latest state
+      setIdx(prevIdx => {
+        console.log(prevIdx);
+        return (Math.floor(prevIdx + (target - prevIdx) * 0.07))}
+      );
+    }
+    previousTimeRef.current = time;
+    requestRef.current = requestAnimationFrame(animate);
+  }
 
   useLayoutEffect(() =>{
     canvas.current.addEventListener('wheel', handleWheel, {passive: false});
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
   return (
-    <div className={"CanvasI" + (mode==ImmersiveNon?'N':'I')}>
-      <Canvas
-        ref={canvas}
-        dpr={Math.max(window.devicePixelRatio, 2)}>
-        <CanvasComponents idx={idx} steps={steps} animations={animations} />
-      </Canvas>
+    <div className={"Canvas" + (mode==Immersive?'I': mode==Animated?'A':'S')}>
+      <Suspense fallback={<></>}>
+        <THREECanvas
+          ref={canvas}
+          dpr={Math.max(window.devicePixelRatio, 2)}
+          gl={{ alpha: true, antialias: true, toneMapping: THREE.NoToneMapping }}
+          >
+          <CanvasComponents mode={mode} idx={idx} steps={steps} animations={animations} />
+        </THREECanvas>
+      </Suspense>
     </div>
   )
 }
 
-function CanvasComponents({idx, steps, animations, ...props}){
+function CanvasComponents({mode, idx, steps, animations, ...props}){
   const mainCamera = useRef();
   const mainViz = useRef();
   const mainText = useRef();
@@ -529,42 +392,47 @@ function CanvasComponents({idx, steps, animations, ...props}){
   const [zoom, setZoom] = useState(6.25);
   const [opacity, setOpacity] = useState(1);
 
-  const textLength = 1000;
-
   useFrame((state, delta) => {
-    let preStep = steps.findIndex((ele) => ele >= idx/totalFrame) - 1;
-    setStep(2*Math.floor((preStep-1)/3)+(preStep%3==1?1:2));
+    if(mode == Animated || mode == Immersive){
+      let preStep = steps.findIndex((ele) => ele >= idx/totalFrame) - 1;
+      setStep(2*Math.floor((preStep-1)/3)+(preStep%3==1?1:2));
 
-    let animation_group1 = animations[0]["animation"][idx];
-    let animation_camera = animations[1]["animation"][idx];
+      let animation_group1 = animations[0]["animation"][idx];
+      let animation_camera = animations[1]["animation"][idx];
 
-    if(mainViz.current && mainText.current && mainCamera.current){
-      setOpacity(animation_group1.opacity);
-      mainViz.current.position.setX(animation_group1.pos[0]);
-      mainViz.current.position.setY(animation_group1.pos[1]);
-      mainViz.current.position.setZ(animation_group1.pos[2]);
-      mainViz.current.rotation.x = animation_group1.rot[0];
-      mainViz.current.rotation.y = animation_group1.rot[1];
-      mainViz.current.rotation.z = animation_group1.rot[2];
+      if(mainViz.current && mainText.current && mainCamera.current){
+        setOpacity(animation_group1.opacity);
+        mainViz.current.position.setX(animation_group1.pos[0]);
+        mainViz.current.position.setY(animation_group1.pos[1]);
+        mainViz.current.position.setZ(animation_group1.pos[2]);
+        mainViz.current.rotation.x = animation_group1.rot[0];
+        mainViz.current.rotation.y = animation_group1.rot[1];
+        mainViz.current.rotation.z = animation_group1.rot[2];
 
-      setZoom(animation_camera.zoom);
-      mainCamera.current.position.setX(animation_camera.pos[0]);
-      mainCamera.current.position.setY(animation_camera.pos[1]);
-      mainCamera.current.position.setZ(animation_camera.pos[2]);
-      mainCamera.current.zoom = animation_camera.zoom;
-      mainCamera.current.updateProjectionMatrix();
-      mainCamera.current.lookAt(0, 0, 0);
+        setZoom(animation_camera.zoom);
+        mainCamera.current.position.setX(animation_camera.pos[0]);
+        mainCamera.current.position.setY(animation_camera.pos[1]);
+        mainCamera.current.position.setZ(animation_camera.pos[2]);
+        mainCamera.current.zoom = animation_camera.zoom;
+        mainCamera.current.updateProjectionMatrix();
+        mainCamera.current.lookAt(0, 0, 0);
 
-      mainText.current.position.multiply(new THREE.Vector3(0, 0, 0));
-      mainText.current.lookAt(mainCamera.current.position.x, mainCamera.current.position.y, mainCamera.current.position.z);
-      mainText.current.position.setY(idx / totalFrame * TextComponentHeight * 6.25 / mainCamera.current.zoom);
-      mainText.current.position.multiply(new THREE.Vector3(
-        0, 1, 0
-      )).add(new THREE.Vector3(
-        mainCamera.current.position.x * 0.9,
-        mainCamera.current.position.y * 0.9,
-        mainCamera.current.position.z * 0.9
-      ));
+        mainText.current.position.multiply(new THREE.Vector3(0, 0, 0));
+        mainText.current.position.setY(idx / totalFrame * TextComponentHeight);
+        mainText.current.position.multiply(new THREE.Vector3(
+          0, 1, 0
+        )).add(new THREE.Vector3(
+            mainCamera.current.position.x,
+            mainCamera.current.position.y,
+            mainCamera.current.position.z
+          ).normalize().multiplyScalar(20000)
+        ).add(new THREE.Vector3(
+          mainCamera.current.position.x,
+          mainCamera.current.position.y,
+          mainCamera.current.position.z
+        ));
+        mainText.current.lookAt(mainCamera.current.position.x, mainCamera.current.position.y, mainCamera.current.position.z);
+      }
     }
   });
 
@@ -572,9 +440,10 @@ function CanvasComponents({idx, steps, animations, ...props}){
     <>
       <OrthoCamera ref={mainCamera} zoom={zoom} />
       <VisComponent ref={mainViz} step={step} opacity={opacity} />
-      <TextComponent ref={mainText} zoom={zoom} />
+      <TextComponent ref={mainText} />
+      <MiniMap />
     </>
   )
 }
 
-export { CanvasI };
+export { Canvas };

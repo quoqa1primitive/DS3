@@ -4,16 +4,13 @@ import { useFrame } from '@react-three/fiber'
 import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
 import "survey-core/survey.css";
-import { StaticNon1, StaticNon2, StaticImm, AnimatedNon, AnimatedImm, ImmersiveNon, ImmersiveImm, EndOfTask} from '../../BasicElements/Constants.js';
+import { Static, Animated, Immersive, EndOfTask} from '../../BasicElements/Constants.js';
 import { If } from '../../BasicElements/BasicElements.js';
 import '../../BasicElements/Main.css'
 
-import { CanvasA } from './Viz_Animated.js';
-import { CanvasI } from './Viz_Immersive.js';
+import { Canvas } from './Canvas.js';
 import Quiz1 from './Quiz_1.js';
 import Quiz2 from './Quiz_2.js';
-
-// import { data } from '../0415Data.js'
 
 function SurveyComponent1(props){
   Survey
@@ -148,21 +145,15 @@ function CompletionPage(props){
 }
 
 function Main2(){
-  const overlay = useRef();
-  const scroll = useRef(0);
-  const scrollLog = useRef([]);
   const [sequence, setSequence] = useState([])
   const [quiz1, setQuiz1] = useState(false)
   const [quiz2, setQuiz2] = useState(false)
-  const [type, setType] = useState(ImmersiveImm);
+  const [type, setType] = useState(Immersive);
   const [completionCode, setCompletionCode] = useState("");
-  const [scrollData, setScrollData] = useState([]);
 
   let PersonID;
 
   function getQuiz(){
-    // scrollLog.current.push(Date.now()); // Check the total elapsed time
-    setScrollData(scrollLog.current);
     axios.get('ajaxGet', {
       params: {
         "action": "setQuiz"
@@ -220,8 +211,8 @@ function Main2(){
 
   return(
     <>
-      <If if={quiz1}><Quiz1 ScrollData={scrollData} type={type} PersonID={PersonID}/></If>
-      <If if={quiz2}><Quiz2 ScrollData={scrollData} type={type} PersonID={PersonID} Sequence={sequence}/></If>
+      <If if={quiz1}><Quiz1 type={type} PersonID={PersonID}/></If>
+      <If if={quiz2}><Quiz2 type={type} PersonID={PersonID} Sequence={sequence}/></If>
       <If if={!quiz1 && !quiz2}>
         <div style={{width: "100%", height: "100%"}} className="PageContents">
           <div className="Viz DS2">
@@ -229,12 +220,7 @@ function Main2(){
               <CompletionPage completionCode={completionCode} type={type} PersonID={PersonID}/>
             </If>
             <If if={type != EndOfTask}>
-              <If if={type == ImmersiveImm || type == ImmersiveNon}>
-                <CanvasI mode={type} overlay={overlay} scroll={scroll} />
-              </If>
-              <If if={type == AnimatedImm || type == AnimatedNon}>
-                <CanvasA mode={type} overlay={overlay} scroll={scroll} />
-              </If>
+              <Canvas mode={type} />
             </If>
           </div>
         </div>

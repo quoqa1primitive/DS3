@@ -2,20 +2,12 @@ export const Static = 100;
 export const Animated = 101;
 export const Immersive = 110;
 
-export const StaticNon1 = 1000;
-export const AnimatedNon = 1001;
-export const ImmersiveNon = 1010;
-export const StaticNon2 = 1011;
-export const StaticImm = 1100;
-export const AnimatedImm = 1101;
-export const ImmersiveImm = 1110;
-
 export const EndOfTask = -1;
 
 // DS1 animation
 export const groupVarNum = 7;
 export const camVarNum = 7;
-export const totalFrame = 1000;
+export const totalFrame = 5000;
 export const TextComponentHeight = 1000;
 
 export const XAXIS1 = 10000;

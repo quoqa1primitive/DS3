@@ -1,15 +1,17 @@
 import * as THREE from 'three'
 import React, { useRef, useCallback, useEffect, useLayoutEffect, useState, useMemo, Suspense } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas as THREECanvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei';
 import { Sky } from '../../BasicElements/Sky.js';
+import { MiniMap } from '../../BasicElements/MiniMap.js';
 
-import { stoppers_DS2, clipPositions_DS2, getClips, getTransitions } from './Animations.js';
+import * as IMM from '../Animations/Immersive.js';
+import * as ANM from '../Animations/Animated.js';
 import { Ocean, Disc, Line, ChangePoint, Rect, TextBox, If } from '../../BasicElements/BasicElements.js';
 import { statesConverter, AnimationGenerator } from '../../BasicElements/BasicElements.js';
 import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, TextComponentHeight } from '../../BasicElements/Constants2.js';
 import { title, text1, text2, text3, text4, text5 } from '../../BasicElements/Constants2.js';
-import { ImmersiveNon, ImmersiveImm } from '../../BasicElements/Constants.js';
+import { Immersive, Animated, Static } from '../../BasicElements/Constants2.js';
 import '../styles/Canvas.css';
 
 let scale = 6.25;
@@ -258,17 +260,13 @@ const OrthoCamera = React.forwardRef((props, ref) => {
         zoomSpeed={0.25/props.zoom}
         style={{zIndex: 5}}/>
       {
-        <ambientLight intensity={0.6} color={color_beige} />
-        // <hemisphereLight intensity={2.6} skyColor={color_beige} isSky={true} />
-      }
-      {
-        <Sky />
+        <ambientLight intensity={0.6} />
       }
     </>
   );
 });
 
-function CanvasI({mode}) {
+function Canvas({mode}) {
   // CanvasI는 mode 정보를 받아서 어떤 크기로 Canvas를 만들지 결정합니다.
   // 또한 CanvasComponents; Camera, Viz, Texts의 frame별 행동(animation)을 결정하기 위한 기저 변수들을 memo합니다.
   // 해당 정보는 CanvasI가 eventListener를 통해 얻은 scroll value를 실제 스크롤이 아닌, progress 정도로 변환한 진행 척도와 함께 전달됩니다.
@@ -280,12 +278,12 @@ function CanvasI({mode}) {
   const [idx, setIdx] = useState(0);
 
   // animation에 관련한 정보들은 페이지가 처음 읽힐 때 memo가 이루어집니다.(baked)
-  const stoppers = useMemo(() => stoppers_DS2, []);
-  const clipPositions = useMemo(() => clipPositions_DS2, []);
-  const clips = useMemo(() => getClips(), []);
-  const transitions = useMemo(() => getTransitions(), []);
-  const animations = useMemo(() => AnimationGenerator(totalFrame, clipPositions, stoppers, clips, transitions), []);
-  const steps = useMemo(() => statesConverter(clipPositions, stoppers), []);
+  const stoppers      = useMemo(() => IMM.stoppers_DS2, []);
+  const clipPositions = useMemo(() => IMM.clipPositions_DS2, []);
+  const clips         = useMemo(() => IMM.getClips(), []);
+  const transitions   = useMemo(() => IMM.getTransitions(), []);
+  const animations    = useMemo(() => AnimationGenerator(totalFrame, clipPositions, stoppers, clips, transitions), []);
+  const steps         = useMemo(() => statesConverter(clipPositions, stoppers), []);
 
   // 핸들 휠은 그냥 휠 이벤트가 발견되면 scroll을 계산하고, idx를 찾아서 수정합니다.
   // CanvasI의 유일한 state는 idx입니다! 이는 CanvasComponents로 넘겨지며, 이외의 Components들은 바뀔 일이 없어야 합니다.
@@ -329,80 +327,84 @@ function CanvasI({mode}) {
   }, []);
 
   return (
-    <div className={"CanvasI" + (mode==ImmersiveNon?'N':'I')}>
+    <div className={"Canvas" + (mode==Immersive?'I': mode==Animated? 'A':'S')}>
       <Suspense fallback={<></>}>
-        <Canvas
+        <THREECanvas
           ref={canvas}
           dpr={Math.max(window.devicePixelRatio, 2)}
           gl={{ alpha: true, antialias: true, toneMapping: THREE.NoToneMapping }}
           linear flat
           >
-          <CanvasComponents idx={idx} steps={steps} animations={animations} />
-        </Canvas>
+          <CanvasComponents mode={mode} idx={idx} steps={steps} animations={animations} />
+        </THREECanvas>
       </Suspense>
     </div>
   )
 }
 
-function CanvasComponents({idx, steps, animations, ...props}){
+function CanvasComponents({mode, idx, steps, animations, ...props}){
   const mainCamera = useRef();
   const mainViz = useRef();
   const mainText = useRef();
 
-  const {gl} = useThree();
+  // const {gl} = useThree();
 
   const [step, setStep] = useState(0);
   const [zoom, setZoom] = useState(6.25);
   const [waterLevel, setWaterLevel] = useState(1);
 
   useFrame((state, delta) => {
-    let preStep = steps.findIndex((ele) => ele >= idx/totalFrame) - 1;
-    setStep(2*Math.floor((preStep-1)/3)+(preStep%3==1?1:2));
+    if(mode == Animated || mode == Immersive){
+      let preStep = steps.findIndex((ele) => ele >= idx/totalFrame) - 1;
+      setStep(2*Math.floor((preStep-1)/3)+(preStep%3==1?1:2));
 
-    let animation_group1 = animations[0]["animation"][idx];
-    let animation_camera = animations[1]["animation"][idx];
+      let animation_group1 = animations[0]["animation"][idx];
+      let animation_camera = animations[1]["animation"][idx];
 
-    if(mainViz.current && mainText.current && mainCamera.current){
-      setWaterLevel(animation_group1.waterLevel);
-      mainViz.current.position.setX(animation_group1.pos[0]);
-      mainViz.current.position.setY(animation_group1.pos[1]);
-      mainViz.current.position.setZ(animation_group1.pos[2]);
-      mainViz.current.rotation.x = animation_group1.rot[0];
-      mainViz.current.rotation.y = animation_group1.rot[1];
-      mainViz.current.rotation.z = animation_group1.rot[2];
+      if(mainViz.current && mainText.current && mainCamera.current){
+        setWaterLevel(animation_group1.waterLevel);
+        mainViz.current.position.setX(animation_group1.pos[0]);
+        mainViz.current.position.setY(animation_group1.pos[1]);
+        mainViz.current.position.setZ(animation_group1.pos[2]);
+        mainViz.current.rotation.x = animation_group1.rot[0];
+        mainViz.current.rotation.y = animation_group1.rot[1];
+        mainViz.current.rotation.z = animation_group1.rot[2];
 
-      setZoom(animation_camera.zoom);
-      mainCamera.current.position.setX(animation_camera.pos[0]);
-      mainCamera.current.position.setY(animation_camera.pos[1]);
-      mainCamera.current.position.setZ(animation_camera.pos[2]);
-      mainCamera.current.zoom = animation_camera.zoom;
-      mainCamera.current.updateProjectionMatrix();
-      mainCamera.current.lookAt(0, 0, 0);
+        setZoom(animation_camera.zoom);
+        mainCamera.current.position.setX(animation_camera.pos[0]);
+        mainCamera.current.position.setY(animation_camera.pos[1]);
+        mainCamera.current.position.setZ(animation_camera.pos[2]);
+        mainCamera.current.zoom = animation_camera.zoom;
+        mainCamera.current.updateProjectionMatrix();
+        mainCamera.current.lookAt(0, 0, 0);
 
-      mainText.current.position.multiply(new THREE.Vector3(0, 0, 0));
-      mainText.current.lookAt(mainCamera.current.position.x, mainCamera.current.position.y, mainCamera.current.position.z);
-      mainText.current.position.setY(idx / totalFrame * TextComponentHeight * 6.25 / mainCamera.current.zoom);
-      mainText.current.position.multiply(new THREE.Vector3(
-        0, 1, 0
-      )).add(new THREE.Vector3(
-        mainCamera.current.position.x * 0.9,
-        mainCamera.current.position.y * 0.9,
-        mainCamera.current.position.z * 0.9
-      ));
+        mainText.current.position.multiply(new THREE.Vector3(0, 0, 0));
+        mainText.current.position.setY(idx / totalFrame * TextComponentHeight);
+        mainText.current.position.multiply(new THREE.Vector3(
+          0, 1, 0
+        )).add(new THREE.Vector3(
+            mainCamera.current.position.x,
+            mainCamera.current.position.y,
+            mainCamera.current.position.z
+          ).normalize().multiplyScalar(20000)
+        ).add(new THREE.Vector3(
+          mainCamera.current.position.x,
+          mainCamera.current.position.y,
+          mainCamera.current.position.z
+        ));
+        mainText.current.lookAt(mainCamera.current.position.x, mainCamera.current.position.y, mainCamera.current.position.z);
+      }
     }
   });
-
-  useLayoutEffect(() => {
-    console.log(gl);
-  }, []);
 
   return(
     <>
       <OrthoCamera ref={mainCamera} zoom={zoom} />
       <VisComponent ref={mainViz} step={step} waterLevel={waterLevel} />
       <TextComponent ref={mainText} />
+      <MiniMap />
     </>
   )
 }
 
-export { CanvasI };
+export { Canvas };

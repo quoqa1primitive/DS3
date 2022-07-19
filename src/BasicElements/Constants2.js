@@ -2,14 +2,6 @@ export const Static = 100;
 export const Animated = 101;
 export const Immersive = 110;
 
-export const StaticNon1 = 1000;
-export const AnimatedNon = 1001;
-export const ImmersiveNon = 1010;
-export const StaticNon2 = 1011;
-export const StaticImm = 1100;
-export const AnimatedImm = 1101;
-export const ImmersiveImm = 1110;
-
 export const EndOfTask = -1;
 
 // DS2 animation

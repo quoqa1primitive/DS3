@@ -6,7 +6,7 @@ import "survey-core/survey.css";
 import "../../BasicElements/Quiz.css";
 import axios from 'axios';
 
-import {StaticNon1} from '../../BasicElements/Constants.js'
+import {Static} from '../../BasicElements/Constants.js'
 import img1 from '../Immersive.JPG';
 import img2 from '../Static.JPG';
 
@@ -136,12 +136,12 @@ function Quiz2(props){
       <div style={{ display: "flex", flexDirection: "row", position: "relative", marginTop: "100px", marginBottom: "45px" }}>
         <div style={{ display: "flex", flexDirection: "column", textAlign: "center", fontSize: "30px"}}>
           <div> A </div>
-          <img src={ props.Sequence[0] == StaticNon1? img2 : img1 } width='305px' height='200px' />
+          <img src={ props.Sequence[0] == Static? img2 : img1 } width='305px' height='200px' />
         </div>
         <div style={{width: "50px"}}/>
         <div style={{ display: "flex", flexDirection: "column", textAlign: "center", fontSize: "30px"}}>
           <div> B </div>
-          <img src={ props.Sequence[0] == StaticNon1? img1 : img2 } width='305px' height='200px' />
+          <img src={ props.Sequence[0] == Static? img1 : img2 } width='305px' height='200px' />
         </div>
       </div>
       <SurveyComponent3 ScrollData={props.ScrollData} type={props.type} PersonID={props.PersonID}/>

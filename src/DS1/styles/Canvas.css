@@ -1,9 +1,9 @@
-.DS2 .CanvasS {
+.DS1 .CanvasS {
   width: 100%;
   height: 640px;
 }
 
-.DS2 .CanvasA {
+.DS1 .CanvasA {
   position: relative;
   top: calc(50% - 320px - 100px);
   left: calc(50% - 420px);
@@ -11,7 +11,7 @@
   height: 640px;
 }
 
-.DS2 .CanvasI {
+.DS1 .CanvasI {
   position: relative;
   /* top: calc(50% - 320px - 100px); */
   left: calc(50% - 525px);
