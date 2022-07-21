@@ -7,10 +7,10 @@ import { MiniMap } from '../../BasicElements/MiniMap.js';
 
 import * as IMM from '../Animations/Immersive.js';
 import * as ANM from '../Animations/Animated.js';
-import { Ocean, Disc, Line, ChangePoint, Rect, TextBox, If } from '../../BasicElements/BasicElements.js';
+import { TextComponent } from './Texts.js';
+import { Ocean, Disc, Line, ChangePoint, Rect, TextBox, OrthoCamera, If } from '../../BasicElements/BasicElements.js';
 import { statesConverter, AnimationGenerator } from '../../BasicElements/BasicElements.js';
 import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1, totalFrame, TextComponentHeight } from '../../BasicElements/Constants2.js';
-import { title, text1, text2, text3, text4, text5 } from '../../BasicElements/Constants2.js';
 import { Immersive, Animated, Static } from '../../BasicElements/Constants2.js';
 import '../styles/Canvas.css';
 
@@ -191,46 +191,6 @@ function OceanGroup(props){
   );
 }
 
-function TextGroup({texts, position, type}){
-
-  return (
-    <group>{
-      texts.map((text, idx) =>
-        <TextBox
-          key={"textBox_"+type+idx}
-          text={text}
-          textType={type}
-          position={position[idx]}
-          lookAt={false}
-          anchorX={"center"}
-          anchorY={"top"}
-        />
-      )}
-    </group>
-  )
-}
-
-const TextComponent = React.forwardRef((props, ref) =>{
-
-  const titles = [title];
-  const texts = [text1, text2, text3, text4, text5];
-
-  return(
-    <group ref={ref}>
-      <TextGroup texts={titles} type={"title"}
-        position={[[0, -0.000 * TextComponentHeight, 0]]} />
-      <TextGroup texts={texts} type={"plain"}
-        position={[
-          [0, -0.160 * TextComponentHeight, 0],
-          [0, -0.330 * TextComponentHeight, 0],
-          [0, -0.500 * TextComponentHeight, 0],
-          [0, -0.700 * TextComponentHeight, 0],
-          [0, -0.985 * TextComponentHeight, 0],
-        ]} />
-    </group>
-  );
-});
-
 const VisComponent = React.forwardRef((props, ref) =>{
   return(
     <group position={[0, 0, 0]} ref={ref}>
@@ -241,29 +201,6 @@ const VisComponent = React.forwardRef((props, ref) =>{
       </If>
     </group>
   )
-});
-
-const OrthoCamera = React.forwardRef((props, ref) => {
-  return(
-    <>
-      <OrthographicCamera ref={ref} makeDefault
-        position={[0, 0, 1000]}
-        near={0}
-        far={50000}
-        zoom={props.zoom}
-        />
-      <OrbitControls
-        camera={ref.current}
-        enablePan={false}
-        enableZoom={false}
-        enableRotate={false}
-        zoomSpeed={0.25/props.zoom}
-        style={{zIndex: 5}}/>
-      {
-        <ambientLight intensity={0.6} />
-      }
-    </>
-  );
 });
 
 function Canvas({mode}) {

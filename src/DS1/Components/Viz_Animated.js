@@ -1,301 +1,190 @@
-import * as THREE from 'three'
-import React, { useRef, useEffect, useLayoutEffect, useState, useImperativeHandle, useMemo, Suspense } from 'react'
-import { Canvas, useFrame, extend } from '@react-three/fiber'
-import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
+import * as THREE from 'three';
+import React, { useRef, useMemo, useCallback } from 'react';
+import { useFrame } from '@react-three/fiber'
+import { Line, TextBox, Rect, Rect2, If, Lerp } from '../../BasicElements/BasicElements.js';
+import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
+import { useStore } from '../../BasicElements/Store.js';
 
-import { Animated } from '../../BasicElements/Constants.js';
-import { Line, TextBox, Rect, TextComponent } from '../../BasicElements/BasicElements.js'
-import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js'
-import '../styles/Canvas.css';
-
-const bezier = require('bezier-easing');
-
-const scale = 6.25;
 const tickLength = 0.6;
-
 const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
 const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
 const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
+const centerPos = [
+  -xyzProps.xLength / 2,
+  -xyzProps.yLength / 2,
+  -xyzProps.zLength / 2
+];
+const color1 = new THREE.Color("#512C8A");
+const color2 = new THREE.Color("#2F9B39");
 
-function Rect2({ width, height, depth, color, opacity }){
-  return(
-    <mesh raycast={() => null} position={[0, height / 10, 0]}>
-      <boxGeometry args={[width, height / 5, depth]} />
-      <meshStandardMaterial color={color} transparent={true} opacity={opacity} />
-    </mesh>
-  )
-}
+// for animation in progress[2-3-4-5]
+// how many datapoints will be marked?
+const visibleNum = [12, 6, 9, 12];
+// what would be the start index?
+const idces = [0, 0, 3, 0];
 
-function VisComponent({camera, scroll, ...props}){
-  const group = useRef();
-  const [step, setStep] = useState(0);
-  const [progress, setProgress] = useState({a: 1, b: 1, c: 1});
-  const [centerPos, setCenterPos] = useState([-xyzProps.xLength / 2, -xyzProps.yLength / 2, -xyzProps.zLength / 2])
+const AxGr = React.forwardRef((props, ref) => {
+  const progress = useStore((state) => state.progress);
+  const currentIdx = useStore((state) => state.currentIdx);
+  const step = useStore((state) => state.step);
 
-  const rectWidth = 6, rectDepth = 2, ratio = 3;
+  const XAxis1 = useMemo(() =>
+    <>
+      {
+        Array(xSteps).fill(0).map((x, y) => x + y).map((item, idx) => {
+          return <mesh key={idx} position={[xPadding + item * ((xLength - 2 * xPadding) / (xSteps - 1)), -tickLength, zLength]}>
+            <If if={step <= 2}>
+              <Line key={'XTick1_'+idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
+              <TextBox text={String.fromCharCode(88+item)} anchorX={"center"} anchorY={"top"} /> // Label
+            </If>
+            <If if={step <= 4}>
+              <Line key={'XGrid_'+idx} color={"lightgrey"} start={[0, tickLength, 0]} end={[0, tickLength, -zLength]} /> // Grid
+            </If>
 
-  const box1 = document.getElementById("text1").getBoundingClientRect();
-  const box3 = document.getElementById("text3").getBoundingClientRect();
-  const box4 = document.getElementById("text4").getBoundingClientRect();
-  const scrollHeight = scroll.current * (document.getElementById("pageController").scrollHeight - window.innerHeight);
+            <If if={step <= 2 && idx <= 1}>
+              <group position={[-4, (idx==0?xyzProps.dataA1[0]:xyzProps.dataB1[0]) / 5 + 3, 0]}>
+                <TextBox key={'XAnn1_'+idx} text={"Jan."} anchorX={"center"} anchorY={"bottom"} label={null}/> // X-Axis2
+              </group>
+              <group position={[4, (idx==0?xyzProps.dataA1[xyzProps.dataA1.length - 1]:xyzProps.dataB1[xyzProps.dataB1.length - 1]) / 5 + 3, 0]}>
+                <TextBox key={'XAnn2_'+idx} text={"Dec."} anchorX={"center"} anchorY={"bottom"} label={null}/> // X-Axis2
+              </group>
+            </If>
 
-  const text1 = scrollHeight + box1.top - window.innerHeight * 0.5 + 100 + box1.height * 0.5;
-  const text3 = scrollHeight + box3.top - window.innerHeight * 0.5 + 100 + box3.height * 0.5;
-  const text4 = scrollHeight + box4.top - window.innerHeight * 0.5 + 100 + box4.height * 0.5;
+          </mesh>
+        })
+      }
+      <If if={step <= 2}>
+        <group position={[xLength / 2, -6, zLength]}>
+          <TextBox text={"City"} anchorX={"center"} anchorY={"bottom"} label={XAXIS1}/>
+        </group>
+      </If>
 
-  const sp_1 = text1 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  const sp_2 = text3 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
-  const sp_3 = text4 / (document.getElementById("pageController").scrollHeight - window.innerHeight);
+      {
+        Array(xyzProps.dataA1.length).fill(0).map((x, y) => x + y).map((item, idx) => {
+          const val = [
+            zPadding + (item - currentIdx) * ((zLength - 2 * zPadding) / (visibleNum[0] - 1)),
+            zPadding + (item - currentIdx) * ((zLength - 2 * zPadding) / (visibleNum[1] - 1)),
+            zPadding + (item - currentIdx) * ((zLength - 2 * zPadding) / (visibleNum[2] - 1)),
+            zPadding + (item - currentIdx) * ((zLength - 2 * zPadding) / (visibleNum[3] - 1))
+          ];
+          // for better animation effect, spacing changes later than adjusting the startpoint. modify if visibleNum and startIdx changed
+          const currentVal =Lerp(Lerp(Lerp(val[0],val[1],progress[3]),val[2],progress[4]),val[3],progress[5]);
+          const visibleCheck = (currentVal <= zPadding + (zLength - 2 * zPadding) + 0.5 * zPadding) && (currentVal >= zPadding - 0.5 * zPadding);
 
-  useFrame(() => {
-    const et = scroll.current;
+          return <mesh key={idx} position={[currentVal, -tickLength, zLength]}>
+            <If if={step >= 4 && visibleCheck}>
+              <Line key={'XTick2_'+idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} />
+              <TextBox key={'XName2_'+idx} text={1 + 1 * item} anchorX={"center"} anchorY={"top"} />
+            </If>
+          </mesh>
+        })
+      }
+      <If if={step >= 4}>
+        <group position={[zLength / 2, -6, zLength]}>
+          <TextBox text={"Month"} anchorX={"center"} anchorY={"bottom"} label={XAXIS1}/>
+        </group>
+      </If>
 
-    let bezierFunc = bezier(0.4, 0, 0.4, 1);
-    let bzVal = 0;
-    const durMargin = 0.03;
+    </>, [step, progress]);
 
-    if(et < (sp_1 - durMargin)){
-      setStep(1);
-      setProgress({a: 0, b: 0, c: 0});
-    }else if(et < (sp_1 + durMargin)){
-      setStep(2);
-      setProgress({a: 0, b: 0, c: 0});
-    }else if(et < (sp_2 - durMargin)){
-      setStep(3);
-      let et2 = et - sp_1 - durMargin;
-      let dur2 = sp_2 - durMargin - sp_1 - durMargin;
-      bzVal = bezierFunc(et2 / dur2);
-      setProgress({a: bzVal, b: bzVal, c: 0});
-    }else if(et < (sp_2 + durMargin)){
-      setStep(4);
-      setProgress({a: 1, b: 1, c: 0});
-    }else if(et < (sp_3 - durMargin)){
-      setStep(5);
-      let et3 = et - sp_2 - durMargin;
-      let dur3 = sp_3 - durMargin - sp_2 - durMargin;
-      bzVal = bezierFunc(et3 / dur3);
-      setProgress({a: 1, b: 1, c: bzVal});
-    }else if(et < (sp_3 + durMargin)){
-      setStep(6);
-      setProgress({a: 1, b: 1, c: 1});
+  const YAxis1 = useMemo(() =>
+  <>
+    {
+      Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
+        return <mesh key={idx} position={[-tickLength, item * ((yLength - 2 * yPadding) / (ySteps - 1)), 0]}>
+          <If if={step >= 1 && step <= 4}>
+            <Line key={'YTick1_'+idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} /> // Tick
+            <TextBox key={'YLabel1_'+idx} text={0 + 30 * item} anchorX={"right"} anchorY={"middle"} /> // Label
+          </If>
+          <Line key={'YGrid_'+idx} color={"lightgrey"} start={[tickLength, 0, 0]} end={[xLength + (zLength - xLength) * progress[1], 0, 0]} /> // Grid
+        </mesh>
+      })
     }
+    <If if={step >= 1 && step <= 4}>
+      <group position={[-6, yLength / 2, -6]}>
+        <TextBox text={"Food Consumption(ton)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS1}/>
+      </group>
+    </If>
 
-    setCenterPos([
-      progress.b * -xyzProps.zLength / 2 + (1 - progress.b) * -xyzProps.xLength / 2,
-      -xyzProps.yLength / 2,
-      -xyzProps.zLength / 2
-    ]);
-    camera.current.lookAt(0, 0, 0);
-  });
+    {
+      Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
+        return <mesh key={idx} position={[-tickLength, item * ((yLength - 2 * yPadding) / (ySteps - 1)), 0]}>
+          <If if={step >= 6}>
+            <Line key={'YTick2_'+idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} /> // Tick
+            <TextBox key={'YLabel2_'+idx} text={0 + 10 * item} anchorX={"right"} anchorY={"middle"} /> // Label
+          </If>
+        </mesh>
+      })
+    }
+    <If if={step >= 6}>
+      <group position={[-6, yLength / 2, -6]}>
+        <TextBox text={"Vegetable + Grain Consumption(%)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS1}/>
+      </group>
+    </If>
+  </>, [progress]);
 
   return(
-    <group ref={group}>
-      <group position={centerPos}>
-        <>
-          {
-            Array(ySteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-              return (
-                <mesh key={idx} position={[-tickLength, item * ((yLength - 2 * yPadding) / (ySteps - 1)), 0]}>
-                  {
-                    (step >=2 && step <= 4) &&
-                    <>
-                      <Line key={idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} /> // Tick
-                      <TextBox text={0 + 30 * item} anchorX={"right"} anchorY={"middle"} /> // Label
-                    </>
-                  }
-                  {
-                    (step >= 6) &&
-                    <>
-                      <Line key={idx} color={"black"} start={[0, 0, 0]} end={[tickLength, 0, 0]} /> // Tick
-                      <TextBox text={0 + 10 * item} anchorX={"right"} anchorY={"middle"} /> // Label
-                    </>
-                  }
-                  <Line key={idx+100} color={"lightgrey"} start={[tickLength, 0, -200]} end={[(1 - progress.b) * xLength + progress.b * zLength, 0, -200]} /> // Grid
-                </mesh>
-              )
-            })
-          }
-          {
-            (step >= 2 && step <= 4) &&
-            <>
-              <group position={[-6, yLength / 2, -6]}>
-                <TextBox text={"Meat Consumption(ton)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS1}/>
-              </group>
-            </>
-          }
-          {
-            (step >= 6) &&
-            <>
-              <group position={[-6, yLength / 2, -6]}>
-                <TextBox text={"Food Self-Sufficiency(%)"} anchorX={"center"} anchorY={"bottom"} label={YAXIS2}/>
-              </group>
-            </>
-          }
-        </>
-        <>
-          {
-            Array(xSteps).fill(0).map((x, y) => x + y).map((item, idx) => {
-              return(
-                <mesh key={idx} position={[xPadding + item * ((xLength - 2 * xPadding) / (xSteps - 1)), -tickLength, zLength]}>
-                {
-                  (step <= 2) &&
-                  <>
-                    <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-                    <TextBox text={String.fromCharCode(88+item)} anchorX={"center"} anchorY={"top"} /> // Label
-                  </>
-                }
-                {
-                  (step == 2) &&
-                  <>
-                    <group position={[-4, (idx==0?xyzProps.dataA1[0]:xyzProps.dataB1[0]) / 5 + 3, 0]}>
-                      <TextBox text={"Jan."} anchorX={"center"} anchorY={"bottom"} label={null}/>
-                    </group>
-                    <group position={[4, (idx==0?xyzProps.dataA1[xyzProps.dataA1.length - 1]:xyzProps.dataB1[xyzProps.dataB1.length - 1]) / 5 + 3, 0]}>
-                      <TextBox text={"Dec."} anchorX={"center"} anchorY={"bottom"} label={null}/>
-                    </group>
-                  </>
-                }
-                </mesh>
-              )
-            })
-          }
-          {
-            Array(xyzProps.dataA1.length).fill(0).map((x, y) => x + y).map((item, idx) => {
-              return <mesh key={idx} position={[zPadding + item * ((zLength - 2 * zPadding) / (zSteps - 1)), -tickLength,0]}>
-                  {
-                    (step >= 4) &&
-                    <>
-                      <Line key={idx} color={"black"} start={[0, 0, 0]} end={[0, tickLength, 0]} /> // Tick
-                      <TextBox text={1 + 1 * item} anchorX={"center"} anchorY={"top"} /> // Label
-                    </>
-                  }
-                </mesh>
-            })
-          }
-          {
-            (step <= 2) &&
-            <>
-              <group position={[xLength / 2, -6, 0]}>
-                <TextBox text={"City"} anchorX={"center"} anchorY={"bottom"} label={XAXIS1}/>
-              </group>
-            </>
-          }
-          {
-            (step >= 4) &&
-            <>
-              <group position={[zLength / 2, -6, 0]}>
-                <TextBox text={"Month"} anchorX={"center"} anchorY={"bottom"} label={ZAXIS1}/>
-              </group>
-            </>
-          }
-        </>
-        {
-          (step >= 2) &&
-          <Line color={"black"} start={[0, 0, 0]} end={[0, yLength, 0]} /> // Y-Axis
-        }
-        <Line color={"black"} start={[0, 0, 0]} end={[(1 - progress.b) * xLength + progress.b * zLength, 0, 0]} /> // X-Axis
-
-      </group>
-      <group position={centerPos}>
-        {
-          <>
-            <mesh key={0} position={[
-              (xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / -1.5) * (1 - progress.b) + (zPadding + 0 * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2) * progress.b
-              , 0, -100]}>
-              <Rect2
-                width={rectWidth * (1 - progress.b) + rectDepth * progress.b}
-                height={(1 - progress.c) * xyzProps.dataA1[0] + progress.c * xyzProps.dataA2[0] * ratio}
-                depth={rectDepth} color={new THREE.Color("#512C8A")} opacity={1} />
-            </mesh>
-            <mesh key={1} position={[
-              (xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / 1.5) * (1 - progress.b) + (zPadding + (xyzProps.dataA1.length - 1) * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2) * progress.b
-              , 0, -100]}>
-              <Rect2
-                width={rectWidth * (1 - progress.b) + rectDepth * progress.b}
-                height={(1 - progress.c) * xyzProps.dataA1[xyzProps.dataA1.length - 1] + progress.c * xyzProps.dataA2[xyzProps.dataA2.length - 1] * ratio}
-                depth={rectDepth} color={new THREE.Color("#512C8A")} opacity={1} />
-            </mesh>
-            <mesh key={2} position={[
-              (xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / -1.5) * (1 - progress.b) + (zPadding + 0 * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2) * progress.b
-              , 0, -100]}>
-              <Rect2
-                width={rectWidth * (1 - progress.b) + rectDepth * progress.b}
-                height={(1 - progress.c) * xyzProps.dataB1[0] + progress.c * xyzProps.dataB2[0] * ratio}
-                depth={rectDepth} color={new THREE.Color("#2F9B39")} opacity={1} />
-            </mesh>
-            <mesh key={3} position={[
-              (xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1)) + rectWidth / 1.5) * (1 - progress.b) + (zPadding + (xyzProps.dataA1.length - 1) * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2) * progress.b
-              , 0, -100]}>
-              <Rect2
-                width={rectWidth * (1 - progress.b) + rectDepth * progress.b}
-                height={(1 - progress.c) * xyzProps.dataB1[xyzProps.dataB1.length - 1] + progress.c * xyzProps.dataB2[xyzProps.dataB2.length - 1] * ratio}
-                depth={rectDepth} color={new THREE.Color("#2F9B39")} opacity={1} />
-            </mesh>
-          </>
-        }
-        {
-          xyzProps.dataA1.map((item, idx) => {
-            return (
-              <>
-              {
-                (idx != 0 && idx != xyzProps.dataA1.length - 1) &&
-                <mesh key={idx} position={[(1 - progress.b) * (xPadding + 0 * ((xLength - 2 * xPadding) / (xSteps - 1))) + progress.b * (zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) - rectDepth / 2), 0, -100]}>
-                  <Rect2 width={rectDepth} height={progress.b * ((1 - progress.c) * item + progress.c * xyzProps.dataA2[idx] * ratio)} depth={rectWidth} color={new THREE.Color("#512C8A")} opacity={1}/>
-                </mesh>
-              }
-              </>
-            )
-          })
-        }
-        {
-          xyzProps.dataB1.map((item, idx) => {
-            return (
-              <>
-              {
-                (idx != 0 && idx != xyzProps.dataA1.length - 1) &&
-                <mesh key={idx} position={[(1 - progress.b) * (xPadding + 1 * ((xLength - 2 * xPadding) / (xSteps - 1))) + progress.b * (zPadding + idx * ((zLength - 2 * zPadding) / (zSteps - 1)) + rectDepth / 2), 0, -100]}>
-                  <Rect2 key={idx} width={rectDepth} height={progress.b * ((1 - progress.c) * item + progress.c * xyzProps.dataB2[idx] * ratio)} depth={rectWidth} color={new THREE.Color("#2F9B39")} opacity={1}/>
-                </mesh>
-              }
-              </>
-            )
-          })
-        }
-      </group>
+    <group position={[centerPos[0] - 0.5 * (zLength - xLength) * progress[1], centerPos[1], centerPos[2]]}>
+      {XAxis1}
+      {YAxis1}
+      <If if={true}>
+        <Line color={"black"} start={[0, 0, zLength]} end={[xLength + (zLength - xLength) * progress[1], 0, zLength]} /> // X-Axis
+        <Line color={"black"} start={[0, 0, 0]} end={[0, yLength, 0]} /> // Y-Axis
+      </If>
     </group>
   )
-}
+});
 
-function CanvasA({mode, scroll}) {
-  const canvas = useRef();
-  const mainCamera = useRef();
+const MainGroup = React.forwardRef((props, ref) => {
+  const group = useRef();
+  const rectGroupPos = useStore((state) => state.rectGroupPos);
 
-  return (
-    <div className={"CanvasA" + (mode==Animated?'N':'I')}>
-      <Canvas
-        ref={canvas}
-        dpr={Math.max(window.devicePixelRatio, 2)}>
-        <OrthographicCamera ref={mainCamera} makeDefault
-          position={[0, 0, 1000 * scale]}
-          near={0}
-          far={50000 * scale}
-          zoom={1 * scale}
-          />
-        <OrbitControls
-          camera={mainCamera.current}
-          enablePan={false}
-          enableZoom={false}
-          enableRotate={false}
-          zoomSpeed={0.25/scale}
-          style={{zIndex: 5}}/>
-        <ambientLight
-          intensity={0.5}/>
-        <Suspense fallback={null}>
-          <VisComponent camera={mainCamera} scroll={scroll} />
-        </Suspense>
-      </Canvas>
-    </div>
+  useFrame((state, delta) => {
+    group.current.position.set(rectGroupPos[0], rectGroupPos[1], rectGroupPos[2]);
+  });
+
+  const BarGroup = useMemo(() =>
+    <group ref={group} >
+      {
+        xyzProps.dataA1.map((item, idx) => {
+          return(
+            <>
+              <Rect2
+                AB={true}
+                key={'RectA'+idx}
+                idx={idx}
+                item={item}
+                color={color1}
+              />
+              <Rect2
+                AB={false}
+                key={'RectB'+idx}
+                idx={idx}
+                item={xyzProps.dataB1[idx]}
+                color={color2}
+              />
+            </>
+          )
+        })
+      }
+    </group>
+  , []);
+
+  return(
+    <>
+      {BarGroup}
+    </>
   )
-}
+});
 
-export { CanvasA };
+const VisComponent_Animated = React.forwardRef((props, ref) =>{
+
+  return(
+    <group position={[0, 0, 0]} ref={ref}>
+      <AxGr />
+      <MainGroup />
+    </group>
+  );
+});
+
+export { VisComponent_Animated };

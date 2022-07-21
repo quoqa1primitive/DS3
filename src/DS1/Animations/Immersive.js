@@ -1,14 +1,11 @@
-const stoppers_DS1 = [0.01, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.01];
-const clipPositions_DS1 = [0.00, 0.11, 0.32, 0.52, 0.68, 0.83, 0.99, 1.00];
+const stoppers_DS1 = [0.01, 0.04, 0.04, 0.04, 0.02, 0.02, 0.01];
+const clipPositions_DS1 = [0.00, 0.11, 0.32, 0.52, 0.68, 0.83, 1.00];
 
 function getClips(){
   let clips = [];
   clips.push({
-    "target": "group1",
-    "name": "group1_init",
-    "pos": [0, 0, 0],
-    "rot": [0, 0, 0],
-    "opacity": 1,
+    "target": "group1", "name": "group1_init",
+    "pos": [0, 0, 0], "rot": [0, 0, 0], "opacity": 1,
   });
   clips.push({
     "target": "group1", "name": "group1_XY",
@@ -20,11 +17,11 @@ function getClips(){
   });
   clips.push({
     "target": "group1", "name": "group1_zoom1",
-    "pos": [30, 10, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 0.2,
+    "pos": [-5, 10, 5], "rot": [0, Math.PI/2 + -40 * Math.PI/2 / 90, Math.PI/2], "opacity": 0.2,
   });
   clips.push({
     "target": "group1", "name": "group1_zoom2",
-    "pos": [-20, 0, 0], "rot": [0, Math.PI/2, Math.PI/2], "opacity": 1,
+    "pos": [15, 10, 20], "rot": [0, Math.PI/2 + +40 * Math.PI/2 / 90, Math.PI/2], "opacity": 1,
   });
   clips.push({
     "target": "group1", "name": "group1_last",
@@ -33,15 +30,15 @@ function getClips(){
 
   clips.push({
     "target": "camera", "name": "cam_init",
-    "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 6.25,
+    "pos": [0, 0, 6250], "zoom": 6.25,
   });
   clips.push({
     "target": "camera", "name": "cam_zoom1",
-    "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 12,
+    "pos": [0, 500, 6250], "zoom": 15,
   });
   clips.push({
     "target": "camera", "name": "cam_zoom2",
-    "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 9,
+    "pos": [0, 800, 6250], "zoom": 14,
   });
   return clips;
 }
@@ -135,9 +132,11 @@ function getTransitions(){
     "from": {"frame": 3, "clip": "cam_init"}, "to": {"frame": 4, "clip": "cam_zoom1"},
     "easing": "bezier",
     "motion": {
-      "type": "linear", // sin, linear, ...
+      "attribute": "pos",
+      "type": "sin", // sin, linear, ...
       "args": {
-        // if sin, there must exist height
+        "axis": 2, // 0=x, 1=y, 2=z, pos should have axis
+        "height": 1000 // sin should have height
       }
     }
   });

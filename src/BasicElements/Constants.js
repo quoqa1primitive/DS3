@@ -25,6 +25,8 @@ export const xyzProps = {
   dataA2: [60, 60, 60, 55, 55, 55, 50, 50, 50, 45, 40, 40],
   dataB2: [30, 40, 40, 50, 50, 50, 60, 70, 70, 70, 70, 80]
 }
+export const rectWidth = 6;
+export const rectDepth = 2;
 
 // DS1 overlays
 export const title = `Does Urbanization Affect

@@ -5,10 +5,10 @@
 
 .DS1 .CanvasA {
   position: relative;
-  top: calc(50% - 320px - 100px);
-  left: calc(50% - 420px);
-  width: 840px;
-  height: 640px;
+  /* top: calc(50% - 320px - 100px); */
+  left: calc(50% - 525px);
+  width: 1050px;
+  height: 100%;
 }
 
 .DS1 .CanvasI {

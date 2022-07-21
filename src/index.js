@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Main1 from './DS1/Components/Main'
+import Main1 from './DS1/BaseStructure/Main'
 import Main2 from './DS2/Components/Main'
 import './index.css';
 
