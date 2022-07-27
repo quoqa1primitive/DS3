@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import React, { useMemo } from 'react';
 import { Line, TextBox, Rect, If, Lerp } from '../../BasicElements/BasicElements.js';
-import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
+import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
+import { xyzProps } from '../BaseStructure/Constants_DS1.js';
 
 const tickLength = 0.6;
 const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;

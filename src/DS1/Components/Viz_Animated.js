@@ -1,21 +1,10 @@
 import * as THREE from 'three';
 import React, { useRef, useMemo, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber'
-import { Line, TextBox, Rect, Rect2, If, Lerp } from '../../BasicElements/BasicElements.js';
-import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
-import { useStore } from '../../BasicElements/Store.js';
-
-const tickLength = 0.6;
-const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
-const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
-const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
-const centerPos = [
-  -xyzProps.xLength / 2,
-  -xyzProps.yLength / 2,
-  -xyzProps.zLength / 2
-];
-const color1 = new THREE.Color("#512C8A");
-const color2 = new THREE.Color("#2F9B39");
+import { Line, TextBox, Rect, If, Lerp } from '../../BasicElements/BasicElements.js';
+import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
+import { xyzProps, rectDepth, rectWidth, centerPos, xLength, yLength, zLength, xPadding, yPadding, zPadding, xSteps, ySteps, zSteps, tickLength, color1, color2 } from '../BaseStructure/Constants_DS1.js';
+import { useStore } from '../BaseStructure/Store.js';
 
 // for animation in progress[2-3-4-5]
 // how many datapoints will be marked?
@@ -132,6 +121,60 @@ const AxGr = React.forwardRef((props, ref) => {
         <Line color={"black"} start={[0, 0, 0]} end={[0, yLength, 0]} /> // Y-Axis
       </If>
     </group>
+  )
+});
+
+const Rect2 = React.forwardRef((props, ref) => {
+  const group = useRef();
+  const box = useRef();
+  const mat = useRef();
+  const progress = useStore((state) => state.progress);
+  const currentIdx = useStore((state) => state.currentIdx);
+  const currentWidth = useStore((state) => state.currentWidth);
+  const opacity = useStore((state) => state.opacity);
+  const step = useStore((state) => state.step);
+  const pos = useMemo(() => [
+    0,
+    xyzProps.zPadding + (props.idx - currentIdx) * ((xyzProps.zLength - 2 * xyzProps.zPadding) / (visibleNum[0] - 1)) + rectDepth / 2,
+    xyzProps.zPadding + (props.idx - currentIdx) * ((xyzProps.zLength - 2 * xyzProps.zPadding) / (visibleNum[1] - 1)) + rectDepth * xyzProps.dataA1.length / visibleNum[1] / 2,
+    xyzProps.zPadding + (props.idx - currentIdx) * ((xyzProps.zLength - 2 * xyzProps.zPadding) / (visibleNum[2] - 1)) + rectDepth * xyzProps.dataA1.length / visibleNum[2] / 2,
+    xyzProps.zPadding + (props.idx - currentIdx) * ((xyzProps.zLength - 2 * xyzProps.zPadding) / (visibleNum[3] - 1)) + rectDepth / 2
+  ]);
+  let selector = 1;
+  let height = [0,0];
+
+  useFrame((state, delta) => {
+    let pos0 = xyzProps.xPadding + (props.AB?0:1) * ((xyzProps.xLength - 2 * xyzProps.xPadding) / (xyzProps.xSteps - 1)) + rectWidth / 1.5 * (props.idx == 0?  -1 : props.idx == xyzProps.dataA1.length - 1? 1 : 0);
+    selector = (props.idx == 0 || props.idx == xyzProps.dataB1.length - 1)? 1 : progress[1];
+    height = [props.item * selector, 3 * (props.AB?xyzProps.dataA2[props.idx] : xyzProps.dataB2[props.idx])];
+
+    // animation을 먹이는 것은 그렇게 많은 과부하는 아니다.
+    group.current.position.setX(Lerp(Lerp(Lerp(Lerp(pos0,pos[1],progress[1]),pos[2],progress[3]),pos[3],progress[4]),pos[4],progress[5]) - (props.AB?currentWidth * progress[1]:0));
+    group.current.visible = (group.current.position.x <= xyzProps.zPadding + (xyzProps.zLength - 2 * xyzProps.zPadding) + 0.5 * xyzProps.zPadding) && (group.current.position.x >= xyzProps.zPadding - 0.5 * xyzProps.zPadding);
+    group.current.scale.setX(currentWidth);
+    group.current.scale.setY(Lerp(height[0], height[1], progress[2])/5);
+    group.current.position.setY(Lerp(height[0], height[1], progress[2])/5/2);
+    mat.current.opacity = step<=8? (props.idx >= 5)? opacity : 1
+    : step<=10? (props.idx > 4)? opacity : (props.idx < 4)? 1.2 - opacity : 1
+    : (props.idx < 4)? 1.2 - opacity: 1;
+  })
+
+  const Rect2 = useMemo(() =>
+    <group idx={props.idx} ref={group}>
+      <mesh ref={box} raycast={() => null} >
+        <boxGeometry  args={[1, 1, 1]} />
+        <meshStandardMaterial ref={mat} color={props.color} transparent={true} />
+      </mesh>
+      <mesh raycast={() => null} >
+        <lineSegments geometry={new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1))} renderOrder={100}>
+          <lineBasicMaterial color="lightgrey"/>
+        </lineSegments>
+      </mesh>
+    </group>
+  )
+
+  return(
+    <>{Rect2}</>
   )
 });
 

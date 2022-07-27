@@ -1,24 +1,12 @@
 import * as THREE from 'three';
 import React, { useMemo, useLayoutEffect } from 'react';
 import { Line, TextBox, Rect, If } from '../../BasicElements/BasicElements.js';
-import { useStore, idces, visibleNum } from '../../BasicElements/Store.js';
-import { xyzProps, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
+import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
+import { xyzProps, rectDepth, rectWidth, centerPos, xLength, yLength, zLength, xPadding, yPadding, zPadding, xSteps, ySteps, zSteps, tickLength, color1, color2 } from '../BaseStructure/Constants_DS1.js';
+import { useStore } from '../BaseStructure/Store.js';
 
-const tickLength = 0.6;
-const xLength = xyzProps.xLength, yLength = xyzProps.yLength, zLength = xyzProps.zLength;
-const xPadding = xyzProps.xPadding, yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
-const xSteps = xyzProps.xSteps, ySteps = xyzProps.ySteps, zSteps = xyzProps.dataA1.length;
-const centerPos = [
-  -xyzProps.xLength / 2,
-  -xyzProps.yLength / 2,
-  -xyzProps.zLength / 2
-];
-const rectDepth = 2;
-const rectWidth = 6;
 const xStep = 8;
 const ratio = 5 / 3;
-const color1 = new THREE.Color("#512C8A");
-const color2 = new THREE.Color("#2F9B39");
 
 function AxGr({props}){
   const step = useStore((state) => state.step);

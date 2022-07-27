@@ -1,106 +1,22 @@
 import * as THREE from 'three'
-import React, { useRef, useLayoutEffect, useState, useMemo, Suspense } from 'react'
-import { Canvas, useThree, useLoader, useFrame, extend } from '@react-three/fiber'
-import { Water } from './Water.js';
-import { OrbitControls, OrthographicCamera, shaderMaterial, useCursor } from '@react-three/drei';
+import React, { useRef, useLayoutEffect, useState, useMemo } from 'react'
+import { Canvas, useThree, useFrame, extend } from '@react-three/fiber'
+import { OrbitControls, OrthographicCamera } from '@react-three/drei';
 import { Line as DreiLine } from '@react-three/drei';
 import { Text } from "troika-three-text";
 import fonts from "./fonts";
-import { useStore, idces, visibleNum } from "./Store";
-import { xyzProps, rectWidth, rectDepth, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './Constants.js'
-extend({ Water, Text });
+import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from './Constants.js'
+extend({ Text });
 
 function Image(){
 
-}
-
-function Ocean({ surfacePosition, ...props }) {
-  const ref = useRef();
-  const gl = useThree((state) => state.gl);
-  const waterNormals = useLoader(
-    THREE.TextureLoader, "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/waternormals.jpg"
-  );
-
-  waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
-  const geom = useMemo(() => new THREE.PlaneGeometry(10000, 10000), []);
-  const config = useMemo(
-    () => ({
-      textureWidth: 512,
-      textureHeight: 512,
-      waterNormals,
-      sunColor: new THREE.Color("#ffffff"),
-      waterColor: new THREE.Color("#7F7F7F"),
-      distortionScale: 5,
-      side: THREE.DoubleSide,
-      format: gl.encoding,
-    }),
-    [waterNormals]
-  );
-
-  useLayoutEffect(() => {
-    ref.current.material.toneMapped = false;
-    ref.current.material.transparent = true;
-    ref.current.material.uniforms.size.value = 2;
-    ref.current.material.uniforms.alpha.value = 0.70;
-    console.log(ref.current.material);
-  },[]);
-
-  useFrame(
-    (state, delta) => (ref.current.material.uniforms.time.value += delta * 0.5)
-  );
-
-  const water = useMemo(() =>
-    <water
-      ref={ref}
-      args={[geom, config]}
-      rotation-x={-Math.PI / 2}
-      position={[0, surfacePosition, 0]}
-    />
-  );
-
-  return (
-    <>{water}</>
-  );
-}
-
-function Disc({ bottomPosition, radius, height, color, opacity=1, greenTop=false, ...props }){
-  const ref = useRef();
-  const color4 = new THREE.Color("#B4A0A6");
-  const color4_bright = new THREE.Color("#d7ccce");
-  const color4_dark = new THREE.Color("#866972");
-  const depth = 100;
-  const cylinderGeometry = useMemo(() => new THREE.BoxGeometry(radius, height, depth));
-  const edges = useMemo(() => new THREE.EdgesGeometry(cylinderGeometry));
-
-  useLayoutEffect(() => {
-    console.log(ref.current);
-  }, []);
-
-  return(
-    <>
-      <mesh ref={ref} raycast={() => null} position={[radius/2, bottomPosition, -depth/2]}>
-        <boxGeometry args={[radius, height, depth]} />
-        <meshBasicMaterial attachArray={"material"} color={false?color:color4_dark} transparent={true} opacity={opacity} />
-        <meshBasicMaterial attachArray={"material"} color={color4} transparent={true} opacity={opacity} />
-        <meshBasicMaterial attachArray={"material"} color={color4_bright} transparent={true} opacity={opacity} />
-        <meshBasicMaterial attachArray={"material"} color={color4} transparent={true} opacity={opacity} />
-        <meshBasicMaterial attachArray={"material"} color={color4} transparent={true} opacity={opacity} />
-        <meshBasicMaterial attachArray={"material"} color={color4} transparent={true} opacity={opacity} />
-      </mesh>
-      <mesh raycast={() => null} position={[radius/2, bottomPosition, -depth/2]}>
-        <lineSegments geometry={edges} renderOrder={100}>
-          <lineBasicMaterial color={new THREE.Color("#5B3F36")}/>
-        </lineSegments>
-      </mesh>
-    </>
-  )
 }
 
 function Line({ start, end, color, dashed=false, ...props }) {
   const ref = useRef();
   useLayoutEffect(() => {
     ref.current.geometry.setFromPoints([new THREE.Vector3(), new THREE.Vector3(end[0], end[1], end[2]).sub(new THREE.Vector3(start[0], start[1], start[2])).normalize()].map((point) => new THREE.Vector3(...point)))
-    console.log(ref.current);
+    // console.log(ref.current);
     // ref.current.material.linewidth = 5;
     // console.log(ref.current);
     // 아래 함수는 dashed를 나타내기 위해 필요함, material만 지정해준다고 dashed로 변하지 않았음
@@ -223,60 +139,6 @@ function TextBox({position=[0, 0, 0], lookAt=true, text, textType="default", anc
     <>{Text}</>
   )
 }
-
-const Rect2 = React.forwardRef((props, ref) => {
-  const group = useRef();
-  const box = useRef();
-  const mat = useRef();
-  const progress = useStore((state) => state.progress);
-  const currentIdx = useStore((state) => state.currentIdx);
-  const currentWidth = useStore((state) => state.currentWidth);
-  const opacity = useStore((state) => state.opacity);
-  const step = useStore((state) => state.step);
-  const pos = useMemo(() => [
-    0,
-    xyzProps.zPadding + (props.idx - currentIdx) * ((xyzProps.zLength - 2 * xyzProps.zPadding) / (visibleNum[0] - 1)) + rectDepth / 2,
-    xyzProps.zPadding + (props.idx - currentIdx) * ((xyzProps.zLength - 2 * xyzProps.zPadding) / (visibleNum[1] - 1)) + rectDepth * xyzProps.dataA1.length / visibleNum[1] / 2,
-    xyzProps.zPadding + (props.idx - currentIdx) * ((xyzProps.zLength - 2 * xyzProps.zPadding) / (visibleNum[2] - 1)) + rectDepth * xyzProps.dataA1.length / visibleNum[2] / 2,
-    xyzProps.zPadding + (props.idx - currentIdx) * ((xyzProps.zLength - 2 * xyzProps.zPadding) / (visibleNum[3] - 1)) + rectDepth / 2
-  ]);
-  let selector = 1;
-  let height = [0,0];
-
-  useFrame((state, delta) => {
-    let pos0 = xyzProps.xPadding + (props.AB?0:1) * ((xyzProps.xLength - 2 * xyzProps.xPadding) / (xyzProps.xSteps - 1)) + rectWidth / 1.5 * (props.idx == 0?  -1 : props.idx == xyzProps.dataA1.length - 1? 1 : 0);
-    selector = (props.idx == 0 || props.idx == xyzProps.dataB1.length - 1)? 1 : progress[1];
-    height = [props.item * selector, 3 * (props.AB?xyzProps.dataA2[props.idx] : xyzProps.dataB2[props.idx])];
-
-    // animation을 먹이는 것은 그렇게 많은 과부하는 아니다.
-    group.current.position.setX(Lerp(Lerp(Lerp(Lerp(pos0,pos[1],progress[1]),pos[2],progress[3]),pos[3],progress[4]),pos[4],progress[5]) - (props.AB?currentWidth * progress[1]:0));
-    group.current.visible = (group.current.position.x <= xyzProps.zPadding + (xyzProps.zLength - 2 * xyzProps.zPadding) + 0.5 * xyzProps.zPadding) && (group.current.position.x >= xyzProps.zPadding - 0.5 * xyzProps.zPadding);
-    group.current.scale.setX(currentWidth);
-    group.current.scale.setY(Lerp(height[0], height[1], progress[2])/5);
-    group.current.position.setY(Lerp(height[0], height[1], progress[2])/5/2);
-    mat.current.opacity = step<=8? (props.idx >= 5)? opacity : 1
-    : step<=10? (props.idx > 4)? opacity : (props.idx < 4)? 1.2 - opacity : 1
-    : (props.idx < 4)? 1.2 - opacity: 1;
-  })
-
-  const Rect2 = useMemo(() =>
-    <group idx={props.idx} ref={group}>
-      <mesh ref={box} raycast={() => null} >
-        <boxGeometry  args={[1, 1, 1]} />
-        <meshStandardMaterial ref={mat} color={props.color} transparent={true} />
-      </mesh>
-      <mesh raycast={() => null} >
-        <lineSegments geometry={new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1))} renderOrder={100}>
-          <lineBasicMaterial color="lightgrey"/>
-        </lineSegments>
-      </mesh>
-    </group>
-  )
-
-  return(
-    <>{Rect2}</>
-  )
-});
 
 function Rect({ width, height, depth, color, opacity }){
   const main = useRef();
@@ -488,8 +350,19 @@ function statesConverter(initStates, stoppers){
   return states;
 }
 
+function getTargets(transitions){
+  let targets = [];
+  for(let i=0; i<transitions.length; i++){
+    if(!targets.includes(transitions[i].target)){
+      targets.push(transitions[i].target);
+    }
+  }
+  return targets;
+}
+
 function AnimationGenerator(totalFrame, initStates, stoppers, clips, transitions){
-  let targets = ["group1", "camera"];
+  let targets = getTargets(transitions);
+  console.log(targets);
   let states = statesConverter(initStates, stoppers);
   let animations = [];
 
@@ -549,6 +422,69 @@ const OrthoCamera = React.forwardRef((props, ref) => {
   );
 });
 
+const MiniMap = (props) => {
+  // This reference will give us direct access to the mesh
+  const miniMapCameraRef = useRef();
+  const { gl, size } = useThree();
+
+  const frustumSize = 500;
+  const aspect = size.width / size.height;
+  const ratio = 1.0;
+
+  const miniMapLocationLeftPixels = 0;
+  const miniMapLocationBottomPixels = 0;
+
+  useFrame(({ gl, scene, camera }) => {
+    gl.autoClear = true;
+    gl.setViewport(0, 0, size.width, size.height);
+    gl.setScissor(0, 0, size.width, size.height);
+    gl.setScissorTest(true);
+    gl.render(scene, camera);
+    gl.autoClear = false;
+    gl.clearDepth();
+
+    // render minicamera
+    gl.setViewport(
+      miniMapLocationLeftPixels,
+      miniMapLocationBottomPixels,
+      size.width * ratio,
+      size.height * ratio
+    );
+    gl.setScissor(
+      miniMapLocationLeftPixels,
+      miniMapLocationBottomPixels,
+      size.width * ratio,
+      size.height * ratio
+    );
+    gl.setScissorTest(true);
+    miniMapCameraRef.current.zoom = 6.25;
+    miniMapCameraRef.current.position.x = camera.position.x;
+    miniMapCameraRef.current.position.y = camera.position.y;
+    miniMapCameraRef.current.position.z = camera.position.z;
+    miniMapCameraRef.current.rotation.x = camera.rotation.x;
+    miniMapCameraRef.current.rotation.y = camera.rotation.y;
+    miniMapCameraRef.current.rotation.z = camera.rotation.z;
+    miniMapCameraRef.current.rotateOnAxis(camera.up, Math.PI);
+    miniMapCameraRef.current.aspect = aspect;
+    miniMapCameraRef.current.updateMatrixWorld();
+    miniMapCameraRef.current.updateProjectionMatrix();
+    gl.render(scene, miniMapCameraRef.current);
+  }, 1);
+
+  return (
+    <>
+      <OrthographicCamera
+        ref={miniMapCameraRef}
+        makeDefault={false}
+        position={[0, 0, 1000]}
+        near={10000}
+        far={50000}
+        zoom={5}
+      />
+    </>
+  );
+};
+
 function If(props){
   return <>{props.if && props.children}</>;
 };
@@ -557,4 +493,4 @@ function Lerp(sVal, eVal, alpha){
   return sVal * (1 - alpha) + eVal * alpha;
 }
 
-export {Ocean, Disc, Line, ChangePoint, TextBox, Rect, Rect2, LineMark, TextComponent, statesConverter, AnimationGenerator, OrthoCamera, If, Lerp};
+export {Line, ChangePoint, TextBox, Rect, LineMark, TextComponent, statesConverter, AnimationGenerator, OrthoCamera, MiniMap, If, Lerp};

@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import * as Survey from "survey-core";
 import * as SurveyReact from "survey-react-ui";
 import "survey-core/survey.css";
+
 import { Static, Animated, Immersive, EndOfTask} from '../../BasicElements/Constants.js';
 import { If } from '../../BasicElements/BasicElements.js';
 import '../../BasicElements/Main.css'
@@ -148,7 +149,7 @@ function Main1(){
   const [sequence, setSequence] = useState([])
   const [quiz1, setQuiz1] = useState(false)
   const [quiz2, setQuiz2] = useState(false)
-  const [type, setType] = useState(Animated);
+  const [type, setType] = useState(Immersive);
   const [completionCode, setCompletionCode] = useState("");
 
   let PersonID;

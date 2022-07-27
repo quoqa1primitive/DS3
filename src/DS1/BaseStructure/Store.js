@@ -1,11 +1,11 @@
 import create from 'zustand';
-import { Lerp } from './BasicElements.js';
-import { xyzProps, rectWidth, rectDepth, totalFrame } from './Constants.js';
+import { Lerp } from '../../BasicElements/BasicElements.js';
+import { xyzProps, centerPos, rectWidth, rectDepth, totalFrame } from './Constants_DS1.js';
 
 export const idces = [0, 0, 3, 0];
 export const visibleNum = [12, 6, 9, 12];
 export const width = [rectWidth, rectDepth, rectDepth * xyzProps.dataA1.length / visibleNum[1], rectDepth * xyzProps.dataA1.length / visibleNum[2], rectDepth];
-export const centerPos = [-xyzProps.xLength / 2,-xyzProps.yLength / 2,-xyzProps.zLength / 2];
+
 
 const useStore = create((set) => ({
   idx:0,

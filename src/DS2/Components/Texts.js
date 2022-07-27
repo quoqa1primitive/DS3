@@ -1,7 +1,6 @@
 import React from 'react'
 import { TextBox } from '../../BasicElements/BasicElements.js';
-import { title, text1, text2, text3, text4, text5, text6 } from '../../BasicElements/Constants2.js';
-import { xyzProps, TextComponentHeight } from '../../BasicElements/Constants2.js';
+import { xyzProps, TextComponentHeight, title, text1, text2, text3, text4, text5, text6 } from '../BaseStructure/Constants_DS2.js';
 
 function TextGroup({texts, position, type}){
   return (

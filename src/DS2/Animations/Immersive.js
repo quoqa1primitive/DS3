@@ -13,11 +13,11 @@ function getClips(){
   });
   clips.push({
     "target": "group1", "name": "ground_topCorner2",
-    "pos": [10, -10, 0], "rot": [4 * Math.PI/180, -22 * Math.PI/180, 0], "waterLevel": 0.48,
+    "pos": [10, -10, 0], "rot": [10 * Math.PI/180, -22 * Math.PI/180, 0], "waterLevel": 0.48,
   });
   clips.push({
     "target": "group1", "name": "group1_end1",
-    "pos": [30, 0, 0], "rot": [1 * Math.PI/180, -10 * Math.PI/180, 0], "waterLevel": 0.74,
+    "pos": [10, -10, 0], "rot": [10 * Math.PI/180, -22 * Math.PI/180, 0], "waterLevel": 0.74,
   });
   clips.push({
     "target": "group1", "name": "group1_end2",
@@ -84,13 +84,13 @@ function getTransitions(){
   });
   transitions.push({
     "target": "camera",
-    "from": {"frame": 3, "clip": "cam_zoomIn1"}, "to": {"frame": 4, "clip": "cam_zoomIn2"},
+    "from": {"frame": 3, "clip": "cam_zoomIn1"}, "to": {"frame": 4, "clip": "cam_zoomIn1"},
     "easing": "bezier",
     "motion": { "type": "linear", "args": {} }
   });
   transitions.push({
     "target": "camera",
-    "from": {"frame": 4, "clip": "cam_zoomIn2"}, "to": {"frame": 5, "clip": "cam_zoomOut"},
+    "from": {"frame": 4, "clip": "cam_zoomIn1"}, "to": {"frame": 5, "clip": "cam_zoomOut"},
     "easing": "bezier",
     "motion": { "type": "linear", "args": {} }
   });

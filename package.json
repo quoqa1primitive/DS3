@@ -12,6 +12,7 @@
     "babel-plugin-glsl": "^1.0.0",
     "bezier-easing": "^2.1.0",
     "d3": "^7.3.0",
+    "fs": "0.0.1-security",
     "lodash": "^4.17.21",
     "npm-watch": "^0.11.0",
     "react": "^17.0.2",
