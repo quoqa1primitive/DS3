@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import React, { useRef, useLayoutEffect, useState, useMemo } from 'react'
 import { Canvas, useThree, useFrame, extend } from '@react-three/fiber'
-import { OrbitControls, OrthographicCamera } from '@react-three/drei';
+import { OrbitControls, OrthographicCamera, PerspectiveCamera, SpotLight } from '@react-three/drei';
 import { Line as DreiLine } from '@react-three/drei';
 import { Text } from "troika-three-text";
 import fonts from "./fonts";
@@ -67,31 +67,36 @@ function TextBox({position=[0, 0, 0], lookAt=true, text, textType="default", anc
     return type == "title"? {
       font: "Noto Sans",
       fontSize: 7.5,
-      color: "black",
-      maxWidth: 100,
-      lineHeight: 1.15,
+      color: "white",
+      maxWidth: 150,
+      lineHeight: 1.75,
       letterSpacing: 0,
       textAlign: "center",
       materialType: "MeshBasicMaterial",
     } : type == "plain"? {
         font: "Noto Sans",
         fontSize: 2.5,
-        color: "black",
-        maxWidth: 65,
-        lineHeight: 1.15,
+        color: "white",
+        maxWidth: 130,
+        lineHeight: 1.45,
         letterSpacing: 0,
-        textAlign: "left",
-        materialType: "MeshBasicMaterial",
-        outlineColor: new THREE.Color("rgb(248, 245, 240)"),
-        outlineOpacity: 0.50,
-        outlineWidth: 0.75,
-        outlineBlur: 5,
-    } : {
+        textAlign: "center",
+        materialType: "MeshBasicMaterial"
+    } : type == "axis"? {
+      font: "Noto Sans",
+      fontSize: 180,
+      color: "white",
+      maxWidth: 5000,
+      lineHeight: 1.45,
+      letterSpacing: 0,
+      textAlign: "center",
+      materialType: "MeshBasicMaterial"
+  }: {
       font: "Noto Sans",
       fontSize: 2.5,
-      color: "black",
+      color: "white",
       maxWidth: 65,
-      lineHeight: 1.15,
+      lineHeight: 1.45,
       letterSpacing: 0,
       textAlign: "left",
       materialType: "MeshBasicMaterial",
@@ -323,6 +328,9 @@ function interpolate(startVal, endVal, duration, time, postType, motion){
   if(motion.type == "sin"){
     interpolatedVal[motion.attribute][motion.args.axis] += motion.args.height * Math.sin(bezierFunc(progress) * Math.PI);
   }
+  if(motion.type == "-sin"){
+    interpolatedVal[motion.attribute][motion.args.axis] += motion.args.height * (-Math.sin(bezierFunc(progress) * Math.PI));
+  }
 
   interpolatedVal.name = startVal.name;
   interpolatedVal.target = startVal.target;
@@ -401,23 +409,23 @@ function AnimationGenerator(totalFrame, initStates, stoppers, clips, transitions
 }
 
 const OrthoCamera = React.forwardRef((props, ref) => {
+
+useLayoutEffect(() => {
+  console.log(ref);
+}, [])
+
   return(
     <>
-      <OrthographicCamera ref={ref} makeDefault
-        position={[0, 0, 1000]}
-        near={0}
-        far={50000}
-        zoom={6.25}
-        />
+      <PerspectiveCamera ref={ref} makeDefault fov={800}far={10000000} near={10} position={[-1000, 1000, 10]} zoom={6}/>
       <OrbitControls
         camera={ref.current}
-        enablePan={false}
-        enableZoom={false}
-        enableRotate={false}
+        enablePan={true}
+        enableZoom={true}
+        enableRotate={true}
         zoomSpeed={0.25}
         style={{zIndex: 5}}/>
-      <ambientLight
-        intensity={0.6}/>
+      <ambientLight intensity={0.9}/>
+      <directionalLight position={[1,2,1]} intensity={1} />
     </>
   );
 });
@@ -457,14 +465,14 @@ const MiniMap = (props) => {
       size.height * ratio
     );
     gl.setScissorTest(true);
-    miniMapCameraRef.current.zoom = 6.25;
-    miniMapCameraRef.current.position.x = camera.position.x;
-    miniMapCameraRef.current.position.y = camera.position.y;
-    miniMapCameraRef.current.position.z = camera.position.z;
-    miniMapCameraRef.current.rotation.x = camera.rotation.x;
-    miniMapCameraRef.current.rotation.y = camera.rotation.y;
-    miniMapCameraRef.current.rotation.z = camera.rotation.z;
-    miniMapCameraRef.current.rotateOnAxis(camera.up, Math.PI);
+    miniMapCameraRef.current.zoom = 5.00;
+    miniMapCameraRef.current.position.x = 0;
+    miniMapCameraRef.current.position.y = 20000;
+    miniMapCameraRef.current.position.z = 1000;
+    // miniMapCameraRef.current.rotation.x = camera.rotation.x;
+    // miniMapCameraRef.current.rotation.y = camera.rotation.y;
+    // miniMapCameraRef.current.rotation.z = camera.rotation.z;
+    // miniMapCameraRef.current.rotateOnAxis(camera.up, Math.PI);
     miniMapCameraRef.current.aspect = aspect;
     miniMapCameraRef.current.updateMatrixWorld();
     miniMapCameraRef.current.updateProjectionMatrix();
@@ -476,9 +484,9 @@ const MiniMap = (props) => {
       <OrthographicCamera
         ref={miniMapCameraRef}
         makeDefault={false}
-        position={[0, 0, 1000]}
-        near={10000}
-        far={50000}
+        position={[0, 5000, 1000]}
+        near={0.1}
+        far={1000}
         zoom={5}
       />
     </>
