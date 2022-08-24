@@ -25,7 +25,7 @@ function Canvas({mode}) {
 
   const setIdx = useStore((state) => state.setIdx);
   const setTarget = useStore((state) => state.setTarget);
-  const scrollLength = 16000;
+  const scrollLength = 20000;
 
   // const [idx, setIdx] = useState(0);
 
@@ -34,7 +34,7 @@ function Canvas({mode}) {
   const clipPositions1 = useMemo(() => mode==Immersive? IMM.clipPositions_DS2 : ANM.clipPositions_DS2, []);
   const clips1          = useMemo(() => mode==Immersive? IMM.getClips() : ANM.getClips(), []);
   const transitions1    = useMemo(() => mode==Immersive? IMM.getTransitions() : ANM.getTransitions(), []);
-  
+
   const stoppers2      = useMemo(() => DIS.stoppers_Dist2, []);
   const clipPositions2 = useMemo(() => DIS.clipPositions_Dist2, []);
   const clips2          = useMemo(() => DIS.getClips(), []);
@@ -72,13 +72,13 @@ function Canvas({mode}) {
   useLayoutEffect(() =>{
     document.getElementById("scroller").addEventListener('scroll', handleScroll, {passive: false});
     document.getElementById("dummy").style.height = scrollLength + "px";
-    
+
     requestRef.current = requestAnimationFrame(animate);
 
     setAnimation_Main(AnimationGenerator(totalFrame, clipPositions1, stoppers1, clips1, transitions1));
     setAnimation_Dist(AnimationGenerator(totalFrame, clipPositions2, stoppers2, clips2, transitions2));
     setAnimation_Rl(AnimationGenerator(totalFrame, clipPositions3, stoppers3, clips3, transitions3));
-    
+
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
@@ -114,7 +114,7 @@ function CanvasComponents({mode, steps, ...props}){
   const animation_main = useStore((state) => state.animation_main);
   const animation_rl = useStore((state) => state.animation_rl);
 
-  
+
 
   const cameraPos = [
     new THREE.Vector3(1, 1, 1)
@@ -130,7 +130,7 @@ function CanvasComponents({mode, steps, ...props}){
 
       let animation_group1 = animation_main[0]["animation"][idx];
       let animation_camera = animation_main[1]["animation"][idx];
-      // let animation_camera = animations[2]["animation"][idx];
+      let animation_text = mode != Static? animation_main[2]["animation"][idx]: undefined;;
       let animation_camera_rl = animation_rl[0]["animation"][idx];
       // console.log(idx);
       let goX = 100*animation_camera_rl.railMove[0];
@@ -148,40 +148,21 @@ function CanvasComponents({mode, steps, ...props}){
           animation_camera_rl.lookAt[1]+goY,
           animation_camera_rl.lookAt[2]
         );
-        // const axis = animation_camera_rl.quaternion;
-        // const angle = animation_camera_rl.quaternion[3]
-        // const quaternion = new THREE.Quaternion();
-        // quaternion.setFromAxisAngle(new THREE.Vector3(0,0,0).fromArray(axis), Math.PI/180*angle);
-        // mainCamera.current.setRotationFromQuaternion(quaternion);
 
-        // console.log(quaternion);
-        // mainCamera.current.setRotationFromEuler(new THREE.Euler(
-        //   Math.PI/180*animation_camera_rl.rot[0],
-        //   Math.PI/180*animation_camera_rl.rot[1],
-        //   Math.PI/180*animation_camera_rl.rot[2]
-        // ));
         mainCamera.current.rotateZ(Math.PI/180*animation_camera_rl.rot[2]);
         mainCamera.current.rotateY(Math.PI/180*animation_camera_rl.rot[1]);
         mainCamera.current.rotateX(Math.PI/180*animation_camera_rl.rot[0]);
-      
-     
+
+
 
         mainCamera.current.zoom = animation_camera_rl.zoom;
         mainCamera.current.updateProjectionMatrix();
 
-        // mainCamera.current.position.setZ(4000000);
-        // mainCamera.current.position.setX(-4500);
-        // mainCamera.current.position.setY(0);
-        // mainCamera.current.lookAt(-4500,0,0);
-
-        // mainCamera.current.rotateY(animation_camera_rl.rot[1]);
         mainText.current.position.setX(textCamPos.x);
-        mainText.current.position.setY(textCamPos.y + idx / totalFrame * TextComponentHeight + TextComponentHeight * 0.02);
+        mainText.current.position.setY(textCamPos.y + animation_text.pos + TextComponentHeight * 0.02);
         mainText.current.position.setZ(textCamPos.z - 100);
-        mainText.current.lookAt(textCamPos.x, textCamPos.y + idx / totalFrame * TextComponentHeight + TextComponentHeight * 0.02, textCamPos.z);
+        mainText.current.lookAt(textCamPos.x, textCamPos.y + animation_text.pos + TextComponentHeight * 0.02, textCamPos.z);
 
-
-        // console.log(mainCamera.current.position);
       }
     }
   });

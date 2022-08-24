@@ -1,5 +1,6 @@
 const stoppers_DS2 = [0.01, 0.03, 0.01, 0.03, 0.01, 0.01];
 const clipPositions_DS2 = [0.00, 0.16, 0.33, 0.50, 0.80, 1.00];
+const totalLength = 1000;
 
 function getClips(){
   let clips = [];
@@ -40,6 +41,31 @@ function getClips(){
     "target": "camera", "name": "cam_zoomIn2",
     "pos": [0, 0, 6250], "rot": [0, 0, 0], "zoom": 10.25,
   });
+
+  clips.push({
+    "target": "text", "name": "text_0",
+    "pos": totalLength * 0.060
+  })
+  clips.push({
+    "target": "text", "name": "text_1",
+    "pos": totalLength * 0.280
+  })
+  clips.push({
+    "target": "text", "name": "text_2",
+    "pos": totalLength * 0.400
+  })
+  clips.push({
+    "target": "text", "name": "text_3",
+    "pos": totalLength * 0.530
+  })
+  clips.push({
+    "target": "text", "name": "text_4",
+    "pos": totalLength * 0.680
+  })
+  clips.push({
+    "target": "text", "name": "text_5",
+    "pos": totalLength * 0.985
+  })
   return clips;
 }
 
@@ -95,6 +121,36 @@ function getTransitions(){
     "motion": { "type": "linear", "args": {} }
   });
 
+  transitions.push({
+    "target": "text",
+    "from": {"frame": 0, "clip": "text_0"}, "to": {"frame": 1, "clip": "text_1"},
+    "easing": "bezier",
+    "motion": {"type": "linear", "args": {}}
+  })
+  transitions.push({
+    "target": "text",
+    "from": {"frame": 1, "clip": "text_1"}, "to": {"frame": 2, "clip": "text_2"},
+    "easing": "bezier",
+    "motion": {"type": "linear", "args": {}}
+  })
+  transitions.push({
+    "target": "text",
+    "from": {"frame": 2, "clip": "text_2"}, "to": {"frame": 3, "clip": "text_3"},
+    "easing": "bezier",
+    "motion": {"type": "linear", "args": {}}
+  })
+  transitions.push({
+    "target": "text",
+    "from": {"frame": 3, "clip": "text_3"}, "to": {"frame": 4, "clip": "text_4"},
+    "easing": "bezier",
+    "motion": {"type": "linear", "args": {}}
+  })
+  transitions.push({
+    "target": "text",
+    "from": {"frame": 4, "clip": "text_4"}, "to": {"frame": 5, "clip": "text_5"},
+    "easing": "bezier",
+    "motion": {"type": "linear", "args": {}}
+  })
   return transitions;
 }
 
