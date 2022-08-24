@@ -78,13 +78,22 @@ function TextBox({position=[0, 0, 0], lookAt=true, text, textType="default", anc
         fontSize: 2.5,
         color: "white",
         maxWidth: 130,
-        lineHeight: 1.45,
+        lineHeight: 1.90,
         letterSpacing: 0,
-        textAlign: "center",
+        textAlign: "left",
         materialType: "MeshBasicMaterial"
     } : type == "axis"? {
       font: "Noto Sans",
       fontSize: 180,
+      color: "white",
+      maxWidth: 5000,
+      lineHeight: 1.45,
+      letterSpacing: 0,
+      textAlign: "center",
+      materialType: "MeshBasicMaterial"
+  }: type == "finalaxis"? {
+      font: "Noto Sans",
+      fontSize: 50,
       color: "white",
       maxWidth: 5000,
       lineHeight: 1.45,

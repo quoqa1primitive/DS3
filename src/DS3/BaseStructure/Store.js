@@ -1,7 +1,7 @@
 import create from 'zustand';
 import { Lerp } from '../../BasicElements/BasicElements.js';
 import { xyzProps, centerPos, totalFrame } from './Constants_DS2.js';
-
+import { Static, Animated, Immersive } from '../../BasicElements/Constants.js';
 export const idces = [0, 0, 3, 0];
 export const visibleNum = [12, 6, 9, 12];
 // export const width = [rectWidth, rectDepth, rectDepth * xyzProps.dataA1.length / visibleNum[1], rectDepth * xyzProps.dataA1.length / visibleNum[2], rectDepth];
@@ -9,9 +9,9 @@ export const visibleNum = [12, 6, 9, 12];
 
 const useStore = create((set) => ({
   idx:0,
+  target: 0,
   step: 0,
   steps: [0, 1],
-  waterLevel: 1,
   animation_main: [],
   animation_dist: [],
   animation_rl: [],
@@ -19,7 +19,7 @@ const useStore = create((set) => ({
 
   setIdx: (val) => set((state) => {
     return {
-      idx: val
+      idx: Math.floor(state.idx + (state.target - state.idx)*0.07)
     }
   }),
   setStep: (val) => set((state) => {
@@ -32,9 +32,9 @@ const useStore = create((set) => ({
       steps: val
     }
   }),
-  setWaterLevel: (val) => set((state) => {
+  setTarget: (val) => set((state) => {
     return {
-      waterLevel: val
+      target: val
     }
   }),
   setAnimation_Main: (val) => set((state) => {

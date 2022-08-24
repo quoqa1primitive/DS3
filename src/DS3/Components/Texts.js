@@ -1,6 +1,6 @@
 import React from 'react'
 import { TextBox } from '../../BasicElements/BasicElements.js';
-import { xyzProps, TextComponentHeight, title, text1, text2, text3, text4, text5, text6 } from '../BaseStructure/Constants_DS2.js';
+import { xyzProps, TextComponentHeight, title, text1, text2, text3, text4, text5, text6} from '../BaseStructure/Constants_DS2.js';
 
 function TextGroup({texts, position, type}){
   return (
@@ -24,7 +24,7 @@ function TextGroup({texts, position, type}){
 const TextComponent = React.forwardRef((props, ref) =>{
 
   const titles = [title];
-  const texts = [text1, text2, text3, text4, text5];
+  const texts = [text1, text2, text3, text4, text5, text6];
 
   return(
     <group ref={ref}>
@@ -32,10 +32,11 @@ const TextComponent = React.forwardRef((props, ref) =>{
         position={[[0, -0.000 * TextComponentHeight, 0]]} />
       <TextGroup texts={texts} type={"plain"}
         position={[
-          [0, -0.160 * TextComponentHeight, 0],
-          [0, -0.330 * TextComponentHeight, 0],
-          [0, -0.500 * TextComponentHeight, 0],
-          [0, -0.700 * TextComponentHeight, 0],
+          [0, -0.060 * TextComponentHeight, 0],
+          [0, -0.280 * TextComponentHeight, 0],
+          [0, -0.400 * TextComponentHeight, 0],
+          [0, -0.530 * TextComponentHeight, 0],
+          [0, -0.680 * TextComponentHeight, 0],
           [0, -0.985 * TextComponentHeight, 0],
         ]} />
     </group>

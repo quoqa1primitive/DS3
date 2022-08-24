@@ -694,6 +694,40 @@ const aftr2bfr3 = `4549.78
 4682.8
 4700.9
 4704.54`;
+const aftr3 = `4712.02
+4668.97
+4634.09
+4709.85
+4668.67
+4620.64
+4568.02
+4649.23
+4696.56
+4725.79
+4791.19
+4786.35
+4793.06
+4778.73
+4766.18
+4796.56
+4793.54
+4700.58
+4696.05
+4677.03
+4670.29
+4713.07
+4726.35
+4659.03
+4662.85
+4577.11
+4532.76
+4482.73
+4397.94
+4410.13
+4356.45
+4349.93
+4326.51
+4431.85`;
 
 
 var shrink = function( value ) {
@@ -722,11 +756,12 @@ const adjustedArr3 = rawArr3.map(shrink);
 const rawB1 = bfr1.split(/\r\n|\r|\n/);
 const rawA1B2 = aftr1bfr2.split(/\r\n|\r|\n/);
 const rawA2B3 = aftr2bfr3.split(/\r\n|\r|\n/);
+const rawA3 = aftr3.split(/\r\n|\r|\n/);
 
 const adjustedB1 = rawB1.map(shrink);
 const adjustedA1B2 = rawA1B2.map(shrink);
 const adjustedA2B3 = rawA2B3.map(shrink);
-
+const adjustedA3 = rawA3.map(shrink);
 
 
 const date1 = rawDate1.split(/\r\n|\r|\n/);
@@ -746,4 +781,4 @@ function refining(rawArr, date) {
 const arr1 = refining(rawArr1, date1);
 const arr2 = refining(rawArr2, date2);
 const arr3 = refining(rawArr3, date3);
-export {adjustedArr1, adjustedArr2, adjustedArr3, arr1, arr2, arr3, adjustedB1, adjustedA1B2, adjustedA2B3};
+export {adjustedArr1, adjustedArr2, adjustedArr3, arr1, arr2, arr3, adjustedB1, adjustedA1B2, adjustedA2B3, adjustedA3};

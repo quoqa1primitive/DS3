@@ -36,11 +36,11 @@ function getClips(){
     "target": "line1", "name": "only axis",
     "lookAt": [-6700,0,3999900] ,"pos": [-6700, 0, 4900000], "rot": [0,0,0], "zoom": 600,
     "lookAtGap":0, "railMove": [0,0],
-    "color1": [200,200,200], "color2": [200,200,200], "color3": [200,200,200],
+    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY,2*interval*lineWidth], 
     "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth], 
     "pos3": [0, line1PosY, 2*interval*lineWidth], 
-    "opacityLine": 0, "opacityGrid": 0, "opacityML": 0, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 1, "opacityGrid": 0, "opacityML": 0, "opacityAxis": 1, "opacityExtraML": 1, "opacityExtraLine": 1
   });
   clips.push({
     "target": "line1", "name": "overall graph",
@@ -294,23 +294,23 @@ function getClips(){
   });
   clips.push({
     "target": "line1", "name": "exit 3d",
-    "lookAt": [-11500, -1000, 760] ,"pos": [-11500, -1000, 1900000], "rot": [0,-360,0], "zoom": 650,
+    "lookAt": [-11500, -1500, 760] ,"pos": [-11500, -1500, 1900000], "rot": [0,-360,0], "zoom": 650,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
     "target": "line1", "name": "final",
-    "lookAt": [-11500, -1000, 760] ,"pos": [-11500, -1000, 1900000], "rot": [0,-360,0], "zoom": 650,
+    "lookAt": [-11500, -1500, 760] ,"pos": [-11500, -1500, 1900000], "rot": [0,-360,0], "zoom": 650,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
 
  

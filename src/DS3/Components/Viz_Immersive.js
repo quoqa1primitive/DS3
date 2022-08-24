@@ -7,7 +7,7 @@ import { Line, ChangePoint, Rect, TextBox, If } from '../../BasicElements/BasicE
 import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
 import { xyzProps, centerPos, xLength, yLength, zLength, xPadding, yPadding, zPadding, xSteps, ySteps, zSteps, tickLength, totalFrame, TextComponentHeight, color4, color4_bright, color4_dark, color_ocean2, color_lineSeg } from '../BaseStructure/Constants_DS2.js';
 import { useStore } from '../BaseStructure/Store.js';
-import {adjustedArr1, adjustedArr2, adjustedArr3, arr1, arr2, arr3, adjustedB1, adjustedA1B2, adjustedA2B3} from './snpData.js';
+import {adjustedArr1, adjustedArr2, adjustedArr3, arr1, arr2, arr3, adjustedB1, adjustedA1B2, adjustedA2B3, adjustedA3} from './snpData.js';
 
 
 const VisComponent = React.forwardRef((props, ref) =>{
@@ -18,10 +18,11 @@ const VisComponent = React.forwardRef((props, ref) =>{
   const grid = useRef();
   const yplane = useRef();
   const firstaxis = useRef();
+  const finalaxis = useRef();
   const bfr1 = useRef();
   const aftr2bfr3 = useRef();
   const aftr1bfr2 = useRef();
-  const camera = useRef();
+  const aftr3 = useRef();
   // const target = useRef();
   const animation_rl = useStore((state) => state.animation_rl);
   // console.log(animation_rl);
@@ -55,6 +56,7 @@ const VisComponent = React.forwardRef((props, ref) =>{
   const shapeB1 = arrToShape(adjustedB1);
   const shapeA2B3 = arrToShape(adjustedA2B3);
   const shapeA1B2 = arrToShape(adjustedA1B2);
+  const shapeA3 = arrToShape(adjustedA3);
 
   const lineChart1 = useMemo(()=> new THREE.ExtrudeGeometry(shape1, extrudeSettings1), []);
   const edges1 = useMemo(()=> new THREE.EdgesGeometry(lineChart1), []);
@@ -68,6 +70,9 @@ const VisComponent = React.forwardRef((props, ref) =>{
   const edges3 = useMemo(()=> new THREE.EdgesGeometry(lineChart3), []);
   const middleLine3 = useMemo(()=> new THREE.ExtrudeGeometry(shape3, extrudeSettings2), []);
 
+  const A3 = useMemo(()=> new THREE.ExtrudeGeometry(shapeA3, extrudeSettings1), []);
+  const edgeA3 = useMemo(()=> new THREE.EdgesGeometry(A3), []);
+  const mlA3 = useMemo(()=> new THREE.ExtrudeGeometry(shapeA3, extrudeSettings2), []);
 
   const A2B3 = useMemo(()=> new THREE.ExtrudeGeometry(shapeA2B3, extrudeSettings1), []);
   const edgeA2B3 = useMemo(()=> new THREE.EdgesGeometry(A2B3), []);
@@ -103,7 +108,10 @@ const VisComponent = React.forwardRef((props, ref) =>{
     // line2.current.translateZ(interval*lineWidth);
     // edge2.current.translateZ(interval*lineWidth);
     // ml2.current.translateZ(interval*lineWidth+lineWidth/2);
-    
+    aftr3.current.translateX(xScale*(adjustedArr3.length-1));
+    aftr3.current.translateZ(2*interval*lineWidth);
+    aftr3.current.translateY(-(adjustedArr3[0]-adjustedArr1[0])*yScale);
+
     line3.current.translateZ(2*interval*lineWidth);
     line3.current.translateY(-(adjustedArr3[0]-adjustedArr1[0])*yScale);
 
@@ -137,17 +145,53 @@ const VisComponent = React.forwardRef((props, ref) =>{
 
 
   }, []);
-  function Annotation({position=[0,0,0], text, length, ...props}){
-    const points = [];
+  function HorizontalAnnotation({position=[0,0,0], text, length, textType, interval, ...props}) {
+    const points=[];
     points.push(new THREE.Vector3(0,0,0));
-    points.push(new THREE.Vector3(0, length, 0));
+    points.push(new THREE.Vector3(length,0,0));
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const annot = useMemo(()=>
       <group position={position}>
+        <TextBox position={[-interval, 0, 0]} text={text} textType={textType}/>
         <line geometry={geometry}>
-          <lineDashedMaterial color="white" transparent opacity={1} dashSize={5}/>
+          <lineBasicMaterial transparent opacity={0.3} />
         </line>
-        <TextBox position={[0,-400,0]} text={text} textType={"axis"} lookAt/> 
+      </group>
+    , []);
+    return(
+      <>{annot}</>
+    )
+  }
+
+  function Annotation({position=[0,0,0], text, length, textType, dotSize=10, yInterval=400, ...props}){
+    const points = [];
+    points.push(new THREE.Vector3(0,0,0));
+    points.push(new THREE.Vector3(0, -length, 0));
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const dotGeometry = new THREE.CircleGeometry(dotSize, 50);
+    const annot = useMemo(()=>
+      <group position={position}>
+        <mesh geometry={dotGeometry}>
+          <meshBasicMaterial/>
+        </mesh>
+        <line geometry={geometry}>
+          <lineDashedMaterial color="white" transparent opacity={0.3} dashSize={5}/>
+        </line>
+        <TextBox position={[0,-length-yInterval,0]} text={text} textType={textType} lookAt/> 
+      </group>
+    , []);
+    return(
+      <>{annot}</>
+    )
+  }
+  function DotAnnotation({position=[0,0,0], text, textType, dotSize, ...props}){
+    const geometry = new THREE.CircleGeometry(dotSize, 50);
+    const annot = useMemo(()=>
+      <group position={position}>
+        <mesh geometry={geometry}>
+          <meshBasicMaterial/>
+        </mesh>
+        <TextBox position={[100,0,0]} text={text} textType={textType} lookAt/> 
       </group>
     , []);
     return(
@@ -156,29 +200,79 @@ const VisComponent = React.forwardRef((props, ref) =>{
   }
   function Axis({position=[0,0,0], lenY, lenX, ...props}){
     const points = [];
-    const arrowHeight = 100;
-    const arrowWidth = 50;
-    points.push(new THREE.Vector3( 0,lenY,0 ));
+    // points.push(new THREE.Vector3( 0,lenY,0 ));
     points.push(new THREE.Vector3( 0,0,0 ));
     points.push(new THREE.Vector3( lenX,0,0 ));
-    const text1 = `COVID-19 throws the world into chaos
+    const text1 = `the first impact of COVID-19
     (FEB 2020)`;
     const text2 = `Delta variant emerges
     (SEPT 2021)`;
     const text3 = `Omicron variant emerges
     (NOV 2021)`;
-    const text1Pos = [1000, 0, 0];
-    const text2Pos = [10000, 0, 0];
-    const text3Pos = [14000, 0, 0];
+    const text1Pos = [(adjustedB1.length-1)*xScale, 2500 + (adjustedArr1[0]-adjustedArr3[0]+adjustedArr1[0])*yScale, 0];
+    const text2Pos = [(adjustedB1.length+adjustedArr1.length+adjustedA1B2.length-3)*xScale, 2500 + (adjustedArr2[0]-adjustedArr3[0]+adjustedArr1[0])*yScale, 0];
+    const text3Pos = [(adjustedB1.length+adjustedArr1.length+adjustedA1B2.length+adjustedArr2.length+adjustedA2B3.length-5)*xScale, 2500 + adjustedArr1[0]*yScale, 0];
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const axis = useMemo(() =>
       <group position={position}>
         <line geometry={geometry}>
           <lineDashedMaterial color="white" transparent opacity={1} dashSize={10} gapSize={1000} scale={1}/>
         </line> 
-        <Annotation position={text1Pos} text={text1} length={800}/>
-        <Annotation position={text2Pos} text={text2} length={800}/>
-        <Annotation position={text3Pos} text={text3} length={800}/>
+        <Annotation position={text1Pos} text={text1} textType={"axis"} length={2500 + (adjustedArr1[0]-adjustedArr3[0]+adjustedArr1[0])*yScale}/>
+        <Annotation position={text2Pos} text={text2} textType={"axis"} length={ 2500 + (adjustedArr2[0]-adjustedArr3[0]+adjustedArr1[0])*yScale }/>
+        <Annotation position={text3Pos} text={text3} textType={"axis"} length={ 2500 + adjustedArr1[0]*yScale } />
+        <HorizontalAnnotation position={[0,0,0]} text={"2,000"} textType={"axis"} interval={600} length={lenX}/>
+        <HorizontalAnnotation position={[0,600-100,0]} text={"2,500"} textType={"axis"} interval={600} length={lenX}/>
+        <HorizontalAnnotation position={[0,1200-100,0]} text={"3,000"} textType={"axis"} interval={600} length={lenX}/>
+        <HorizontalAnnotation position={[0,1800-100,0]} text={"3,500"} textType={"axis"} interval={600} length={lenX}/>
+        <HorizontalAnnotation position={[0,2400-100,0]} text={"4,000"} textType={"axis"} interval={600} length={lenX}/>
+      </group>
+    , []);
+    return(
+      <>{axis}</>
+    )
+  }
+
+  function FinalAxis({position=[0,0,0], lenX, ...props}){
+    const points = [];
+    // points.push(new THREE.Vector3( 0,lenY,0 ));
+    points.push(new THREE.Vector3( 0,0,0 ));
+    points.push(new THREE.Vector3( lenX,0,0 ));
+    const expire1 = `recovery of the initial impact D+52`;
+    const expire2 = `recovery of the Delta variant D+52`;
+    const expire3 = `recovery of the Omicron variant D+52`;
+    const min1 = `floor at 2702.3`;
+    const min2 = `floor at 2702.3`;
+    const min3 = `floor at 2702.3`;
+    const text3 = `Omicron variant emerges
+    (NOV 2021)`;
+    const line1Height = (adjustedArr1[0]-adjustedArr3[0]+adjustedArr1[0])*yScale;
+    const gap = 190;
+    const minV1 = 24;
+    const minV2 = 22;
+    const minV3 = 9;
+
+    const exp1Pos = [(adjustedArr1.length-1)*xScale,line1Height,0];
+    const exp2Pos = [(adjustedArr2.length-1)*xScale,line1Height,0];
+    const exp3Pos = [(adjustedArr3.length-1)*xScale,line1Height,0];
+    const min1Pos = [minV1*xScale, line1Height -(adjustedArr1[0]-adjustedArr1[minV1])*yScale,0];
+    const min2Pos = [minV2*xScale, line1Height -(adjustedArr2[0]-adjustedArr2[minV2])*yScale,0];
+    const min3Pos = [minV3*xScale, line1Height -(adjustedArr3[0]-adjustedArr3[minV3])*yScale,0];
+    const axis = useMemo(() =>
+      <group position={position}>
+        <Annotation position={exp1Pos} length={50} yInterval={20} text={expire1} textType={"finalaxis"} />
+        <Annotation position={exp2Pos} length={50} yInterval={20} text={expire2} textType={"finalaxis"} />
+        <Annotation position={exp3Pos} length={-50} yInterval={-40} text={expire3} textType={"finalaxis"} />
+        <Annotation position={min1Pos} length={50} yInterval={20} text={min1} textType={"finalaxis"} />
+        <Annotation position={min2Pos} length={50} yInterval={20} text={min2} textType={"finalaxis"} />
+        <Annotation position={min3Pos} length={-400} yInterval={-40} text={min3} textType={"finalaxis"} />
+        <HorizontalAnnotation position={[0,line1Height,0]} text={"0%"} textType={"finalaxis"} interval={100} length={lenX}/>
+        <HorizontalAnnotation position={[0,line1Height-gap,0]} text={"-5%"} textType={"finalaxis"} interval={100} length={lenX}/>
+        <HorizontalAnnotation position={[0,line1Height-gap*2,0]} text={"-10%"} textType={"finalaxis"} interval={100} length={lenX}/>
+        <HorizontalAnnotation position={[0,line1Height-gap*3,0]} text={"-15%"} textType={"finalaxis"} interval={100} length={lenX}/>
+        <HorizontalAnnotation position={[0,line1Height-gap*4,0]} text={"-20%"} textType={"finalaxis"} interval={100} length={lenX}/>
+        <HorizontalAnnotation position={[0,line1Height-gap*5,0]} text={"-25%"} textType={"finalaxis"} interval={100} length={lenX}/>
+        <HorizontalAnnotation position={[0,line1Height-gap*6,0]} text={"-30%"} textType={"finalaxis"} interval={100} length={lenX}/>
       </group>
     , []);
     return(
@@ -373,6 +467,21 @@ const VisComponent = React.forwardRef((props, ref) =>{
           </mesh>
         </group>
 
+        <group ref={aftr3}>
+          <mesh geometry={A3}>
+            <meshStandardMaterial attach="material" color={new THREE.Color("rgb(110,110,110)")} 
+              opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
+          </mesh>
+          <lineSegments geometry={edgeA3} renderOrder={120}>
+            <lineBasicMaterial attach="material" color={new THREE.Color("rgb(200,200,200)")} 
+              opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
+          </lineSegments>
+          <mesh position={[0,0,lineWidth/2]} geometry={mlA3}>
+            <lineBasicMaterial attach="material" color={new THREE.Color("rgb(160,160,160)")} 
+              opacity={animation_rl[0]["animation"][idx].opacityExtraML} transparent />
+          </mesh>
+        </group>
+
         <gridHelper ref={grid} args={[14400*3,180*3]}>
         <lineBasicMaterial attach="material" color={new THREE.Color("rgb(150, 150, 150)")} 
               opacity={animation_rl[0]["animation"][idx].opacityGrid} transparent />
@@ -380,10 +489,12 @@ const VisComponent = React.forwardRef((props, ref) =>{
         <mesh ref={oneJ} geometry={oneJum}>
           <meshBasicMaterial color="red" opacity={0} transparent={true}/>
         </mesh>
-        <Axis ref={firstaxis} position={[-xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length+adjustedB1.length-5),-2500,0]}
+        <Axis ref={firstaxis} position={[-xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length+adjustedB1.length-5),-2500,-100]}
         lenY={3000} 
-        lenX={xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length+adjustedB1.length-5)+1200}/>
-        {/* {<LongFense arr={fenseArr1} position={[0,0,40]}/>} */}
+        lenX={xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length+adjustedB1.length+adjustedA3.length-6)+1200}>
+        </Axis>
+        <FinalAxis ref={finalaxis} position={[-xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length-4),0,-100]} 
+        lenX={adjustedArr1.length*xScale+150}/>
         </>
 
         }

@@ -17,19 +17,16 @@ import { useStore } from './Store.js';
 import '../styles/Canvas.css';
 
 function Canvas({mode}) {
-  // CanvasI는 mode 정보를 받아서 어떤 크기로 Canvas를 만들지 결정합니다.
-  // 또한 CanvasComponents; Camera, Viz, Texts의 frame별 행동(animation)을 결정하기 위한 기저 변수들을 memo합니다.
-  // 해당 정보는 CanvasI가 eventListener를 통해 얻은 scroll value를 실제 스크롤이 아닌, progress 정도로 변환한 진행 척도와 함께 전달됩니다.
-  
+
   const canvas = useRef();
   const setAnimation_Main = useStore((state)=> state.setAnimation_Main);
   const setAnimation_Dist = useStore((state)=> state.setAnimation_Dist);
   const setAnimation_Rl = useStore((state)=> state.setAnimation_Rl);
-  const speed = 0.35, smooth = 12, limit = 2.5 / window.devicePixelRatio;
-  let scroll = 0;
-  let target = 0;
-  const idx = useStore((state) => state.idx);
+
   const setIdx = useStore((state) => state.setIdx);
+  const setTarget = useStore((state) => state.setTarget);
+  const scrollLength = 16000;
+
   // const [idx, setIdx] = useState(0);
 
   // animation에 관련한 정보들은 페이지가 처음 읽힐 때 memo가 이루어집니다.(baked)
@@ -54,17 +51,10 @@ function Canvas({mode}) {
 
   // 핸들 휠은 그냥 휠 이벤트가 발견되면 scroll을 계산하고, idx를 찾아서 수정합니다.
   // CanvasI의 유일한 state는 idx입니다! 이는 CanvasComponents로 넘겨지며, 이외의 Components들은 바뀔 일이 없어야 합니다.
-  const handleWheel = useCallback((e) => {
-    let currentIdx = Math.floor(scroll * totalFrame) == totalFrame? totalFrame-1 : Math.floor(scroll * totalFrame);
-    // animation[1] here is camera animation which always has "zoom"
-    const delta = e.wheelDelta;
-    const normalizedScroll = (Math.abs(delta * speed) > limit ? limit * (-delta * speed) / Math.abs(delta * speed) : (-delta * speed));
-
-    scroll = Math.max(0, Math.min(scroll + normalizedScroll / 1000, 1)); // limit the progress equal or under 1
-    let newIdx = Math.floor(scroll * totalFrame) == totalFrame? totalFrame-1 : Math.floor(scroll * totalFrame);
-    target = newIdx;
-    // console.log(target, idx);
-  }, [speed, limit, totalFrame]);
+  const handleScroll = useCallback((e) => {
+    setTarget(document.getElementById("scroller").scrollTop / scrollLength* totalFrame);
+    console.log(e);
+  }, [totalFrame]);
 
   // here is animation request for make idx smooth
   const requestRef = React.useRef();
@@ -72,20 +62,17 @@ function Canvas({mode}) {
 
   const animate = time => {
     if (previousTimeRef.current != undefined) {
-      const deltaTime = time - previousTimeRef.current;
-      // console.log(target);
-      // Pass on a function to the setter of the state
-      // to make sure we always have the latest state
-      // setIdx(Math.floor(idx + (target - idx) * 0.07));
-      setIdx(target);
-      // console.log(target);
+      setIdx();
+
     }
     previousTimeRef.current = time;
     requestRef.current = requestAnimationFrame(animate);
   }
 
   useLayoutEffect(() =>{
-    canvas.current.addEventListener('wheel', handleWheel, {passive: false});
+    document.getElementById("scroller").addEventListener('scroll', handleScroll, {passive: false});
+    document.getElementById("dummy").style.height = scrollLength + "px";
+    
     requestRef.current = requestAnimationFrame(animate);
 
     setAnimation_Main(AnimationGenerator(totalFrame, clipPositions1, stoppers1, clips1, transitions1));
@@ -96,17 +83,20 @@ function Canvas({mode}) {
   }, []);
 
   return (
-    <div className={"Canvas" + (mode==Immersive?'I': mode==Animated? 'A':'S')}>
-      <Suspense fallback={<></>}>
-        <THREECanvas
-          ref={canvas}
-          dpr={Math.max(window.devicePixelRatio, 2)}
-          gl={{ alpha: true, antialias: true, toneMapping: THREE.NoToneMapping }}
-          linear flat
-          >
-          <CanvasComponents mode={mode} steps={steps1} />
-        </THREECanvas>
-      </Suspense>
+    <div id={"scroller"}>
+      <div className={"Canvas" + (mode==Immersive?'I': mode==Animated? 'A':'S')}>
+        <Suspense fallback={<></>}>
+          <THREECanvas
+            ref={canvas}
+            dpr={Math.max(window.devicePixelRatio, 2)}
+            gl={{ alpha: true, antialias: true, toneMapping: THREE.NoToneMapping }}
+            linear flat
+            >
+            <CanvasComponents mode={mode} steps={steps1} />
+          </THREECanvas>
+        </Suspense>
+      </div>
+      <div id={"dummy"}> . </div>
     </div>
   )
 }
