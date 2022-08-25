@@ -5,16 +5,6 @@ export const totalFrame = 5000;
 export const TextComponentHeight = 1000;
 
 // DS2 consts
-export const xyzProps = {
-  xSteps: 6, xLength: 100, xPadding: 2.5,
-  ySteps: 20, yLength: 100, yPadding: 2.5,
-  zSteps: 0, zLength: 0, zPadding: 0,
-}
-export const xLength = xyzProps.xLength,    yLength = xyzProps.yLength,   zLength = xyzProps.zLength;
-export const xPadding = xyzProps.xPadding,  yPadding = xyzProps.yPadding, zPadding = xyzProps.zPadding;
-export const xSteps = xyzProps.xSteps,      ySteps = xyzProps.ySteps,     zSteps = xyzProps.zSteps;
-export const centerPos = [-xyzProps.xLength/2, -xyzProps.yLength/2, -xyzProps.zLength/2];
-
 export const tickLength = 0.6;
 
 // DS2 overlays

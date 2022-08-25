@@ -36,7 +36,7 @@ function getClips(){
     "target": "line1", "name": "only axis",
     "lookAt": [-6700,0,3999900] ,"pos": [-6700, 0, 4900000], "rot": [0,0,0], "zoom": 600,
     "lookAtGap":0, "railMove": [0,0],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "color1": [0,100,0], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY,2*interval*lineWidth],
     "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth],
     "pos3": [0, line1PosY, 2*interval*lineWidth],

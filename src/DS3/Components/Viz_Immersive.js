@@ -5,7 +5,7 @@ import { useThree, useLoader, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, PerspectiveCamera, SpotLight } from '@react-three/drei';
 import { Line, ChangePoint, Rect, TextBox, If } from '../../BasicElements/BasicElements.js';
 import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
-import { xyzProps, centerPos, xLength, yLength, zLength, xPadding, yPadding, zPadding, xSteps, ySteps, zSteps, tickLength, totalFrame, TextComponentHeight, color4, color4_bright, color4_dark, color_ocean2, color_lineSeg } from '../BaseStructure/Constants_DS2.js';
+import { totalFrame, TextComponentHeight } from '../BaseStructure/Constants_DS2.js';
 import { useStore } from '../BaseStructure/Store.js';
 import {adjustedArr1, adjustedArr2, adjustedArr3, arr1, arr2, arr3, adjustedB1, adjustedA1B2, adjustedA2B3, adjustedA3} from './snpData.js';
 import { Text } from "troika-three-text";
@@ -89,8 +89,8 @@ function Axis({position=[0,0,0], lenY, lenX, ...props}){
       <line geometry={geometry}>
         <lineDashedMaterial color="white" transparent opacity={1} dashSize={10} gapSize={1000} scale={1}/>
       </line>
-      <Annotation position={text1Pos} text={text1} textType={"axis"} length={2500 + (adjustedArr1[0]-adjustedArr3[0]+adjustedArr1[0])*yScale}/>
-      <Annotation position={text2Pos} text={text2} textType={"axis"} length={2500 + (adjustedArr2[0]-adjustedArr3[0]+adjustedArr1[0])*yScale }/>
+      <Annotation position={text1Pos} text={text1} textType={"axis"} length={2500 + (adjustedArr1[0]-adjustedArr3[0]+adjustedArr1[0]) * yScale}/>
+      <Annotation position={text2Pos} text={text2} textType={"axis"} length={2500 + (adjustedArr2[0]-adjustedArr3[0]+adjustedArr1[0]) * yScale }/>
       <Annotation position={text3Pos} text={text3} textType={"axis"} length={2500 + adjustedArr1[0]*yScale } />
       <HorizontalAnnotation position={[0,0,0]}        text={"2,000"} textType={"axis"} interval={600} length={lenX}/>
       <HorizontalAnnotation position={[0,600-100,0]}  text={"2,500"} textType={"axis"} interval={600} length={lenX}/>
@@ -105,10 +105,6 @@ function Axis({position=[0,0,0], lenY, lenX, ...props}){
 }
 
 function FinalAxis({position=[0,0,0], lenX, ...props}){
-  const points = [];
-  // points.push(new THREE.Vector3( 0,lenY,0 ));
-  points.push(new THREE.Vector3( 0,0,0 ));
-  points.push(new THREE.Vector3( lenX,0,0 ));
   const expire1 = `recovery of the initial impact D+52`;
   const expire2 = `recovery of the Delta variant D+52`;
   const expire3 = `recovery of the Omicron variant D+52`;
@@ -117,33 +113,34 @@ function FinalAxis({position=[0,0,0], lenX, ...props}){
   const min3 = `floor at 2702.3`;
   const text3 = `Omicron variant emerges
   (NOV 2021)`;
-  const line1Height = (adjustedArr1[0]-adjustedArr3[0]+adjustedArr1[0])*yScale;
+
+  const line1Height = (adjustedArr1[0] - adjustedArr3[0] + adjustedArr1[0]) * yScale;
   const gap = 190;
   const minV1 = 24;
   const minV2 = 22;
   const minV3 = 9;
 
-  const exp1Pos = [(adjustedArr1.length-1)*xScale,line1Height,0];
-  const exp2Pos = [(adjustedArr2.length-1)*xScale,line1Height,0];
-  const exp3Pos = [(adjustedArr3.length-1)*xScale,line1Height,0];
-  const min1Pos = [minV1*xScale, line1Height -(adjustedArr1[0]-adjustedArr1[minV1])*yScale,0];
-  const min2Pos = [minV2*xScale, line1Height -(adjustedArr2[0]-adjustedArr2[minV2])*yScale,0];
-  const min3Pos = [minV3*xScale, line1Height -(adjustedArr3[0]-adjustedArr3[minV3])*yScale,0];
+  const exp1Pos = [(adjustedArr1.length - 1) * xScale, line1Height, 0];
+  const exp2Pos = [(adjustedArr2.length - 1) * xScale, line1Height, 0];
+  const exp3Pos = [(adjustedArr3.length - 1) * xScale, line1Height, 0];
+  const min1Pos = [minV1 * xScale, line1Height - (adjustedArr1[0] - adjustedArr1[minV1]) * yScale, 0];
+  const min2Pos = [minV2 * xScale, line1Height - (adjustedArr2[0] - adjustedArr2[minV2]) * yScale, 0];
+  const min3Pos = [minV3 * xScale, line1Height - (adjustedArr3[0] - adjustedArr3[minV3]) * yScale, 0];
   const axis = useMemo(() =>
     <group position={position}>
-      <Annotation position={exp1Pos} length={50} yInterval={20} text={expire1} textType={"finalaxis"} />
-      <Annotation position={exp2Pos} length={50} yInterval={20} text={expire2} textType={"finalaxis"} />
-      <Annotation position={exp3Pos} length={-50} yInterval={-40} text={expire3} textType={"finalaxis"} />
-      <Annotation position={min1Pos} length={50} yInterval={20} text={min1} textType={"finalaxis"} />
-      <Annotation position={min2Pos} length={50} yInterval={20} text={min2} textType={"finalaxis"} />
-      <Annotation position={min3Pos} length={-400} yInterval={-40} text={min3} textType={"finalaxis"} />
-      <HorizontalAnnotation position={[0,line1Height,0]} text={"0%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0,line1Height-gap,0]} text={"-5%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0,line1Height-gap*2,0]} text={"-10%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0,line1Height-gap*3,0]} text={"-15%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0,line1Height-gap*4,0]} text={"-20%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0,line1Height-gap*5,0]} text={"-25%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0,line1Height-gap*6,0]} text={"-30%"} textType={"finalaxis"} interval={100} length={lenX}/>
+      <Annotation position={exp1Pos} length={50}    yInterval={20}  text={expire1}  textType={"finalaxis"} />
+      <Annotation position={exp2Pos} length={50}    yInterval={20}  text={expire2}  textType={"finalaxis"} />
+      <Annotation position={exp3Pos} length={-50}   yInterval={-40} text={expire3}  textType={"finalaxis"} />
+      <Annotation position={min1Pos} length={50}    yInterval={20}  text={min1}     textType={"finalaxis"} />
+      <Annotation position={min2Pos} length={50}    yInterval={20}  text={min2}     textType={"finalaxis"} />
+      <Annotation position={min3Pos} length={-400}  yInterval={-40} text={min3}     textType={"finalaxis"} />
+      <HorizontalAnnotation position={[0, line1Height - gap * 0, 0]} text={"0%"}   textType={"finalaxis"} interval={100} length={lenX}/>
+      <HorizontalAnnotation position={[0, line1Height - gap * 1, 0]} text={"-5%"}  textType={"finalaxis"} interval={100} length={lenX}/>
+      <HorizontalAnnotation position={[0, line1Height - gap * 2, 0]} text={"-10%"} textType={"finalaxis"} interval={100} length={lenX}/>
+      <HorizontalAnnotation position={[0, line1Height - gap * 3, 0]} text={"-15%"} textType={"finalaxis"} interval={100} length={lenX}/>
+      <HorizontalAnnotation position={[0, line1Height - gap * 4, 0]} text={"-20%"} textType={"finalaxis"} interval={100} length={lenX}/>
+      <HorizontalAnnotation position={[0, line1Height - gap * 5, 0]} text={"-25%"} textType={"finalaxis"} interval={100} length={lenX}/>
+      <HorizontalAnnotation position={[0, line1Height - gap * 6, 0]} text={"-30%"} textType={"finalaxis"} interval={100} length={lenX}/>
     </group>
   , []);
   return(
@@ -176,8 +173,8 @@ function LongFense({arr, position}) {
   function fenseRail(posArr, textArr){
     const len = posArr.length;
     const arr = Array.from(Array(len), () => new Array(3));
-    for (let i=0; i<len; i++) {
-      arr[i][0] = new THREE.Vector3( i*xScale, posArr[i]*yScale, 0 )
+    for(let i = 0; i < len; i++) {
+      arr[i][0] = new THREE.Vector3(i * xScale, posArr[i] * yScale, 0)
       arr[i][1] = textArr[i][0];
       arr[i][2] = textArr[i][1];
     }
@@ -191,16 +188,18 @@ function LongFense({arr, position}) {
         arr.map((point, idx) => {
           return(
             <Fense
-            key={"Fense" + idx}
-            position={point[0]}
-            text={point[1]}
-            date={point[2]}
-            lookAt={true}/>
+              key={"Fense" + idx}
+              position={point[0]}
+              text={point[1]}
+              date={point[2]}
+              lookAt
+            />
           );
         })
       }
     </group>
   , []);
+
   return(
     <>{rail}</>
   )
@@ -219,9 +218,7 @@ const VisComponent = React.forwardRef((props, ref) =>{
   const aftr2bfr3 = useRef();
   const aftr1bfr2 = useRef();
   const aftr3 = useRef();
-  // const target = useRef();
   const animation_rl = useStore((state) => state.animation_rl);
-  // console.log(animation_rl);
   const idx = useStore((state) => state.idx);
 
   const extrudeSettings1 = { depth: lineWidth, bevelEnabled: false, bevelSegments: 1, steps: 2, bevelSize: 1, bevelThickness: 1 };
@@ -234,22 +231,22 @@ const VisComponent = React.forwardRef((props, ref) =>{
   function arrToShape(arr){
     let points = [];
     for (var i=0; i< arr.length; i++) {
-      points.push( new THREE.Vector3( i*xScale, arr[i]*yScale, 0 ) );
+      points.push(new THREE.Vector3(i * xScale, arr[i] * yScale, 0));
     }
     for (var i=0; i< arr.length; i++) {
-      let idx = arr.length -1 - i;
-      points.push( new THREE.Vector3( idx*xScale, arr[idx]*yScale - chartWidth, 0) );
+      let idx = arr.length - 1 - i;
+      points.push(new THREE.Vector3(idx * xScale, arr[idx] * yScale - chartWidth, 0));
     }
-    return( new THREE.Shape(points) );
+    return(new THREE.Shape(points));
   }
 
-  const shape1 = arrToShape(adjustedArr1);
-  const shape2 = arrToShape(adjustedArr2);
-  const shape3 = arrToShape(adjustedArr3);
-  const shapeB1 = arrToShape(adjustedB1);
+  const shape1    = arrToShape(adjustedArr1);
+  const shape2    = arrToShape(adjustedArr2);
+  const shape3    = arrToShape(adjustedArr3);
+  const shapeB1   = arrToShape(adjustedB1);
   const shapeA2B3 = arrToShape(adjustedA2B3);
   const shapeA1B2 = arrToShape(adjustedA1B2);
-  const shapeA3 = arrToShape(adjustedA3);
+  const shapeA3   = arrToShape(adjustedA3);
 
   const lineChart1  = useMemo(()=> new THREE.ExtrudeGeometry(shape1, extrudeSettings1), []);
   const edges1      = useMemo(()=> new THREE.EdgesGeometry(lineChart1), []);
@@ -282,54 +279,70 @@ const VisComponent = React.forwardRef((props, ref) =>{
   const oneJum = useMemo(()=> new THREE.SphereGeometry(2), []);
 
   useFrame((state, delta) => {
-    line1.current.position.setX(animation_rl[0]["animation"][idx].pos1[0]);
-    line1.current.position.setY(animation_rl[0]["animation"][idx].pos1[1]);
-    line1.current.position.setZ(animation_rl[0]["animation"][idx].pos1[2]);
-
-    line2.current.position.setX(animation_rl[0]["animation"][idx].pos2[0]);
-    line2.current.position.setY(animation_rl[0]["animation"][idx].pos2[1]);
-    line2.current.position.setZ(animation_rl[0]["animation"][idx].pos2[2]);
-
-    line3.current.position.setX(animation_rl[0]["animation"][idx].pos3[0]);
-    line3.current.position.setY(animation_rl[0]["animation"][idx].pos3[1]);
-    line3.current.position.setZ(animation_rl[0]["animation"][idx].pos3[2]);
-
-    // console.log(line3.current.position);
+    const lineAnimation = animation_rl[0]["animation"][idx];
+    line1.current.position.set(lineAnimation.pos1[0], lineAnimation.pos1[1], lineAnimation.pos1[2]);
+    line2.current.position.set(lineAnimation.pos2[0], lineAnimation.pos2[1], lineAnimation.pos2[2]);
+    line3.current.position.set(lineAnimation.pos3[0], lineAnimation.pos3[1], lineAnimation.pos3[2]);
   });
 
   useLayoutEffect(() => {
-    aftr3.current.translateX(xScale*(adjustedArr3.length-1));
-    aftr3.current.translateZ(2*interval*lineWidth);
-    aftr3.current.translateY(-(adjustedArr3[0]-adjustedArr1[0])*yScale);
+    const zDelta = 2 * interval * lineWidth;
+    const yDelta = -yScale * (adjustedArr3[0] - adjustedArr1[0]);
 
-    line3.current.translateZ(2*interval*lineWidth);
-    line3.current.translateY(-(adjustedArr3[0]-adjustedArr1[0])*yScale);
+    bfr1.current.translateX(-xScale * (adjustedArr2.length + adjustedA2B3.length + adjustedA1B2.length + adjustedArr1.length + adjustedB1.length - 5));
+    bfr1.current.translateY(yDelta);
+    bfr1.current.translateZ(zDelta);
 
-    aftr2bfr3.current.translateX(-xScale*(adjustedA2B3.length-1));
-    aftr2bfr3.current.translateZ(2*interval*lineWidth);
-    aftr2bfr3.current.translateY(-(adjustedArr3[0]-adjustedArr1[0])*yScale);
+    line1.current.translateX(-xScale * (adjustedArr2.length + adjustedA2B3.length + adjustedA1B2.length + adjustedArr1.length - 4));
+    line1.current.translateY(yDelta);
+    line1.current.translateZ(zDelta);
 
-    line2.current.translateY(-(adjustedArr3[0]-adjustedArr1[0])*yScale);
-    line2.current.translateX(-xScale*(adjustedArr2.length+adjustedA2B3.length-2));
-    line2.current.translateZ(2*interval*lineWidth);
+    aftr1bfr2.current.translateX(-xScale * (adjustedArr2.length + adjustedA2B3.length + adjustedA1B2.length - 3));
+    aftr1bfr2.current.translateY(yDelta);
+    aftr1bfr2.current.translateZ(zDelta);
 
-    aftr1bfr2.current.translateY(-(adjustedArr3[0]-adjustedArr1[0])*yScale);
-    aftr1bfr2.current.translateX(-xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length-3));
-    aftr1bfr2.current.translateZ(2*interval*lineWidth);
+    line2.current.translateX(-xScale * (adjustedArr2.length + adjustedA2B3.length - 2));
+    line2.current.translateY(yDelta);
+    line2.current.translateZ(zDelta);
 
-    line1.current.translateY(-(adjustedArr3[0]-adjustedArr1[0])*yScale);
-    line1.current.translateX(-xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length-4));
-    line1.current.translateZ(2*interval*lineWidth);
+    aftr2bfr3.current.translateX(-xScale * (adjustedA2B3.length - 1));
+    aftr2bfr3.current.translateY(yDelta);
+    aftr2bfr3.current.translateZ(zDelta);
 
-    bfr1.current.translateY(-(adjustedArr3[0]-adjustedArr1[0])*yScale);
-    bfr1.current.translateX(-xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length+adjustedB1.length-5));
-    bfr1.current.translateZ(2*interval*lineWidth);
+    line3.current.translateX(0);
+    line3.current.translateY(yDelta);
+    line3.current.translateZ(zDelta);
+
+    aftr3.current.translateX(xScale * (adjustedArr3.length - 1));
+    aftr3.current.translateY(yDelta);
+    aftr3.current.translateZ(zDelta);
 
     grid.current.position.setY(-930);
-    // firstaxis.current.rotateY(Math.PI/2);
-    // ml1.current.translateZ(lineWidth/2);
-
   }, []);
+
+  let rlAnimation = animation_rl[0]["animation"][idx];
+  let color1 = new THREE.Color("rgb(" +
+    Math.floor(rlAnimation.color1[0]) + "," +
+    Math.floor(rlAnimation.color1[1]) + "," +
+    Math.floor(rlAnimation.color1[2]) + ")");
+
+  let color2 = new THREE.Color("rgb(" +
+    Math.floor(rlAnimation.color2[0]) + "," +
+    Math.floor(rlAnimation.color2[1]) + "," +
+    Math.floor(rlAnimation.color2[2]) + ")");
+
+  let color3 = new THREE.Color("rgb(" +
+    Math.floor(rlAnimation.color3[0]) + "," +
+    Math.floor(rlAnimation.color3[1]) + "," +
+    Math.floor(rlAnimation.color3[2]) + ")");
+
+  const COLOR_MESH    = new THREE.Color("rgb(110, 110, 110)");
+  const COLOR_LINESEG = new THREE.Color("rgb(200, 200, 200)");
+  const COLOR_LINE    = new THREE.Color("rgb(160, 160, 160)");
+
+  let mat_mesh = new THREE.MeshStandardMaterial({color: COLOR_MESH, opacity: rlAnimation.opacityExtraLine, transparent: true})
+  let mat_lineseg = new THREE.LineBasicMaterial({color: COLOR_LINESEG, opacity: rlAnimation.opacityExtraLine, transparent: true})
+  let mat_line = new THREE.LineBasicMaterial({color: COLOR_LINE, opacity: rlAnimation.opacityExtraML, transparent: true})
 
   return(
     <group position={[0, 0, 0]} ref={ref}>
@@ -337,137 +350,64 @@ const VisComponent = React.forwardRef((props, ref) =>{
         <>
           <group ref={line1}>
             <mesh geometry={lineChart1}>
-              <meshStandardMaterial attach="material" color={new THREE.Color("rgb(" +
-                Math.floor(animation_rl[0]["animation"][idx].color1[0]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color1[1]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color1[2]) + ")")}
-                opacity={animation_rl[0]["animation"][idx].opacityLine} transparent />
+              <meshStandardMaterial attach="material" color={color1} opacity={rlAnimation.opacityLine} transparent />
             </mesh>
             <lineSegments geometry={edges1} renderOrder={100}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(" +
-                Math.floor(animation_rl[0]["animation"][idx].color1[0]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color1[1]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color1[2]) + ")")}
-                opacity={animation_rl[0]["animation"][idx].opacityLine} transparent />
+              <lineBasicMaterial attach="material" color={color1} opacity={rlAnimation.opacityLine} transparent />
             </lineSegments>
             <mesh position={[0,0,lineWidth/2]} geometry={middleLine1}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(" +
-                Math.floor(animation_rl[0]["animation"][idx].color1[0]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color1[1]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color1[2]) + ")")}
-                opacity={animation_rl[0]["animation"][idx].opacityML} transparent />
+              <lineBasicMaterial attach="material" color={color1} opacity={rlAnimation.opacityML} transparent />
             </mesh>
           </group>
           <group ref={line2}>
             <mesh geometry={lineChart2}>
-              <meshStandardMaterial attach="material" color={new THREE.Color("rgb(" +
-                Math.floor(animation_rl[0]["animation"][idx].color2[0]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color2[1]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color2[2]) + ")")}
-                opacity={animation_rl[0]["animation"][idx].opacityLine} transparent />
+              <meshStandardMaterial attach="material" color={color2} opacity={rlAnimation.opacityLine} transparent />
             </mesh>
             <lineSegments geometry={edges2} renderOrder={110}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(" +
-                Math.floor(animation_rl[0]["animation"][idx].color2[0]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color2[1]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color2[2]) + ")")}
-                opacity={animation_rl[0]["animation"][idx].opacityLine} transparent />
+              <lineBasicMaterial attach="material" color={color2} opacity={rlAnimation.opacityLine} transparent />
             </lineSegments>
             <mesh position={[0,0,lineWidth/2]} geometry={middleLine2}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(" +
-                Math.floor(animation_rl[0]["animation"][idx].color2[0]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color2[1]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color2[2]) + ")")}
-                opacity={animation_rl[0]["animation"][idx].opacityML} transparent />
+              <lineBasicMaterial attach="material" color={color2} opacity={rlAnimation.opacityML} transparent />
             </mesh>
           </group>
           <group ref={line3}>
             <mesh geometry={lineChart3}>
-              <meshStandardMaterial attach="material" color={new THREE.Color("rgb(" +
-                Math.floor(animation_rl[0]["animation"][idx].color3[0]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color3[1]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color3[2]) + ")")}
-                opacity={animation_rl[0]["animation"][idx].opacityLine} transparent />
+              <meshStandardMaterial attach="material" color={color3} opacity={rlAnimation.opacityLine} transparent />
             </mesh>
             <lineSegments geometry={edges3} renderOrder={120}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(" +
-                Math.floor(animation_rl[0]["animation"][idx].color3[0]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color3[1]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color3[2]) + ")")}
-                opacity={animation_rl[0]["animation"][idx].opacityLine} transparent />
+              <lineBasicMaterial attach="material" color={color3} opacity={rlAnimation.opacityLine} transparent />
             </lineSegments>
             <mesh position={[0,0,lineWidth/2]} geometry={middleLine3}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(" +
-                Math.floor(animation_rl[0]["animation"][idx].color3[0]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color3[1]) + "," +
-                Math.floor(animation_rl[0]["animation"][idx].color3[2]) + ")")}
-                opacity={animation_rl[0]["animation"][idx].opacityML} transparent />
+              <lineBasicMaterial attach="material" color={color3} opacity={rlAnimation.opacityML} transparent />
             </mesh>
           </group>
 
           <group ref={aftr2bfr3}>
-            <mesh geometry={A2B3}>
-              <meshStandardMaterial attach="material" color={new THREE.Color("rgb(110,110,110)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
-            </mesh>
-            <lineSegments geometry={edgeA2B3} renderOrder={120}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(200,200,200)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
-            </lineSegments>
-            <mesh position={[0,0,lineWidth/2]} geometry={mlA2B3}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(160,160,160)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraML} transparent />
-            </mesh>
+            <mesh geometry={A2B3} material={mat_mesh} />
+            <lineSegments geometry={edgeA2B3} renderOrder={120} material={mat_lineseg} />
+            <mesh position={[0,0,lineWidth/2]} geometry={mlA2B3} material={mat_line} />
           </group>
 
           <group ref={aftr1bfr2}>
-            <mesh geometry={A1B2}>
-              <meshStandardMaterial attach="material" color={new THREE.Color("rgb(110,110,110)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
-            </mesh>
-            <lineSegments geometry={edgeA1B2} renderOrder={120}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(200,200,200)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
-            </lineSegments>
-            <mesh position={[0,0,lineWidth/2]} geometry={mlA1B2}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(160,160,160)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraML} transparent />
-            </mesh>
+            <mesh geometry={A1B2} material={mat_mesh} />
+            <lineSegments geometry={edgeA1B2} renderOrder={120} material={mat_lineseg} />
+            <mesh position={[0,0,lineWidth/2]} geometry={mlA1B2} material={mat_line} />
           </group>
 
           <group ref={bfr1}>
-            <mesh geometry={B1}>
-              <meshStandardMaterial attach="material" color={new THREE.Color("rgb(110,110,110)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
-            </mesh>
-            <lineSegments geometry={edgeB1} renderOrder={120}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(200,200,200)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
-            </lineSegments>
-            <mesh position={[0,0,lineWidth/2]} geometry={mlB1}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(160,160,160)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraML} transparent />
-            </mesh>
+            <mesh geometry={B1} material={mat_mesh} />
+            <lineSegments geometry={edgeB1} renderOrder={120} material={mat_lineseg} />
+            <mesh position={[0,0,lineWidth/2]} geometry={mlB1} material={mat_line} />
           </group>
 
           <group ref={aftr3}>
-            <mesh geometry={A3}>
-              <meshStandardMaterial attach="material" color={new THREE.Color("rgb(110,110,110)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
-            </mesh>
-            <lineSegments geometry={edgeA3} renderOrder={120}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(200,200,200)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraLine} transparent />
-            </lineSegments>
-            <mesh position={[0,0,lineWidth/2]} geometry={mlA3}>
-              <lineBasicMaterial attach="material" color={new THREE.Color("rgb(160,160,160)")}
-                opacity={animation_rl[0]["animation"][idx].opacityExtraML} transparent />
-            </mesh>
+            <mesh geometry={A3} material={mat_mesh} />
+            <lineSegments geometry={edgeA3} renderOrder={120} material={mat_lineseg} />
+            <mesh position={[0,0,lineWidth/2]} geometry={mlA3} material={mat_line} />
           </group>
 
           <gridHelper ref={grid} args={[14400 * 3, 180 * 3]}>
-          <lineBasicMaterial attach="material" color={new THREE.Color("rgb(150, 150, 150)")}
-                opacity={animation_rl[0]["animation"][idx].opacityGrid} transparent />
+          <lineBasicMaterial attach="material" color={new THREE.Color("rgb(150, 150, 150)")} opacity={rlAnimation.opacityGrid} transparent />
           </gridHelper>
           <mesh ref={oneJ} geometry={oneJum}>
             <meshBasicMaterial color="red" opacity={0} transparent={true}/>
