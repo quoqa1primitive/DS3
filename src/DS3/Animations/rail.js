@@ -14,14 +14,14 @@ const clipPositions_DS2 = [0.00, 0.03, 0.06, 0.09, 0.12, 0.15, 0.18, 0.21, 0.24,
 const points3 = [];
 for (var i=0; i< adjustedArr3.length; i++) {
   points3.push( [ i*xScale, (adjustedArr3[i] - 2*adjustedArr3[0] + adjustedArr1[0])*yScale, (2*interval)*lineWidth ] );
-} 
+}
 const points2 = [];
 for (var i=0; i< adjustedArr2.length; i++) {
   points2.push( [ i*xScale, (adjustedArr2[i]-2*adjustedArr2[0]+adjustedArr1[0])*yScale , interval*lineWidth ] );
 } const points1 = [];
 for (var i=0; i< adjustedArr1.length; i++) {
   points1.push( [ i*xScale, (adjustedArr1[i]-adjustedArr1[0])*yScale, 0 ] );
-} 
+}
 const len3 = points3.length;
 const len2 = points2.length;
 const len1 = points1.length;
@@ -37,9 +37,9 @@ function getClips(){
     "lookAt": [-6700,0,3999900] ,"pos": [-6700, 0, 4900000], "rot": [0,0,0], "zoom": 600,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY,2*interval*lineWidth], 
-    "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth], 
-    "pos3": [0, line1PosY, 2*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY,2*interval*lineWidth],
+    "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth],
+    "pos3": [0, line1PosY, 2*interval*lineWidth],
     "opacityLine": 1, "opacityGrid": 0, "opacityML": 0, "opacityAxis": 1, "opacityExtraML": 1, "opacityExtraLine": 1
   });
   clips.push({
@@ -47,9 +47,9 @@ function getClips(){
     "lookAt": [-6700,0,3999900] ,"pos": [-6700, 0, 4900000], "rot": [0,0,0], "zoom": 600,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY,2*interval*lineWidth], 
-    "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth], 
-    "pos3": [0, line1PosY, 2*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY,2*interval*lineWidth],
+    "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth],
+    "pos3": [0, line1PosY, 2*interval*lineWidth],
     "opacityLine": 1, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 1, "opacityExtraLine": 1
   });
   clips.push({
@@ -57,109 +57,109 @@ function getClips(){
     "lookAt": [-10800,-700,760] ,"pos": [-10800, -700, 5000], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY,2*interval*lineWidth], 
-    "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth], 
-    "pos3": [0, line1PosY, 2*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 1, "opacityExtraLine": 0.5
+    "pos1": [line1PosX, line1PosY,2*interval*lineWidth],
+    "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth],
+    "pos3": [0, line1PosY, 2*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 1, "opacityExtraLine": 0.5
   });
   clips.push({
     "target": "line1", "name": "start rotate",
     "lookAt": [-10800,-700,760] ,"pos": [-13550, -760, 760], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY,2*interval*lineWidth], 
-    "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth], 
-    "pos3": [0, line1PosY, 2*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 1, "opacityExtraLine": 0.5
+    "pos1": [line1PosX, line1PosY,2*interval*lineWidth],
+    "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth],
+    "pos3": [0, line1PosY, 2*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 1, "opacityExtraLine": 0.5
   });
   clips.push({
     "target": "line1", "name": "graph move",
     "lookAt": [-10800,-700,760] ,"pos": [-13550, -760, 760], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
     "target": "line1", "name": "go to line1",
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [0,1],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
     "target": "line1", "name": "fly1",
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [2,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });  
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+  });
   clips.push({
     "target": "line1", "name": "fly2",
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [3,-4],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });  
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+  });
   clips.push({
     "target": "line1", "name": "fly3",
      "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [20,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [5,-3],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });  
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+  });
   clips.push({
     "target": "line1", "name": "fly4",
      "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [5.5,-3],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
     "target": "line1", "name": "fly5",
      "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [6.7,-8],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
     "target": "line1", "name": "fly6",
      "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [6.7, -8],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
     "target": "line1", "name": "fly7",
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [30,-85,0], "zoom": 1,
     "lookAtGap":1, "railMove": [6.7, -8],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -167,9 +167,9 @@ function getClips(){
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [6.7, -8],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -177,9 +177,9 @@ function getClips(){
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [7, -8],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -187,9 +187,9 @@ function getClips(){
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [8.5, -10.6],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -197,9 +197,9 @@ function getClips(){
     "lookAt": [-13450, -770, 50] ,"pos": [-13450, -770, 50], "rot": [30,-105,0], "zoom": 1,
     "lookAtGap":1, "railMove": [10, -12.6],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -207,9 +207,9 @@ function getClips(){
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [70,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [8.5, -10.6],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -217,9 +217,9 @@ function getClips(){
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-20,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [9.5, -7.5],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -227,9 +227,9 @@ function getClips(){
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [13, -6],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -237,9 +237,9 @@ function getClips(){
     "lookAt": [-13450, -770, 120] ,"pos": [-13450, -770, 120], "rot": [30,-90,0], "zoom": 1,
     "lookAtGap":1, "railMove": [13, -8],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -247,9 +247,9 @@ function getClips(){
     "lookAt": [-13450, -770, 120] ,"pos": [-13450, -770, 120], "rot": [0,-150,0], "zoom": 1,
     "lookAtGap":1, "railMove": [15, -5],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -257,9 +257,9 @@ function getClips(){
     "lookAt": [-13450, -770, 220] ,"pos": [-13450, -770, 220], "rot": [0,-165,0], "zoom": 1,
     "lookAtGap":1, "railMove": [30, -2],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -267,9 +267,9 @@ function getClips(){
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-20,-170,0], "zoom": 1,
     "lookAtGap":1, "railMove": [41, -1],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -277,9 +277,9 @@ function getClips(){
     "lookAt": [-9450, -770, 760] ,"pos": [-13450, -770, 760], "rot": [-20,-180,0], "zoom": 1,
     "lookAtGap":0, "railMove": [41.5, 1],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -287,9 +287,9 @@ function getClips(){
     "lookAt": [-11500, -770, 760] ,"pos": [-11500, -770, 5000], "rot": [0,-360,0], "zoom": 1,
     "lookAtGap":0, "railMove": [0, 0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -297,9 +297,9 @@ function getClips(){
     "lookAt": [-11500, -1500, 760] ,"pos": [-11500, -1500, 1900000], "rot": [0,-360,0], "zoom": 650,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
@@ -307,13 +307,13 @@ function getClips(){
     "lookAt": [-11500, -1500, 760] ,"pos": [-11500, -1500, 1900000], "rot": [0,-360,0], "zoom": 650,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth], 
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth], 
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth], 
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
     "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
   });
 
- 
+
   return clips;
 }
 
