@@ -7,8 +7,8 @@ const camIntervalX = 1350;
 const camIntervalY = 1880;
 const xSpace = 1;
 
-const stoppers_DS2 =      [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00];
-const clipPositions_DS2 = [0.00, 0.03, 0.06, 0.09, 0.12, 0.15, 0.18, 0.21, 0.24, 0.27, 0.30, 0.33, 0.36, 0.39,  0.42,  0.45,  0.48,  0.51,  0.54,  0.57,  0.60,  0.63,  0.69,  0.72,  0.75,  0.78,  0.81,  0.84,  1.00];
+const stoppers_DS2 =      [0.00, 0.01, 0.00, 0.00, 0.01, 0.01, 0.01, 0.01, 0.01, 0.00, 0.00, 0.01, 0.00, 0.00];
+const clipPositions_DS2 = [0.00, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.45, 0.55, 0.65, 0.69, 0.85, 0.90, 1.00];
 // frame                      0,    1,    2,    3,    4,    5,    6,    7,    8,    9,   10,   11,   12,   13,    14,    15,    16,    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,   27,     28
 
 const points3 = [];
@@ -34,284 +34,170 @@ function getClips(){
   let clips = [];
   clips.push({
     "target": "line1", "name": "only axis",
-    "lookAt": [-6700,0,3999900] ,"pos": [-6700, 0, 4900000], "rot": [0,0,0], "zoom": 600,
+    "lookAt": [-6100,10000,3999900] ,"pos": [-6100, 10000, 4900000], "rot": [0,0,0], "zoom": 600,
     "lookAtGap":0, "railMove": [0,0],
     "color1": [0,100,0], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY,2*interval*lineWidth],
     "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth],
     "pos3": [0, line1PosY, 2*interval*lineWidth],
-    "opacityLine": 1, "opacityGrid": 0, "opacityML": 0, "opacityAxis": 1, "opacityExtraML": 1, "opacityExtraLine": 1
+    "opacityLine": 1, "opacityGrid": 0, "opacityML": 0, "opacityAxis": 1, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 1, "opacityExtraLine": 1
   });
   clips.push({
     "target": "line1", "name": "overall graph",
-    "lookAt": [-6700,0,3999900] ,"pos": [-6700, 0, 4900000], "rot": [0,0,0], "zoom": 600,
+    "lookAt": [-6100,-2500,3999900] ,"pos": [-6100, -2500, 4900000], "rot": [0,0,0], "zoom": 600,
     "lookAtGap":0, "railMove": [0,0],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY,2*interval*lineWidth],
     "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth],
     "pos3": [0, line1PosY, 2*interval*lineWidth],
-    "opacityLine": 1, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 1, "opacityExtraLine": 1
+    "opacityLine": 1, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 1, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 1, "opacityExtraLine": 1
   });
   clips.push({
     "target": "line1", "name": "enter 3d",
     "lookAt": [-10800,-700,760] ,"pos": [-10800, -700, 5000], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":0, "railMove": [0,0],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY,2*interval*lineWidth],
     "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth],
     "pos3": [0, line1PosY, 2*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 1, "opacityExtraLine": 0.5
+    "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 0.9, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 1, "opacityExtraLine": 0.5
   });
   clips.push({
     "target": "line1", "name": "start rotate",
-    "lookAt": [-10800,-700,760] ,"pos": [-13550, -760, 760], "rot": [0,0,0], "zoom": 1,
-    "lookAtGap":0, "railMove": [0,0],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "lookAt": [-10800,-700,760] ,"pos": [-13530, -760, 760], "rot": [-20,0,0], "zoom": 1,
+    "lookAtGap":0, "railMove": [0,2],
+    "color1": [110,110,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY,2*interval*lineWidth],
     "pos2": [-xScale*(adjustedArr2.length+adjustedA2B3.length-2), line1PosY, 2*interval*lineWidth],
     "pos3": [0, line1PosY, 2*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 1, "opacityExtraLine": 0.5
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 1, "opacityExtraLine": 0.5
   });
   clips.push({
-    "target": "line1", "name": "graph move",
-    "lookAt": [-10800,-700,760] ,"pos": [-13550, -760, 760], "rot": [0,0,0], "zoom": 1,
-    "lookAtGap":0, "railMove": [0,0],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "target": "line1", "name": "line2 move",
+    "lookAt": [-10800,-700,760] ,"pos": [-13530, -760, 760], "rot": [-20,0,0], "zoom": 1,
+    "lookAtGap":0, "railMove": [0,2],
+    "color1": [110,110,255], "color2": [100,250,50], "color3": [250,10,102],
+    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
+    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
+    "pos3": [0, line1PosY, 2*interval*lineWidth],
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 1, "opacityExtraLine": 0.5
+  });
+  clips.push({
+    "target": "line1", "name": "line3 move",
+    "lookAt": [-10800,-700,760] ,"pos": [-13530, -760, 760], "rot": [-20,0,0], "zoom": 1,
+    "lookAtGap":0, "railMove": [0,2],
+    "color1": [110,110,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
     "target": "line1", "name": "go to line1",
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
     "lookAtGap":1, "railMove": [0,1],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
-    "target": "line1", "name": "fly1",
+    "target": "line1", "name": "go to min",
     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [2,0],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "lookAtGap":1, "railMove": [8.3,-10.9],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
-    "target": "line1", "name": "fly2",
-    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [3,-4],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "target": "line1", "name": "compare min",
+    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [85,-50,0], "zoom": 1,
+    "lookAtGap":1, "railMove": [8.5,-12],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
-    "target": "line1", "name": "fly3",
-     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [20,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [5,-3],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "target": "line1", "name": "turn 1",
+     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [20,-30,0], "zoom": 1,
+    "lookAtGap":1, "railMove": [6,-6],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
-    "target": "line1", "name": "fly4",
-     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [5.5,-3],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "target": "line1", "name": "turn 2",
+     "lookAt": [-13450, -770, 220] ,"pos": [-13450, -770, 220], "rot": [0,-130,0], "zoom": 1,
+    "lookAtGap":1, "railMove": [7,-5],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
-    "target": "line1", "name": "fly5",
-     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [6.7,-8],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "target": "line1", "name": "go to line1 end",
+    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-20,-179,0], "zoom": 1,
+    "lookAtGap":1, "railMove": [41.5, 1],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly6",
-     "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [6.7, -8],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 1, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly7",
-    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [30,-85,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [6.7, -8],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly8",
-    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [6.7, -8],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly9",
-    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [7, -8],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly10",
-    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-60,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [8.5, -10.6],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly11",
-    "lookAt": [-13450, -770, 50] ,"pos": [-13450, -770, 50], "rot": [30,-105,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [10, -12.6],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly12",
-    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [70,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [8.5, -10.6],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly13",
-    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-20,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [9.5, -7.5],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly14",
-    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [0,0,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [13, -6],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly15",
-    "lookAt": [-13450, -770, 120] ,"pos": [-13450, -770, 120], "rot": [30,-90,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [13, -8],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly16",
-    "lookAt": [-13450, -770, 120] ,"pos": [-13450, -770, 120], "rot": [0,-150,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [15, -5],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly17",
-    "lookAt": [-13450, -770, 220] ,"pos": [-13450, -770, 220], "rot": [0,-165,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [30, -2],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly18",
-    "lookAt": [-13450, -770, 520] ,"pos": [-13450, -770, 520], "rot": [-20,-170,0], "zoom": 1,
-    "lookAtGap":1, "railMove": [41, -1],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
-  });
-  clips.push({
-    "target": "line1", "name": "fly19",
-    "lookAt": [-9450, -770, 760] ,"pos": [-13450, -770, 760], "rot": [-20,-180,0], "zoom": 1,
-    "lookAtGap":0, "railMove": [41.5, 1],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
-    "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
-    "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
-    "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
     "target": "line1", "name": "end rotate",
-    "lookAt": [-11500, -770, 760] ,"pos": [-11500, -770, 5000], "rot": [0,-360,0], "zoom": 1,
-    "lookAtGap":0, "railMove": [0, 0],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "lookAt": [-13450, -770, 6620] ,"pos": [-13450, -770, 6620], "rot": [0,-270,0], "zoom": 2,
+    "lookAtGap":1, "railMove": [21.5, 1],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0.5, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 0, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
     "target": "line1", "name": "exit 3d",
-    "lookAt": [-11500, -1500, 760] ,"pos": [-11500, -1500, 1900000], "rot": [0,-360,0], "zoom": 650,
-    "lookAtGap":0, "railMove": [0,0],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "lookAt": [-13450, -770, 4999900] ,"pos": [-13450, -770, 4999900], "rot": [0,-270,0], "zoom": 2000,
+    "lookAtGap":1, "railMove": [21.5, -10],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 1, "opacityGrid": 0.0, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 1, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
   clips.push({
-    "target": "line1", "name": "final",
-    "lookAt": [-11500, -1500, 760] ,"pos": [-11500, -1500, 1900000], "rot": [0,-360,0], "zoom": 650,
-    "lookAtGap":0, "railMove": [0,0],
-    "color1": [100,100,240], "color2": [100,250,50], "color3": [250,10,102],
+    "target": "line1", "name": "fly10",
+    "lookAt": [-13450, -770, 4999900] ,"pos": [-13450, -770, 4999900], "rot": [0,-270,0], "zoom": 2000,
+    "lookAtGap":1, "railMove": [21.5, -10],
+    "color1": [100,100,255], "color2": [100,250,50], "color3": [250,10,102],
     "pos1": [line1PosX, line1PosY, 2*interval*lineWidth],
     "pos2": [line1PosX, line1PosY-gap2to1, 3*interval*lineWidth],
     "pos3": [line1PosX, line1PosY-gap3to1, 4*interval*lineWidth],
-    "opacityLine": 0.5, "opacityGrid": 0, "opacityML": 1, "opacityAxis": 0, "opacityExtraML": 0, "opacityExtraLine": 0
+    "opacityLine": 0.5, "opacityGrid": 0.0, "opacityML": 1, "opacityAxis": 0, "opacityLastAxis": 1, 
+    "opacity3dAnnot": 1, "opacityExtraML": 0, "opacityExtraLine": 0
   });
+
 
 
   return clips;
@@ -322,150 +208,86 @@ function getTransitions(){
   let clips = getClips();
   transitions.push({
     "target": "line1",
-    "from": {"frame": 1, "clip": "only axis"}, "to": {"frame": 2, "clip": "overall graph"},
+    "from": {"frame": 0, "clip": "only axis"}, "to": {"frame": 1, "clip": "overall graph"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 2, "clip": "overall graph"}, "to": {"frame": 3, "clip": "enter 3d"},
+    "from": {"frame": 1, "clip": "overall graph"}, "to": {"frame": 2, "clip": "enter 3d"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 3, "clip": "enter 3d"}, "to": {"frame": 4, "clip": "start rotate"},
+    "from": {"frame": 2, "clip": "enter 3d"}, "to": {"frame": 3, "clip": "start rotate"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 4, "clip": "start rotate"}, "to": {"frame": 5, "clip": "graph move"},
+    "from": {"frame": 3, "clip": "start rotate"}, "to": {"frame": 4, "clip": "line2 move"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 5, "clip": "graph move"}, "to": {"frame": 6, "clip": "go to line1"},
+    "from": {"frame": 4, "clip": "line2 move"}, "to": {"frame": 5, "clip": "line3 move"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 6, "clip": "go to line1"}, "to": {"frame": 7, "clip": "fly1"},
+    "from": {"frame": 5, "clip": "line3 move"}, "to": {"frame": 6, "clip": "go to line1"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 7, "clip": "fly1"}, "to": {"frame": 8, "clip": "fly2"},
+    "from": {"frame": 6, "clip": "go to line1"}, "to": {"frame": 7, "clip": "go to min"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [
+      { "type": "sin", "attribute": "pos", "args": {"axis": 1, "height": 700} },
+      { "type": "sin", "attribute": "lookAt", "args": {"axis": 1, "height": 700} }
+    ]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 8, "clip": "fly2"}, "to": {"frame": 9, "clip": "fly3"},
+    "from": {"frame": 7, "clip": "go to min"}, "to": {"frame": 8, "clip": "compare min"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 9, "clip": "fly3"}, "to": {"frame": 10, "clip": "fly4"},
+    "from": {"frame": 8, "clip": "compare min"}, "to": {"frame": 9, "clip": "turn 1"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 10, "clip": "fly4"}, "to": {"frame": 11, "clip": "fly5"},
+    "from": {"frame": 9, "clip": "turn 1"}, "to": {"frame": 10, "clip": "turn 2"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 11, "clip": "fly5"}, "to": {"frame": 12, "clip": "fly6"},
+    "from": {"frame": 10, "clip": "turn 2"}, "to": {"frame": 11, "clip": "go to line1 end"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [
+      { "type": "-sin", "attribute": "pos", "args": {"axis": 1, "height": 500} },
+      { "type": "-sin", "attribute": "lookAt", "args": {"axis": 1, "height": 500} }
+    ]
   });
   transitions.push({
     "target": "line1",
-    "from": {"frame": 12, "clip": "fly6"}, "to": {"frame": 13, "clip": "fly7"},
+    "from": {"frame": 11, "clip": "go to line1 end"}, "to": {"frame": 12, "clip": "end rotate"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });  transitions.push({
     "target": "line1",
-    "from": {"frame": 13, "clip": "fly7"}, "to": {"frame": 14, "clip": "fly8"},
+    "from": {"frame": 12, "clip": "end rotate"}, "to": {"frame": 13, "clip": "exit 3d"},
     "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 14, "clip": "fly8"}, "to": {"frame": 15, "clip": "fly9"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 15, "clip": "fly9"}, "to": {"frame": 16, "clip": "fly10"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 16, "clip": "fly10"}, "to": {"frame": 17, "clip": "fly11"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 17, "clip": "fly11"}, "to": {"frame": 18, "clip": "fly12"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 18, "clip": "fly12"}, "to": {"frame": 19, "clip": "fly13"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 19, "clip": "fly13"}, "to": {"frame": 20, "clip": "fly14"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 20, "clip": "fly14"}, "to": {"frame": 21, "clip": "fly15"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 21, "clip": "fly15"}, "to": {"frame": 22, "clip": "fly16"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 22, "clip": "fly16"}, "to": {"frame": 23, "clip": "fly17"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 23, "clip": "fly17"}, "to": {"frame": 24, "clip": "fly18"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 24, "clip": "fly18"}, "to": {"frame": 25, "clip": "fly19"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 25, "clip": "fly19"}, "to": {"frame": 26, "clip": "end rotate"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 26, "clip": "end rotate"}, "to": {"frame": 27, "clip": "exit 3d"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
-  });  transitions.push({
-    "target": "line1",
-    "from": {"frame": 27, "clip": "exit 3d"}, "to": {"frame": 28, "clip": "final"},
-    "easing": "bezier",
-    "motion": { "type": "linear", "args": {} }
+    "motion": [{ "type": "linear", "args": {} }]
   });
 
 

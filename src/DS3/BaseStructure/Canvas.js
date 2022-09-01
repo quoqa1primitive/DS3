@@ -25,7 +25,7 @@ function Canvas({mode}) {
 
   const setIdx = useStore((state) => state.setIdx);
   const setTarget = useStore((state) => state.setTarget);
-  const scrollLength = 20000;
+  const scrollLength = 50000;
 
   // const [idx, setIdx] = useState(0);
 

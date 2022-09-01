@@ -1,6 +1,6 @@
-const stoppers_DS2 = [0.01, 0.03, 0.01, 0.03, 0.01, 0.01];
-const clipPositions_DS2 = [0.00, 0.16, 0.33, 0.50, 0.80, 1.00];
-const totalLength = 1000;
+const stoppers_DS2 =      [0.00, 0.01, 0.05, 0.01, 0.01, 0.01, 0.05, 0.00];
+const clipPositions_DS2 = [0.00, 0.10, 0.25, 0.35, 0.45, 0.55, 0.85, 1.00];
+const totalLength = 1500;
 
 function getClips(){
   let clips = [];
@@ -44,27 +44,35 @@ function getClips(){
 
   clips.push({
     "target": "text", "name": "text_0",
-    "pos": totalLength * 0.060
+    "pos": totalLength * 0.020
   })
   clips.push({
     "target": "text", "name": "text_1",
-    "pos": totalLength * 0.280
+    "pos": totalLength * 0.123
   })
   clips.push({
     "target": "text", "name": "text_2",
-    "pos": totalLength * 0.400
+    "pos": totalLength * 0.300
   })
   clips.push({
     "target": "text", "name": "text_3",
-    "pos": totalLength * 0.530
+    "pos": totalLength * 0.445
   })
   clips.push({
     "target": "text", "name": "text_4",
-    "pos": totalLength * 0.680
+    "pos": totalLength * 0.580
   })
   clips.push({
     "target": "text", "name": "text_5",
-    "pos": totalLength * 0.985
+    "pos": totalLength * 0.726
+  })
+  clips.push({
+    "target": "text", "name": "text_6",
+    "pos": totalLength * 0.840
+  })
+  clips.push({
+    "target": "text", "name": "text_7",
+    "pos": totalLength * 0.940
   })
   return clips;
 }
@@ -148,6 +156,18 @@ function getTransitions(){
   transitions.push({
     "target": "text",
     "from": {"frame": 4, "clip": "text_4"}, "to": {"frame": 5, "clip": "text_5"},
+    "easing": "bezier",
+    "motion": {"type": "linear", "args": {}}
+  })
+  transitions.push({
+    "target": "text",
+    "from": {"frame": 5, "clip": "text_5"}, "to": {"frame": 6, "clip": "text_6"},
+    "easing": "bezier",
+    "motion": {"type": "linear", "args": {}}
+  })
+  transitions.push({
+    "target": "text",
+    "from": {"frame": 6, "clip": "text_6"}, "to": {"frame": 7, "clip": "text_7"},
     "easing": "bezier",
     "motion": {"type": "linear", "args": {}}
   })

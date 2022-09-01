@@ -75,9 +75,9 @@ function TextBox({position=[0, 0, 0], lookAt=true, text, textType="default", anc
       materialType: "MeshBasicMaterial",
     } : type == "plain"? {
         font: "Noto Sans",
-        fontSize: 2.5,
+        fontSize: 3.2,
         color: "white",
-        maxWidth: 130,
+        maxWidth: 100,
         lineHeight: 1.90,
         letterSpacing: 0,
         textAlign: "left",
@@ -334,11 +334,14 @@ function interpolate(startVal, endVal, duration, time, postType, motion){
     }
   }
 
-  if(motion.type == "sin"){
-    interpolatedVal[motion.attribute][motion.args.axis] += motion.args.height * Math.sin(bezierFunc(progress) * Math.PI);
-  }
-  if(motion.type == "-sin"){
-    interpolatedVal[motion.attribute][motion.args.axis] += motion.args.height * (-Math.sin(bezierFunc(progress) * Math.PI));
+  for(let i=0; i<motion.length; i++){
+    let currentMotion = motion[i];
+    if(currentMotion.type == "sin"){
+      interpolatedVal[currentMotion.attribute][currentMotion.args.axis] += currentMotion.args.height * Math.sin(bezierFunc(progress) * Math.PI);
+    }
+    if(currentMotion.type == "-sin"){
+      interpolatedVal[currentMotion.attribute][currentMotion.args.axis] += currentMotion.args.height * (-Math.sin(bezierFunc(progress) * Math.PI));
+    }
   }
 
   interpolatedVal.name = startVal.name;
@@ -428,9 +431,9 @@ useLayoutEffect(() => {
       <PerspectiveCamera ref={ref} makeDefault fov={800}far={10000000} near={10} position={[-1000, 1000, 10]} zoom={6}/>
       <OrbitControls
         camera={ref.current}
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={true}
+        enablePan={false}
+        enableZoom={false}
+        enableRotate={false}
         zoomSpeed={0.25}
         style={{zIndex: 5}}/>
       <ambientLight intensity={0.9}/>

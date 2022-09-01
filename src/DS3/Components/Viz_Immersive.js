@@ -16,7 +16,7 @@ const opts = {
   font: "https://fonts.gstatic.com/s/notosans/v7/o-0IIpQlx3QUlC5A4PNr5TRG.woff",
   fontSize: 50.0,
   color: "black",
-  maxWidth: 65,
+  maxWidth: 5000,
   lineHeight: 1.15,
   letterSpacing: 0,
   textAlign: "left",
@@ -26,54 +26,121 @@ const opts = {
 const yScale = 20;
 const xScale = 30;
 const lineWidth = 80;
+const line1Height = (adjustedArr1[0] - adjustedArr3[0] + adjustedArr1[0]) * yScale;
 
-function HorizontalAnnotation({position=[0,0,0], text, length, textType, interval, ...props}) {
-  const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), new THREE.Vector3(length,0,0)]), []);
-  const annot = useMemo(()=>
-    <group position={position}>
-      <TextBox position={[-interval, 0, 0]} text={text} textType={textType}/>
-      <line geometry={geometry}>
-        <lineBasicMaterial transparent opacity={0.3} />
-      </line>
-    </group>
-  , []);
-
+function AnnotZ({position, text, ...props}) {
+  const animation_rl = useStore((state) => state.animation_rl);
+  const idx = useStore((state) => state.idx);
   return(
-    <>{annot}</>
+    <>
+    <group position={position}>
+      <DreiLine points={[[0,0,0], [0, 0, lineWidth]]}
+        color={"white"} opacity={animation_rl[0]["animation"][idx].opacity3dAnnot} transparent lineWidth={0.1} 
+        dashSize={50} gapSize={80} dashed={false} />  
+    </group>
+    <group position={[position[0], position[1], position[2]+lineWidth+10]}>
+        <text {...opts}
+          text={text} fillOpacity={animation_rl[0]["animation"][idx].opacity3dAnnot}
+          font={opts.font} fontSize={400} color={"rgb(255, 255, 255)"} anchorX="right" anchorY="middle"/>
+    </group>
+    </>
   )
 }
 
-function Annotation({position=[0,0,0], text, length, dotSize=10, yInterval=400, ...props}){
+function HrztAnnotFirst({position=[0,0,0], text, length, adj=0.8, interval=200, ...props}) {
   const animation_rl = useStore((state) => state.animation_rl);
   const idx = useStore((state) => state.idx);
-
-  const points = useMemo(() => [new THREE.Vector3(0,0,0), new THREE.Vector3(0, -length, 0)], []);
-  const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints(points), []);
-  const dotGeometry = useMemo(() => new THREE.CircleGeometry(dotSize, 50), []);
-  const annot = useMemo(()=>
-    <group position={position}>
-      <mesh geometry={dotGeometry}>
-        <meshBasicMaterial/>
-      </mesh>
-      <line geometry={geometry}>
-        <lineDashedMaterial color="white" transparent opacity={0.3} dashSize={5}/>
-      </line>
-      <DreiLine points={[[0, 0, 0], [0, -length*2, 0]]} color={"white"} lineWidth={1} dashed={true} />
-    </group>
-  , []);
   return(
     <>
-      {annot}
-      <group position={position}>
+    <group position={position}>
+      <DreiLine points={[[0, 0, 0], [length, 0, 0]]} 
+        color={"white"} opacity={animation_rl[0]["animation"][idx].opacityAxis} transparent lineWidth={0.2} 
+        dashSize={60} gapSize={40} dashed={true} />
+    </group>
+    <group position={[position[0]-interval, position[1], position[2]]}>
         <text {...opts}
-          text={text} fillOpacity={animation_rl[0]["animation"][idx].opacityAxis}
-          font={opts.font} color={"rgb(255, 255, 255)"} anchorX="right" anchorY="middle"/>
+          text={text} fillOpacity={1*animation_rl[0]["animation"][idx].opacityAxis}
+          font={opts.font} fontSize={180} color={"rgb(255, 255, 255)"} anchorX="right" anchorY="middle"/>
       </group>
     </>
   )
 }
 
+function AnnotFirst({position=[0,0,0], text, length, adj=0.8, interval=-200, anchor="center", ...props}){
+  const animation_rl = useStore((state) => state.animation_rl);
+  const idx = useStore((state) => state.idx);
+
+  const points = useMemo(() => [new THREE.Vector3(0,0,0), new THREE.Vector3(0, -length, 0)], []);
+  const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints(points), []);
+  const dotGeometry = useMemo(() => new THREE.CircleGeometry(40, 50), []);
+  return(
+    <>
+      <group position={position}>
+        <mesh geometry={dotGeometry}>
+          <meshBasicMaterial opacity={0.8*animation_rl[0]["animation"][idx].opacityAxis} transparent/>
+        </mesh>
+        <DreiLine points={[[0, 0, 0], [0, length, 0]]} 
+          color={"white"} opacity={adj*animation_rl[0]["animation"][idx].opacityAxis} transparent lineWidth={0.2} 
+          dashSize={50} gapSize={100} dashed={false} />
+      </group>
+      <group position={[position[0], position[1]+length+interval, position[2]]}>
+        <text {...opts}
+          text={text} fillOpacity={1*animation_rl[0]["animation"][idx].opacityAxis}
+          font={opts.font} fontSize={200} color={"rgb(255, 255, 255)"} anchorX={anchor} anchorY="middle"/>
+      </group>
+    </>
+  )
+}
+
+function HrztAnnotLast({position=[0,0,0], text, length, interval=100, adj=1, ...props}) {
+  const animation_rl = useStore((state) => state.animation_rl);
+  const idx = useStore((state) => state.idx);
+  console.log(interval);
+  return(
+    <>
+    <group position={position}>
+      <DreiLine points={[[0, 0, 0], [length, 0, 0]]} 
+        color={"rgb(150, 150, 150)"} opacity={adj*animation_rl[0]["animation"][idx].opacityLastAxis} transparent lineWidth={0.4} 
+        dashSize={20} gapSize={10} dashed={true} />
+    </group>
+    <group position={[position[0]-interval, position[1], position[2]]}>
+        <text {...opts}
+          text={text} fillOpacity={animation_rl[0]["animation"][idx].opacityLastAxis}
+          font={opts.font} fontSize={55} color={"rgb(255, 255, 255)"} anchorX="right" anchorY="middle"/>
+      </group>
+    </>
+  )
+}
+
+function AnnotLast({position=[0,0,0], text, length, interval=10, adj=1, anchor="left", ...props}){
+  const animation_rl = useStore((state) => state.animation_rl);
+  const idx = useStore((state) => state.idx);
+  const dotGeometry = useMemo(() => new THREE.CircleGeometry(10, 50), []);
+  const textInterval = interval;
+  return(
+    <>
+      <group position={position}>
+        <mesh geometry={dotGeometry}>
+          <meshBasicMaterial opacity={animation_rl[0]["animation"][idx].opacityLastAxis} transparent />
+        </mesh>
+        <DreiLine points={[[0, 0, 0], [0, length, 0]]} 
+          color={"white"} opacity={adj*animation_rl[0]["animation"][idx].opacityLastAxis} transparent lineWidth={0.1} 
+          dashSize={50} gapSize={100} dashed={false} />
+        <group position={[0, length+textInterval, 0]}>
+          <text {...opts}
+            text={text} fillOpacity={animation_rl[0]["animation"][idx].opacityLastAxis}
+            font={opts.font} fontSize={60} color={"rgb(255, 255, 255)"} anchorX={anchor} anchorY="middle"/>
+        </group>
+      </group>
+
+    </>
+  )
+}
+
 function Axis({position=[0,0,0], lenY, lenX, ...props}){
+  const animation_rl = useStore((state) => state.animation_rl);
+  const idx = useStore((state) => state.idx);
+  // console.log(animation_rl[0]["animation"][idx].opacityAxis);
   const text1 = useMemo(() => `the first impact of COVID-19
   (FEB 2020)`, []);
   const text2 = useMemo(() => `Delta variant emerges
@@ -86,31 +153,36 @@ function Axis({position=[0,0,0], lenY, lenX, ...props}){
   const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(lenX, 0, 0)]), []);
   const axis = useMemo(() =>
     <group position={position}>
-      <line geometry={geometry}>
-        <lineDashedMaterial color="white" transparent opacity={1} dashSize={10} gapSize={1000} scale={1}/>
-      </line>
-      <Annotation position={text1Pos} text={text1} textType={"axis"} length={2500 + (adjustedArr1[0]-adjustedArr3[0]+adjustedArr1[0]) * yScale}/>
-      <Annotation position={text2Pos} text={text2} textType={"axis"} length={2500 + (adjustedArr2[0]-adjustedArr3[0]+adjustedArr1[0]) * yScale }/>
-      <Annotation position={text3Pos} text={text3} textType={"axis"} length={2500 + adjustedArr1[0]*yScale } />
-      <HorizontalAnnotation position={[0,0,0]}        text={"2,000"} textType={"axis"} interval={600} length={lenX}/>
-      <HorizontalAnnotation position={[0,600-100,0]}  text={"2,500"} textType={"axis"} interval={600} length={lenX}/>
-      <HorizontalAnnotation position={[0,1200-100,0]} text={"3,000"} textType={"axis"} interval={600} length={lenX}/>
-      <HorizontalAnnotation position={[0,1800-100,0]} text={"3,500"} textType={"axis"} interval={600} length={lenX}/>
-      <HorizontalAnnotation position={[0,2400-100,0]} text={"4,000"} textType={"axis"} interval={600} length={lenX}/>
+      <AnnotFirst position={text1Pos} anchor={"left"}  adj={1} text={text1} interval={-350} length={-2500-(adjustedArr1[0]-adjustedArr3[0]+adjustedArr1[0]) * yScale}/>
+      <AnnotFirst position={text2Pos} anchor={"right"} adj={1}   text={text2} interval={-350} length={-2500-(adjustedArr2[0]-adjustedArr3[0]+adjustedArr1[0]) * yScale }/>
+      <AnnotFirst position={text3Pos} anchor={"left"}  adj={1} text={text3} interval={-350} length={-2500-adjustedArr1[0]*yScale } />
+      <HrztAnnotFirst position={[0,0,0]}        text={"2,000"} length={lenX}/>
+      <HrztAnnotFirst position={[0,600-100,0]}  text={"2,500"} length={lenX}/>
+      <HrztAnnotFirst position={[0,1200-100,0]} text={"3,000"} length={lenX}/>
+      <HrztAnnotFirst position={[0,1800-100,0]} text={"3,500"} length={lenX}/>
+      <HrztAnnotFirst position={[0,2400-100,0]} text={"4,000"}  length={lenX}/>
+
     </group>
   , []);
   return(
-    <>{axis}</>
+    <>
+    {axis}
+    <group position={[position[0]-200,position[1]+2900, position[2]]}>
+      <text {...opts}
+        text={"S&P 500"} fillOpacity={1*animation_rl[0]["animation"][idx].opacityAxis}
+        font={opts.font} fontSize={180} color={"rgb(255, 255, 255)"} anchorX="right" anchorY="middle"/>
+      </group>
+    </>
   )
 }
 
 function FinalAxis({position=[0,0,0], lenX, ...props}){
-  const expire1 = `recovery of the initial impact D+52`;
-  const expire2 = `recovery of the Delta variant D+52`;
-  const expire3 = `recovery of the Omicron variant D+52`;
-  const min1 = `floor at 2702.3`;
-  const min2 = `floor at 2702.3`;
-  const min3 = `floor at 2702.3`;
+  const expire1 = `recovery of the initial impact D+182`;
+  const expire2 = `recovery of the Delta variant D+50`;
+  const expire3 = `recovery of the Omicron variant D+23`;
+  const min1 = `floor at 2237.4`;
+  const min2 = `floor at 4307.54`;
+  const min3 = `floor at 4513.04`;
   const text3 = `Omicron variant emerges
   (NOV 2021)`;
 
@@ -128,19 +200,19 @@ function FinalAxis({position=[0,0,0], lenX, ...props}){
   const min3Pos = [minV3 * xScale, line1Height - (adjustedArr3[0] - adjustedArr3[minV3]) * yScale, 0];
   const axis = useMemo(() =>
     <group position={position}>
-      <Annotation position={exp1Pos} length={50}    yInterval={20}  text={expire1}  textType={"finalaxis"} />
-      <Annotation position={exp2Pos} length={50}    yInterval={20}  text={expire2}  textType={"finalaxis"} />
-      <Annotation position={exp3Pos} length={-50}   yInterval={-40} text={expire3}  textType={"finalaxis"} />
-      <Annotation position={min1Pos} length={50}    yInterval={20}  text={min1}     textType={"finalaxis"} />
-      <Annotation position={min2Pos} length={50}    yInterval={20}  text={min2}     textType={"finalaxis"} />
-      <Annotation position={min3Pos} length={-400}  yInterval={-40} text={min3}     textType={"finalaxis"} />
-      <HorizontalAnnotation position={[0, line1Height - gap * 0, 0]} text={"0%"}   textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0, line1Height - gap * 1, 0]} text={"-5%"}  textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0, line1Height - gap * 2, 0]} text={"-10%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0, line1Height - gap * 3, 0]} text={"-15%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0, line1Height - gap * 4, 0]} text={"-20%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0, line1Height - gap * 5, 0]} text={"-25%"} textType={"finalaxis"} interval={100} length={lenX}/>
-      <HorizontalAnnotation position={[0, line1Height - gap * 6, 0]} text={"-30%"} textType={"finalaxis"} interval={100} length={lenX}/>
+      <AnnotLast position={exp1Pos} length={100}    interval={60}  text={expire1} anchor={"right"}  />
+      <AnnotLast position={exp2Pos} length={-60}    interval={-30}  text={expire2}  />
+      <AnnotLast position={exp3Pos} length={100}   interval={60} text={expire3}  />
+      <AnnotLast position={min1Pos} length={50}    interval={60}  text={min1}     />
+      <AnnotLast position={min2Pos} length={0}    interval={-65}  text={min2}     />
+      <AnnotLast position={min3Pos} length={-230}  interval={-50} text={min3}     />
+      <HrztAnnotLast position={[0, line1Height - gap * 0, 0]} adj={2} text={"0%"}   length={lenX}/>
+      <HrztAnnotLast position={[0, line1Height - gap * 1, 0]} adj={2} text={"-5%"}  length={lenX}/>
+      <HrztAnnotLast position={[0, line1Height - gap * 2, 0]} adj={2} text={"-10%"} length={lenX}/>
+      <HrztAnnotLast position={[0, line1Height - gap * 3, 0]} adj={2} text={"-15%"} length={lenX}/>
+      <HrztAnnotLast position={[0, line1Height - gap * 4, 0]} adj={2} text={"-20%"} length={lenX}/>
+      <HrztAnnotLast position={[0, line1Height - gap * 5, 0]} adj={2} text={"-25%"} length={lenX}/>
+      <HrztAnnotLast position={[0, line1Height - gap * 6, 0]} adj={2} text={"-30%"} length={lenX}/>
     </group>
   , []);
   return(
@@ -226,7 +298,7 @@ const VisComponent = React.forwardRef((props, ref) =>{
 
   const interval = 3;
   const chartHeight = 150;
-  const chartWidth = 1;
+  const chartWidth = 4;
 
   function arrToShape(arr){
     let points = [];
@@ -317,7 +389,8 @@ const VisComponent = React.forwardRef((props, ref) =>{
     aftr3.current.translateY(yDelta);
     aftr3.current.translateZ(zDelta);
 
-    grid.current.position.setY(-930);
+    grid.current.position.setY(-934);
+    grid.current.translateX(-10);
   }, []);
 
   let rlAnimation = animation_rl[0]["animation"][idx];
