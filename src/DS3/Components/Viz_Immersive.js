@@ -10,6 +10,8 @@ import { useStore } from '../BaseStructure/Store.js';
 import {adjustedArr1, adjustedArr2, adjustedArr3, arr1, arr2, arr3, adjustedB1, adjustedA1B2, adjustedA2B3, adjustedA3} from './snpData.js';
 import { Text } from "troika-three-text";
 import { Line as DreiLine } from '@react-three/drei';
+
+import glsl from 'babel-plugin-glsl/macro'
 extend({ Text });
 
 const opts = {
@@ -95,7 +97,7 @@ function AnnotFirst({position=[0,0,0], text, length, adj=0.8, interval=-200, anc
 function HrztAnnotLast({position=[0,0,0], text, length, interval=100, adj=1, ...props}) {
   const animation_rl = useStore((state) => state.animation_rl);
   const idx = useStore((state) => state.idx);
-  console.log(interval);
+  // console.log(interval);
   return(
     <>
     <group position={position}>
@@ -136,6 +138,7 @@ function AnnotLast({position=[0,0,0], text, length, interval=10, adj=1, anchor="
     </>
   )
 }
+
 
 function Axis({position=[0,0,0], lenY, lenX, ...props}){
   const animation_rl = useStore((state) => state.animation_rl);
@@ -292,6 +295,7 @@ const VisComponent = React.forwardRef((props, ref) =>{
   const aftr3 = useRef();
   const animation_rl = useStore((state) => state.animation_rl);
   const idx = useStore((state) => state.idx);
+ 
 
   const extrudeSettings1 = { depth: lineWidth, bevelEnabled: false, bevelSegments: 1, steps: 2, bevelSize: 1, bevelThickness: 1 };
   const extrudeSettings2 = { depth: lineWidth/16, bevelEnabled: false, bevelSegments: 1, steps: 2, bevelSize: 1, bevelThickness: 1 };
@@ -311,7 +315,6 @@ const VisComponent = React.forwardRef((props, ref) =>{
     }
     return(new THREE.Shape(points));
   }
-
   const shape1    = arrToShape(adjustedArr1);
   const shape2    = arrToShape(adjustedArr2);
   const shape3    = arrToShape(adjustedArr3);
@@ -350,11 +353,13 @@ const VisComponent = React.forwardRef((props, ref) =>{
   // const cameraTarget = useMemo(()=> new THREE.BoxGeometry(1,1,1), []);
   const oneJum = useMemo(()=> new THREE.SphereGeometry(2), []);
 
+
   useFrame((state, delta) => {
     const lineAnimation = animation_rl[0]["animation"][idx];
     line1.current.position.set(lineAnimation.pos1[0], lineAnimation.pos1[1], lineAnimation.pos1[2]);
     line2.current.position.set(lineAnimation.pos2[0], lineAnimation.pos2[1], lineAnimation.pos2[2]);
     line3.current.position.set(lineAnimation.pos3[0], lineAnimation.pos3[1], lineAnimation.pos3[2]);
+
   });
 
   useLayoutEffect(() => {
@@ -486,11 +491,13 @@ const VisComponent = React.forwardRef((props, ref) =>{
             <meshBasicMaterial color="red" opacity={0} transparent={true}/>
           </mesh>
           <Axis ref={firstaxis}
-            position={[-xScale * (adjustedArr2.length + adjustedA2B3.length + adjustedA1B2.length + adjustedArr1.length + adjustedB1.length - 5), -2500, -100]}
+            position={[-xScale * (adjustedArr2.length + adjustedA2B3.length + adjustedA1B2.length + adjustedArr1.length + adjustedB1.length - 5), -2500, -150]}
             lenY={3000}
             lenX={xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length+adjustedB1.length+adjustedA3.length-6)+1200} />
           <FinalAxis ref={finalaxis} position={[-xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length-4),0,-100]}
           lenX={adjustedArr1.length*xScale+150}/>
+
+    
         </>
       }
     </group>
