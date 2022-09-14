@@ -8,6 +8,7 @@ import * as DIS from '../Animations/Distribution.js';
 import * as IMM from '../Animations/Immersive.js';
 import * as ANM from '../Animations/Animated.js';
 import * as RL from '../Animations/rail.js';
+import * as RLA from '../Animations/rail_animated.js';
 import { TextComponent }          from '../Components/Texts.js';
 import { VisComponent_Immersive } from '../Components/Viz_Immersive.js';
 // import { VisComponent_Animated }  from '../Components/Viz_Animated.js';
@@ -22,6 +23,7 @@ function Canvas({mode}) {
   const setAnimation_Main = useStore((state)=> state.setAnimation_Main);
   const setAnimation_Dist = useStore((state)=> state.setAnimation_Dist);
   const setAnimation_Rl = useStore((state)=> state.setAnimation_Rl);
+  const setAnimation_Rl_animated = useStore((state)=> state.setAnimation_Rl_animated);
 
   const setIdx = useStore((state) => state.setIdx);
   const setTarget = useStore((state) => state.setTarget);
@@ -30,10 +32,10 @@ function Canvas({mode}) {
   // const [idx, setIdx] = useState(0);
 
   // animation에 관련한 정보들은 페이지가 처음 읽힐 때 memo가 이루어집니다.(baked)
-  const stoppers1      = useMemo(() => mode==Immersive? IMM.stoppers_DS2 : ANM.stoppers_DS2, []);
-  const clipPositions1 = useMemo(() => mode==Immersive? IMM.clipPositions_DS2 : ANM.clipPositions_DS2, []);
-  const clips1          = useMemo(() => mode==Immersive? IMM.getClips() : ANM.getClips(), []);
-  const transitions1    = useMemo(() => mode==Immersive? IMM.getTransitions() : ANM.getTransitions(), []);
+  const stoppers1      = useMemo(() => mode==Immersive? IMM.stoppers_DS2 : IMM.stoppers_DS2, []);
+  const clipPositions1 = useMemo(() => mode==Immersive? IMM.clipPositions_DS2 : IMM.clipPositions_DS2, []);
+  const clips1          = useMemo(() => mode==Immersive? IMM.getClips() : IMM.getClips(), []);
+  const transitions1    = useMemo(() => mode==Immersive? IMM.getTransitions() : IMM.getTransitions(), []);
 
   const stoppers2      = useMemo(() => DIS.stoppers_Dist2, []);
   const clipPositions2 = useMemo(() => DIS.clipPositions_Dist2, []);
@@ -45,6 +47,11 @@ function Canvas({mode}) {
   const clips3          = useMemo(() => RL.getClips(), []);
   const transitions3    = useMemo(() => RL.getTransitions(), []);
 
+  const stoppers4      = useMemo(() => RLA.stoppers_DS2, []);
+  const clipPositions4 = useMemo(() => RLA.clipPositions_DS2, []);
+  const clips4          = useMemo(() => RLA.getClips(), []);
+  const transitions4    = useMemo(() => RLA.getTransitions(), []);
+
 
   // useMemo(() => AnimationGenerator(totalFrame, clipPositions, stoppers, clips, transitions), []);
   const steps1         = useMemo(() => statesConverter(clipPositions1, stoppers1), []);
@@ -53,7 +60,7 @@ function Canvas({mode}) {
   // CanvasI의 유일한 state는 idx입니다! 이는 CanvasComponents로 넘겨지며, 이외의 Components들은 바뀔 일이 없어야 합니다.
   const handleScroll = useCallback((e) => {
     setTarget(document.getElementById("scroller").scrollTop / scrollLength* totalFrame);
-    console.log(e);
+    // console.log(e);
   }, [totalFrame]);
 
   // here is animation request for make idx smooth
@@ -78,6 +85,7 @@ function Canvas({mode}) {
     setAnimation_Main(AnimationGenerator(totalFrame, clipPositions1, stoppers1, clips1, transitions1));
     setAnimation_Dist(AnimationGenerator(totalFrame, clipPositions2, stoppers2, clips2, transitions2));
     setAnimation_Rl(AnimationGenerator(totalFrame, clipPositions3, stoppers3, clips3, transitions3));
+    setAnimation_Rl_animated(AnimationGenerator(totalFrame, clipPositions4, stoppers4, clips4, transitions4));
 
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
@@ -113,6 +121,7 @@ function CanvasComponents({mode, steps, ...props}){
   const setStep = useStore((state) => state.setStep);
   const animation_main = useStore((state) => state.animation_main);
   const animation_rl = useStore((state) => state.animation_rl);
+  const animation_rl_animated = useStore((state) => state.animation_rl_animated);
 
 
 
@@ -130,38 +139,62 @@ function CanvasComponents({mode, steps, ...props}){
 
       let animation_group1 = animation_main[0]["animation"][idx];
       let animation_camera = animation_main[1]["animation"][idx];
-      let animation_text = mode != Static? animation_main[2]["animation"][idx]: undefined;;
+      let animation_text = mode != Static? animation_main[2]["animation"][idx]: undefined;
       let animation_camera_rl = animation_rl[0]["animation"][idx];
+      let animation_camera_animated = animation_rl_animated[0]["animation"][idx];
       // console.log(idx);
-      let goX = 100*animation_camera_rl.railMove[0];
-      let goY = 100*animation_camera_rl.railMove[1];
+
       if(mainViz.current && mainText.current && mainCamera.current){
+        if(mode == Immersive){
+          let goX = 100*animation_camera_rl.railMove[0];
+          let goY = 100*animation_camera_rl.railMove[1];
+          mainCamera.current.position.setX(animation_camera_rl.pos[0]+goX);
+          mainCamera.current.position.setY(animation_camera_rl.pos[1]+goY);
+          mainCamera.current.position.setZ(animation_camera_rl.pos[2]);
+          // mainCamera.current.rotateZ(-Math.PI/2);
+
+          mainCamera.current.lookAt(
+            animation_camera_rl.lookAt[0]+animation_camera_rl.lookAtGap+goX,
+            animation_camera_rl.lookAt[1]+goY,
+            animation_camera_rl.lookAt[2]
+          );
+
+          mainCamera.current.rotateZ(Math.PI/180*animation_camera_rl.rot[2]);
+          mainCamera.current.rotateY(Math.PI/180*animation_camera_rl.rot[1]);
+          mainCamera.current.rotateX(Math.PI/180*animation_camera_rl.rot[0]);
 
 
-        mainCamera.current.position.setX(animation_camera_rl.pos[0]+goX);
-        mainCamera.current.position.setY(animation_camera_rl.pos[1]+goY);
-        mainCamera.current.position.setZ(animation_camera_rl.pos[2]);
-        // mainCamera.current.rotateZ(-Math.PI/2);
 
-        mainCamera.current.lookAt(
-          animation_camera_rl.lookAt[0]+animation_camera_rl.lookAtGap+goX,
-          animation_camera_rl.lookAt[1]+goY,
-          animation_camera_rl.lookAt[2]
-        );
+          mainCamera.current.zoom = animation_camera_rl.zoom;
+          mainCamera.current.updateProjectionMatrix();
+        }
+        else if(mode == Animated){
+          let goX = 100*animation_camera_animated.railMove[0];
+          let goY = 100*animation_camera_animated.railMove[1];
+          mainCamera.current.position.setX(animation_camera_animated.pos[0]+goX);
+          mainCamera.current.position.setY(animation_camera_animated.pos[1]+goY);
+          mainCamera.current.position.setZ(animation_camera_animated.pos[2]);
+          // mainCamera.current.rotateZ(-Math.PI/2);
 
-        mainCamera.current.rotateZ(Math.PI/180*animation_camera_rl.rot[2]);
-        mainCamera.current.rotateY(Math.PI/180*animation_camera_rl.rot[1]);
-        mainCamera.current.rotateX(Math.PI/180*animation_camera_rl.rot[0]);
+          mainCamera.current.lookAt(
+            animation_camera_animated.lookAt[0]+animation_camera_animated.lookAtGap+goX,
+            animation_camera_animated.lookAt[1]+goY,
+            animation_camera_animated.lookAt[2]
+          );
+
+          mainCamera.current.rotateZ(Math.PI/180*animation_camera_animated.rot[2]);
+          mainCamera.current.rotateY(Math.PI/180*animation_camera_animated.rot[1]);
+          mainCamera.current.rotateX(Math.PI/180*animation_camera_animated.rot[0]);
 
 
 
-        mainCamera.current.zoom = animation_camera_rl.zoom;
-        mainCamera.current.updateProjectionMatrix();
-
-        mainText.current.position.setX(textCamPos.x);
-        mainText.current.position.setY(textCamPos.y + animation_text.pos + TextComponentHeight * 0.02);
-        mainText.current.position.setZ(textCamPos.z - 100);
-        mainText.current.lookAt(textCamPos.x, textCamPos.y + animation_text.pos + TextComponentHeight * 0.02, textCamPos.z);
+          mainCamera.current.zoom = animation_camera_animated.zoom;
+          mainCamera.current.updateProjectionMatrix();
+        }
+        // mainText.current.position.setX(textCamPos.x);
+        // mainText.current.position.setY(textCamPos.y + animation_text.pos + TextComponentHeight * 0.02);
+        // mainText.current.position.setZ(textCamPos.z - 100);
+        // mainText.current.lookAt(textCamPos.x, textCamPos.y + animation_text.pos + TextComponentHeight * 0.02, textCamPos.z);
 
       }
     }
@@ -177,12 +210,10 @@ function CanvasComponents({mode, steps, ...props}){
           }
       </If>
       <If if={mode == Animated}>
+        <VisComponent_Immersive ref={mainViz} />
         {
           <TextComponent ref={mainText} />
           }
-      </If>
-      <If if={mode == Animated}>
-
       </If>
       <MiniMap />
     </>

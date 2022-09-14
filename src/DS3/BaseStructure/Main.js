@@ -148,7 +148,7 @@ function Main3(){
   const [sequence, setSequence] = useState([])
   const [quiz1, setQuiz1] = useState(false)
   const [quiz2, setQuiz2] = useState(false)
-  const [type, setType] = useState(Immersive);
+  const [type, setType] = useState(Animated);
   const [completionCode, setCompletionCode] = useState("");
 
   let PersonID;

@@ -4,7 +4,7 @@ import React, { useRef, useMemo, useLayoutEffect } from 'react'
 import { useThree, useLoader, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, OrthographicCamera, PerspectiveCamera, SpotLight } from '@react-three/drei';
 import { Line, ChangePoint, Rect, TextBox, If } from '../../BasicElements/BasicElements.js';
-import { XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
+import { Static, Animated, Immersive, XAXIS1, YAXIS1, YAXIS2, ZAXIS1 } from '../../BasicElements/Constants.js';
 import { totalFrame, TextComponentHeight } from '../BaseStructure/Constants_DS2.js';
 import { useStore } from '../BaseStructure/Store.js';
 import {adjustedArr1, adjustedArr2, adjustedArr3, arr1, arr2, arr3, adjustedB1, adjustedA1B2, adjustedA2B3, adjustedA3} from './snpData.js';
@@ -12,6 +12,7 @@ import { Text } from "troika-three-text";
 import { Line as DreiLine } from '@react-three/drei';
 
 import glsl from 'babel-plugin-glsl/macro'
+import { ShaderMaterial } from 'three';
 extend({ Text });
 
 const opts = {
@@ -29,6 +30,9 @@ const yScale = 20;
 const xScale = 30;
 const lineWidth = 80;
 const line1Height = (adjustedArr1[0] - adjustedArr3[0] + adjustedArr1[0]) * yScale;
+
+
+
 
 function AnnotZ({position, text, ...props}) {
   const animation_rl = useStore((state) => state.animation_rl);
@@ -51,17 +55,27 @@ function AnnotZ({position, text, ...props}) {
 
 function HrztAnnotFirst({position=[0,0,0], text, length, adj=0.8, interval=200, ...props}) {
   const animation_rl = useStore((state) => state.animation_rl);
+  const animation_rl_animated = useStore((state) => state.animation_rl_animated);
+  const type = useStore((state) => state.type);
   const idx = useStore((state) => state.idx);
+  const dotGeometry = useMemo(() => new THREE.CircleGeometry(10, 50), []);
+  let op = 0;
+  if(type == Immersive){
+    op = adj*animation_rl[0]["animation"][idx].opacityAxis;
+  }
+  else if(type == Animated){
+    op = adj*animation_rl_animated[0]["animation"][idx].opacityAxis;
+  }
   return(
     <>
     <group position={position}>
       <DreiLine points={[[0, 0, 0], [length, 0, 0]]} 
-        color={"white"} opacity={animation_rl[0]["animation"][idx].opacityAxis} transparent lineWidth={0.2} 
+        color={"white"} opacity={op} transparent lineWidth={0.2} 
         dashSize={60} gapSize={40} dashed={true} />
     </group>
     <group position={[position[0]-interval, position[1], position[2]]}>
         <text {...opts}
-          text={text} fillOpacity={1*animation_rl[0]["animation"][idx].opacityAxis}
+          text={text} fillOpacity={1*op}
           font={opts.font} fontSize={180} color={"rgb(255, 255, 255)"} anchorX="right" anchorY="middle"/>
       </group>
     </>
@@ -70,24 +84,30 @@ function HrztAnnotFirst({position=[0,0,0], text, length, adj=0.8, interval=200, 
 
 function AnnotFirst({position=[0,0,0], text, length, adj=0.8, interval=-200, anchor="center", ...props}){
   const animation_rl = useStore((state) => state.animation_rl);
+  const animation_rl_animated = useStore((state) => state.animation_rl_animated);
+  const type = useStore((state) => state.type);
   const idx = useStore((state) => state.idx);
-
-  const points = useMemo(() => [new THREE.Vector3(0,0,0), new THREE.Vector3(0, -length, 0)], []);
-  const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints(points), []);
+  let op = 0;
+  if(type == Immersive){
+    op = animation_rl[0]["animation"][idx].opacityAxis;
+  }
+  else if(type == Animated){
+    op = animation_rl_animated[0]["animation"][idx].opacityAxis;
+  }
   const dotGeometry = useMemo(() => new THREE.CircleGeometry(40, 50), []);
   return(
     <>
       <group position={position}>
         <mesh geometry={dotGeometry}>
-          <meshBasicMaterial opacity={0.8*animation_rl[0]["animation"][idx].opacityAxis} transparent/>
+          <meshBasicMaterial opacity={0.8*op} transparent/>
         </mesh>
         <DreiLine points={[[0, 0, 0], [0, length, 0]]} 
-          color={"white"} opacity={adj*animation_rl[0]["animation"][idx].opacityAxis} transparent lineWidth={0.2} 
+          color={"white"} opacity={adj*op} transparent lineWidth={0.2} 
           dashSize={50} gapSize={100} dashed={false} />
       </group>
       <group position={[position[0], position[1]+length+interval, position[2]]}>
         <text {...opts}
-          text={text} fillOpacity={1*animation_rl[0]["animation"][idx].opacityAxis}
+          text={text} fillOpacity={1*op}
           font={opts.font} fontSize={200} color={"rgb(255, 255, 255)"} anchorX={anchor} anchorY="middle"/>
       </group>
     </>
@@ -96,18 +116,27 @@ function AnnotFirst({position=[0,0,0], text, length, adj=0.8, interval=-200, anc
 
 function HrztAnnotLast({position=[0,0,0], text, length, interval=100, adj=1, ...props}) {
   const animation_rl = useStore((state) => state.animation_rl);
+  const animation_rl_animated = useStore((state) => state.animation_rl_animated);
+  const type = useStore((state) => state.type);
   const idx = useStore((state) => state.idx);
+  let op = 0;
+  if(type == Immersive){
+    op = animation_rl[0]["animation"][idx].opacityLastAxis;
+  }
+  else if(type == Animated){
+    op = animation_rl_animated[0]["animation"][idx].opacityLastAxis;
+  }
   // console.log(interval);
   return(
     <>
     <group position={position}>
       <DreiLine points={[[0, 0, 0], [length, 0, 0]]} 
-        color={"rgb(150, 150, 150)"} opacity={adj*animation_rl[0]["animation"][idx].opacityLastAxis} transparent lineWidth={0.4} 
+        color={"rgb(150, 150, 150)"} opacity={adj*op} transparent lineWidth={0.4} 
         dashSize={20} gapSize={10} dashed={true} />
     </group>
     <group position={[position[0]-interval, position[1], position[2]]}>
         <text {...opts}
-          text={text} fillOpacity={animation_rl[0]["animation"][idx].opacityLastAxis}
+          text={text} fillOpacity={op}
           font={opts.font} fontSize={55} color={"rgb(255, 255, 255)"} anchorX="right" anchorY="middle"/>
       </group>
     </>
@@ -116,21 +145,31 @@ function HrztAnnotLast({position=[0,0,0], text, length, interval=100, adj=1, ...
 
 function AnnotLast({position=[0,0,0], text, length, interval=10, adj=1, anchor="left", ...props}){
   const animation_rl = useStore((state) => state.animation_rl);
+  const animation_rl_animated = useStore((state) => state.animation_rl_animated);
+  const type = useStore((state) => state.type);
   const idx = useStore((state) => state.idx);
   const dotGeometry = useMemo(() => new THREE.CircleGeometry(10, 50), []);
   const textInterval = interval;
+  let op = 0;
+  if(type == Immersive){
+    op = adj*animation_rl[0]["animation"][idx].opacityLastAxis;
+  }
+  else if(type == Animated){
+    op = adj*animation_rl_animated[0]["animation"][idx].opacityLastAxis;
+  }
+
   return(
     <>
       <group position={position}>
         <mesh geometry={dotGeometry}>
-          <meshBasicMaterial opacity={animation_rl[0]["animation"][idx].opacityLastAxis} transparent />
+          <meshBasicMaterial opacity={op} transparent />
         </mesh>
         <DreiLine points={[[0, 0, 0], [0, length, 0]]} 
-          color={"white"} opacity={adj*animation_rl[0]["animation"][idx].opacityLastAxis} transparent lineWidth={0.1} 
+          color={"white"} opacity={adj*op} transparent lineWidth={0.1} 
           dashSize={50} gapSize={100} dashed={false} />
         <group position={[0, length+textInterval, 0]}>
           <text {...opts}
-            text={text} fillOpacity={animation_rl[0]["animation"][idx].opacityLastAxis}
+            text={text} fillOpacity={op}
             font={opts.font} fontSize={60} color={"rgb(255, 255, 255)"} anchorX={anchor} anchorY="middle"/>
         </group>
       </group>
@@ -142,7 +181,16 @@ function AnnotLast({position=[0,0,0], text, length, interval=10, adj=1, anchor="
 
 function Axis({position=[0,0,0], lenY, lenX, ...props}){
   const animation_rl = useStore((state) => state.animation_rl);
+  const animation_rl_animated = useStore((state) => state.animation_rl_animated);
+  const type = useStore((state) => state.type);
   const idx = useStore((state) => state.idx);
+  let op = 0;
+  if(type == Immersive){
+    op = animation_rl[0]["animation"][idx].opacityAxis;
+  }
+  else if(type == Animated){
+    op = animation_rl_animated[0]["animation"][idx].opacityAxis;
+  }
   // console.log(animation_rl[0]["animation"][idx].opacityAxis);
   const text1 = useMemo(() => `the first impact of COVID-19
   (FEB 2020)`, []);
@@ -172,7 +220,7 @@ function Axis({position=[0,0,0], lenY, lenX, ...props}){
     {axis}
     <group position={[position[0]-200,position[1]+2900, position[2]]}>
       <text {...opts}
-        text={"S&P 500"} fillOpacity={1*animation_rl[0]["animation"][idx].opacityAxis}
+        text={"S&P 500"} fillOpacity={op}
         font={opts.font} fontSize={180} color={"rgb(255, 255, 255)"} anchorX="right" anchorY="middle"/>
       </group>
     </>
@@ -294,7 +342,10 @@ const VisComponent = React.forwardRef((props, ref) =>{
   const aftr1bfr2 = useRef();
   const aftr3 = useRef();
   const animation_rl = useStore((state) => state.animation_rl);
+  const animation_rl_animated = useStore((state) => state.animation_rl_animated);
+  const type = useStore((state) => state.type);
   const idx = useStore((state) => state.idx);
+  const spinTest = useRef();
  
 
   const extrudeSettings1 = { depth: lineWidth, bevelEnabled: false, bevelSegments: 1, steps: 2, bevelSize: 1, bevelThickness: 1 };
@@ -355,10 +406,21 @@ const VisComponent = React.forwardRef((props, ref) =>{
 
 
   useFrame((state, delta) => {
-    const lineAnimation = animation_rl[0]["animation"][idx];
-    line1.current.position.set(lineAnimation.pos1[0], lineAnimation.pos1[1], lineAnimation.pos1[2]);
-    line2.current.position.set(lineAnimation.pos2[0], lineAnimation.pos2[1], lineAnimation.pos2[2]);
-    line3.current.position.set(lineAnimation.pos3[0], lineAnimation.pos3[1], lineAnimation.pos3[2]);
+    const immersiveAnimation = animation_rl[0]["animation"][idx];
+    const animatedAnimation = animation_rl_animated[0]["animation"][idx];
+    if(type == Immersive){
+      console.log("yes");
+      line1.current.position.set(immersiveAnimation.pos1[0], immersiveAnimation.pos1[1], immersiveAnimation.pos1[2]);
+      line2.current.position.set(immersiveAnimation.pos2[0], immersiveAnimation.pos2[1], immersiveAnimation.pos2[2]);
+      line3.current.position.set(immersiveAnimation.pos3[0], immersiveAnimation.pos3[1], immersiveAnimation.pos3[2]);
+    }
+    else if(type == Animated){
+      console.log("no");
+      line1.current.position.set(animatedAnimation.pos1[0], animatedAnimation.pos1[1], animatedAnimation.pos1[2]);
+      line2.current.position.set(animatedAnimation.pos2[0], animatedAnimation.pos2[1], animatedAnimation.pos2[2]);
+      line3.current.position.set(animatedAnimation.pos3[0], animatedAnimation.pos3[1], animatedAnimation.pos3[2]);
+    }
+
 
   });
 
@@ -398,65 +460,126 @@ const VisComponent = React.forwardRef((props, ref) =>{
     grid.current.translateX(-10);
   }, []);
 
-  let rlAnimation = animation_rl[0]["animation"][idx];
+  let immersiveAnimation = animation_rl[0]["animation"][idx];
+  let animatedAnimation = animation_rl_animated[0]["animation"][idx];
+  let gridOp = 0;
+  let lineOp = 0;
+  let mlOp = 0;
+  let extOp = 0;
+  let extMlOp = 0;
+  if(type == Immersive){
+    gridOp = immersiveAnimation.opacityGrid;
+    lineOp = immersiveAnimation.opacityLine;
+    mlOp   = immersiveAnimation.opacityML;
+    extOp = immersiveAnimation.opacityExtraLine;
+    extMlOp = immersiveAnimation.opacityExtraML;
+  }
+  else if(type == Animated){
+    gridOp = animatedAnimation.opacityGrid;
+    lineOp = animatedAnimation.opacityLine;
+    mlOp   = animatedAnimation.opacityML;
+    extOp = animatedAnimation.opacityExtraLine;
+    extMlOp = animatedAnimation.opacityExtraML;
+  }
   let color1 = new THREE.Color("rgb(" +
-    Math.floor(rlAnimation.color1[0]) + "," +
-    Math.floor(rlAnimation.color1[1]) + "," +
-    Math.floor(rlAnimation.color1[2]) + ")");
+    Math.floor(immersiveAnimation.color1[0]) + "," +
+    Math.floor(immersiveAnimation.color1[1]) + "," +
+    Math.floor(immersiveAnimation.color1[2]) + ")");
 
   let color2 = new THREE.Color("rgb(" +
-    Math.floor(rlAnimation.color2[0]) + "," +
-    Math.floor(rlAnimation.color2[1]) + "," +
-    Math.floor(rlAnimation.color2[2]) + ")");
+    Math.floor(immersiveAnimation.color2[0]) + "," +
+    Math.floor(immersiveAnimation.color2[1]) + "," +
+    Math.floor(immersiveAnimation.color2[2]) + ")");
 
   let color3 = new THREE.Color("rgb(" +
-    Math.floor(rlAnimation.color3[0]) + "," +
-    Math.floor(rlAnimation.color3[1]) + "," +
-    Math.floor(rlAnimation.color3[2]) + ")");
+    Math.floor(immersiveAnimation.color3[0]) + "," +
+    Math.floor(immersiveAnimation.color3[1]) + "," +
+    Math.floor(immersiveAnimation.color3[2]) + ")");
 
   const COLOR_MESH    = new THREE.Color("rgb(110, 110, 110)");
   const COLOR_LINESEG = new THREE.Color("rgb(200, 200, 200)");
   const COLOR_LINE    = new THREE.Color("rgb(160, 160, 160)");
 
-  let mat_mesh = new THREE.MeshStandardMaterial({color: COLOR_MESH, opacity: rlAnimation.opacityExtraLine, transparent: true})
-  let mat_lineseg = new THREE.LineBasicMaterial({color: COLOR_LINESEG, opacity: rlAnimation.opacityExtraLine, transparent: true})
-  let mat_line = new THREE.LineBasicMaterial({color: COLOR_LINE, opacity: rlAnimation.opacityExtraML, transparent: true})
+  let mat_mesh = new THREE.MeshStandardMaterial({color: COLOR_MESH, opacity: extOp, transparent: true})
+  let mat_lineseg = new THREE.LineBasicMaterial({color: COLOR_LINESEG, opacity: extOp, transparent: true})
+  let mat_line = new THREE.LineBasicMaterial({color: COLOR_LINE, opacity: extMlOp, transparent: true})
+
+  const vertexShader= `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `
+  const fragmentShader= `
+    uniform vec3 color1;
+    uniform vec3 color2;
+    varying vec2 vUv;
+    float alpha = 0;
+    if (vUv.x <0.5)
+    {
+      alpha = 1;
+    }
+    if (vUv.x >=0.5)
+    {
+      alpha = 0;
+    }
+    void main() {
+      gl_FragColor.rgba = vec4(color1, alpha);
+    }
+  `
+
+  const data = useMemo(
+    () => ({
+      uniforms: {
+        color1: { value: new THREE.Color("rgb(100, 100, 255)") },
+        color2: { value: new THREE.Color("rgb(100, 0, 0)") }
+      },
+      fragmentShader,
+      vertexShader
+    }),
+    []
+  )
 
   return(
     <group position={[0, 0, 0]} ref={ref}>
       {
         <>
           <group ref={line1}>
+            {<mesh position={[0,0, 1000]} geometry={lineChart1}>
+              <shaderMaterial attachArray={"material"} {...data} />
+       
+            </mesh>}
             <mesh geometry={lineChart1}>
-              <meshStandardMaterial attach="material" color={color1} opacity={rlAnimation.opacityLine} transparent />
+              <meshStandardMaterial attach="material" color={color1} opacity={lineOp} transparent />
             </mesh>
             <lineSegments geometry={edges1} renderOrder={100}>
-              <lineBasicMaterial attach="material" color={color1} opacity={rlAnimation.opacityLine} transparent />
+              <lineBasicMaterial attach="material" color={color1} opacity={lineOp} transparent />
             </lineSegments>
             <mesh position={[0,0,lineWidth/2]} geometry={middleLine1}>
-              <lineBasicMaterial attach="material" color={color1} opacity={rlAnimation.opacityML} transparent />
+              <lineBasicMaterial attach="material" color={color1} opacity={mlOp} transparent />
             </mesh>
           </group>
           <group ref={line2}>
             <mesh geometry={lineChart2}>
-              <meshStandardMaterial attach="material" color={color2} opacity={rlAnimation.opacityLine} transparent />
+              <meshStandardMaterial attach="material" color={color2} opacity={lineOp} transparent />
             </mesh>
             <lineSegments geometry={edges2} renderOrder={110}>
-              <lineBasicMaterial attach="material" color={color2} opacity={rlAnimation.opacityLine} transparent />
+              <lineBasicMaterial attach="material" color={color2} opacity={lineOp} transparent />
             </lineSegments>
             <mesh position={[0,0,lineWidth/2]} geometry={middleLine2}>
-              <lineBasicMaterial attach="material" color={color2} opacity={rlAnimation.opacityML} transparent />
+              <lineBasicMaterial attach="material" color={color2} opacity={mlOp} transparent />
             </mesh>
           </group>
           <group ref={line3}>
             <mesh geometry={lineChart3}>
-              <meshStandardMaterial attach="material" color={color3} opacity={rlAnimation.opacityLine} transparent />
+              <meshStandardMaterial attach="material" color={color3} opacity={lineOp} transparent />
             </mesh>
             <lineSegments geometry={edges3} renderOrder={120}>
-              <lineBasicMaterial attach="material" color={color3} opacity={rlAnimation.opacityLine} transparent />
+              <lineBasicMaterial attach="material" color={color3} opacity={lineOp} transparent />
             </lineSegments>
             <mesh position={[0,0,lineWidth/2]} geometry={middleLine3}>
-              <lineBasicMaterial attach="material" color={color3} opacity={rlAnimation.opacityML} transparent />
+              <lineBasicMaterial attach="material" color={color3} opacity={mlOp} transparent />
             </mesh>
           </group>
 
@@ -485,7 +608,7 @@ const VisComponent = React.forwardRef((props, ref) =>{
           </group>
 
           <gridHelper ref={grid} args={[14400 * 3, 180 * 3]}>
-          <lineBasicMaterial attach="material" color={new THREE.Color("rgb(150, 150, 150)")} opacity={rlAnimation.opacityGrid} transparent />
+          <lineBasicMaterial attach="material" color={new THREE.Color("rgb(150, 150, 150)")} opacity={gridOp} transparent />
           </gridHelper>
           <mesh ref={oneJ} geometry={oneJum}>
             <meshBasicMaterial color="red" opacity={0} transparent={true}/>
@@ -496,7 +619,6 @@ const VisComponent = React.forwardRef((props, ref) =>{
             lenX={xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length+adjustedB1.length+adjustedA3.length-6)+1200} />
           <FinalAxis ref={finalaxis} position={[-xScale*(adjustedArr2.length+adjustedA2B3.length+adjustedA1B2.length+adjustedArr1.length-4),0,-100]}
           lenX={adjustedArr1.length*xScale+150}/>
-
     
         </>
       }
@@ -505,3 +627,12 @@ const VisComponent = React.forwardRef((props, ref) =>{
 });
 
 export { VisComponent as VisComponent_Immersive };
+
+
+
+
+
+
+
+
+
